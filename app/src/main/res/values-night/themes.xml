@@ -1,0 +1,82 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.DelDia" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorOnBackground">@color/primary_dark</item>
+        <item name="colorPrimaryVariant">@color/purple_500</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="android:fontFamily">@font/nexa_light</item>
+        <item name="android:textColor">@color/purple_200</item>
+    </style>
+
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+
+        <item name="android:background">@drawable/round_secondary</item>
+        <item name="android:backgroundTint">@color/purple_200</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="cornerRadius">50dp</item>
+    </style>
+
+    <style name="ButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/purple_200</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="cornerRadius">50dp</item>
+        <item name="iconTint">@color/icons</item>
+    </style>
+
+    <style name="SpinnerStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <!-- Color of box ONLY, not dropdown -->
+        <item name="boxBackgroundColor">@color/primary_dark</item>
+        <!-- Box outline color depending on state (default, enabled, but NOT error) -->
+        <item name="boxStrokeColor">@color/purple_200</item>
+        <!-- Box outline color just for errors -->
+        <item name="boxStrokeErrorColor">@color/red_light</item>
+        <!-- Enable 8dp space below the box for error message -->
+<!--        <item name="errorEnabled">true</item>-->
+        <!-- Hint INSIDE the box, before focusing the TextInputEditText -->
+        <item name="android:textColorHint">@color/purple_200</item>
+        <!-- Hint ON TOP of the box, when the spinner's TextInputEditText is focused. -->
+        <item name="hintTextColor">@color/purple_200</item>
+
+    </style>
+
+    <style name="CustomSwitchStyle" parent="@style/Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:colorControlActivated">#9C27B0</item>
+    </style>
+
+    <style name="CustomCardViewStyle" parent="CardView">
+        <item name="cardBackgroundColor">@color/primary_dark</item>
+        <item name="android:layout_margin">10dp</item>
+    </style>
+
+    <style name="CustomTextInputLayoutOutlinedBoxStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColor">@android:color/holo_green_dark</item>
+    </style>
+
+    <style name="CustomTextInputLayoutFilledBoxStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeColor">@color/purple_200</item>
+        <item name="android:textColorHint">@color/purple_200</item>
+        <item name="hintTextColor">@color/purple_200</item>
+        <item name="boxBackgroundColor">@color/primary_dark</item>
+        <item name="startIconTint">@color/purple_200</item>
+        <item name="endIconTint">@color/purple_200</item>
+    </style>
+
+    <style name="SwitchCompatStyle" >
+        <item name="thumbTint">@color/red_light</item>
+        <item name="android:textColor">@color/purple_200</item>
+
+        <item name="trackTint">@color/blue_dark</item>
+    </style>
+
+</resources>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardViewProduct"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorOnBackground">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_stock_V20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.15" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_stock_V60"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.6" />
+
+        <TextView
+            android:id="@+id/cardProductName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:text="CHEESE TRIS QUESO"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guideline_stock_V60"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/cardProductSize"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:text="105GX4-2.50"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guideline_stock_V60"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toBottomOf="@+id/cardProductName" />
+
+        <TextView
+            android:id="@+id/cardPrependTextPriceSale"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:text="P.U: S/ "
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toBottomOf="@+id/cardProductSize" />
+
+        <TextView
+            android:id="@+id/cardPriceSale"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="2.15"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guideline_stock_V60"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/cardPrependTextPriceSale"
+            app:layout_constraintTop_toBottomOf="@+id/cardProductSize" />
+
+        <TextView
+            android:id="@+id/cardAvailable"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DISPONIBLE: "
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V60"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/cardStock"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/cardAvailable"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/editTextQuantity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/my_edit_text_border"
+            android:inputType="number"
+            android:padding="10dp"
+            android:selectAllOnFocus="true"
+            android:text=""
+            android:textAlignment="center"
+            android:textSize="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V60"
+            app:layout_constraintTop_toBottomOf="@+id/cardAvailable" />
+
+
+        <TextView
+            android:id="@+id/cardSubtotalLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="subtotal: S/ "
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V60"
+            app:layout_constraintTop_toBottomOf="@+id/editTextQuantity" />
+
+
+        <TextView
+            android:id="@+id/cardSubtotalSale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="55.0"
+            android:textSize="18sp"
+            app:layout_constraintStart_toEndOf="@+id/cardSubtotalLabel"
+            app:layout_constraintTop_toBottomOf="@+id/editTextQuantity" />
+
+
+        <ImageView
+            android:id="@+id/cardProductPath"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:src="@android:mipmap/sym_def_app_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/cardProductCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/round_primary"
+            android:backgroundTint="@color/accent"
+            android:fontFamily="@font/nexa_bold"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="125"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

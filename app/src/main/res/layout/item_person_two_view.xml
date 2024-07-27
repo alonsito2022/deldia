@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardViewPerson"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    app:cardCornerRadius="4dp"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true"
+
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorOnBackground"
+        android:id="@+id/constraintPerson"
+        android:padding="4dp">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_stock_V10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.78" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_stock_V30"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.01" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_stock_V60"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.96" />
+
+
+        <TextView
+            android:id="@+id/cardPersonFullName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lato"
+            android:text="MARCO POLO"
+            android:textSize="20dp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V10"
+
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V30"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/cardAddressName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="AV. ALAN RAPHAEL"
+            android:textSize="14dp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V10"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V30"
+            app:layout_constraintTop_toBottomOf="@+id/cardPersonFullName" />
+
+        <TextView
+            android:id="@+id/cardDocumentType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="RUC: "
+            android:textSize="14dp"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V30"
+            app:layout_constraintTop_toBottomOf="@+id/cardAddressName" />
+        <TextView
+            android:id="@+id/cardDocumentNumber"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="45454545"
+            android:textSize="14dp"
+            app:layout_constraintStart_toEndOf="@+id/cardDocumentType"
+            app:layout_constraintTop_toBottomOf="@+id/cardAddressName" />
+
+        <TextView
+            android:id="@+id/cardRouteStatusDisplay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PENDIENTE"
+            android:textSize="12dp"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V30"
+            app:layout_constraintTop_toBottomOf="@+id/cardDocumentType" />
+
+        <TextView
+            android:id="@+id/cardRouteDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="15/05"
+            android:textSize="12dp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V10"
+            app:layout_constraintTop_toBottomOf="@+id/cardAddressName" />
+
+
+        <TextView
+            android:id="@+id/cardObservation"
+            android:layout_width="45dp"
+            android:layout_height="65dp"
+            android:fontFamily="@font/lato"
+            android:text="26"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:textAlignment="center"
+            android:paddingTop="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/guideline_stock_V60"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V10"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.cardview.widget.CardView>

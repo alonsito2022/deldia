@@ -1,0 +1,102 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.DelDia" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/primary_dark</item>
+        <item name="colorOnBackground">@color/white</item>
+        <item name="colorPrimaryVariant">@color/primary_light</item>
+        <item name="colorOnPrimary">@color/primary_text</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSecondaryVariant">@color/primary</item>
+        <item name="colorOnSecondary">@color/secondary_text</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="android:fontFamily">@font/nexa_light</item>
+        <item name="materialButtonStyle">@style/ButtonStyle</item>
+        <item name="android:textColor">@color/primary_text</item>
+
+    </style>
+
+    <style name="NexaTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/nexa_light</item>
+    </style>
+
+
+    <style name="ButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/blue_dark</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="cornerRadius">50dp</item>
+        <item name="iconTint">@color/icons</item>
+    </style>
+
+    <style name="datePickerTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimaryDark">@color/purple_500</item>
+        <item name="colorAccent">@color/purple_700</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/datePickerTheme.ButtonBarNegativeButtonStyle</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/datePickerTheme.ButtonBarPositiveButtonStyle</item>
+    </style>
+    <style name="datePickerTheme.ButtonBarNegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/purple_500</item>
+    </style>
+    <style name="datePickerTheme.ButtonBarPositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/purple_700</item>
+    </style>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/white</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="AppSearchView" parent="Widget.AppCompat.SearchView" >
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/nexa_light</item>
+    </style>
+
+    <style name="BottomNavigation">
+        <item name="android:background">@color/primary</item>
+        <item name="itemIconTint">@color/white</item>
+        <item name="itemTextColor">@color/white</item>
+    </style>
+
+    <style name="CustomTextInputLayoutFilledBoxStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeColor">@color/primary_text</item>
+        <item name="android:textColorHint">@color/primary_text</item>
+        <item name="hintTextColor">@color/primary_text</item>
+        <item name="boxBackgroundColor">@color/white</item>
+        <item name="startIconTint">@color/primary_text</item>
+        <item name="endIconTint">@color/primary_text</item>
+    </style>
+
+    <style name="SpinnerStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <!-- Color of box ONLY, not dropdown -->
+        <item name="boxBackgroundColor">@color/white</item>
+        <!-- Box outline color depending on state (default, enabled, but NOT error) -->
+        <item name="boxStrokeColor">@color/purple_200</item>
+        <!-- Box outline color just for errors -->
+        <item name="boxStrokeErrorColor">@color/red_light</item>
+        <!-- Enable 8dp space below the box for error message -->
+<!--        <item name="errorEnabled">true</item>-->
+        <!-- Hint INSIDE the box, before focusing the TextInputEditText -->
+        <item name="android:textColorHint">@color/black</item>
+        <!-- Hint ON TOP of the box, when the spinner's TextInputEditText is focused. -->
+        <item name="hintTextColor">@color/black</item>
+
+    </style>
+
+    <style name="CustomSwitchStyle" parent="@style/Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:colorControlActivated">#b71c1c</item>
+    </style>
+
+    <style name="CustomCardViewStyle" parent="CardView">
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="android:layout_margin">10dp</item>
+    </style>
+
+</resources>

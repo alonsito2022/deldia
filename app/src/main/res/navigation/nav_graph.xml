@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/chartFragment">
+
+    <fragment
+        android:id="@+id/chartFragment"
+        android:name="com.example.deldia.fragments.ChartFragment"
+        android:label="Graficos"
+        tools:layout="@layout/fragment_chart" >
+        <action
+            android:id="@+id/action_chartFragment_to_routeFragment"
+            app:destination="@id/routeFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_chartFragment_to_productFragment"
+            app:destination="@id/productFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_clientFragment"
+            app:destination="@id/clientFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_saleRealizedFragment"
+            app:destination="@id/saleRealizedFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_cashFragment"
+            app:destination="@id/cashFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_transferFragment"
+            app:destination="@id/transferFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_exchangeFragment"
+            app:destination="@id/exchangeFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_pickingFragment"
+            app:destination="@id/pickingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/clientFragment"
+        android:name="com.example.deldia.fragments.ClientFragment"
+        android:label="Clientes"
+        tools:layout="@layout/fragment_client" >
+        <action
+            android:id="@+id/action_clientFragment_to_chartFragment"
+            app:destination="@id/chartFragment" />
+        <action
+            android:id="@+id/action_clientFragment_to_clientSaleRealizedFragment"
+            app:destination="@id/clientSaleRealizedFragment" />
+        <action
+            android:id="@+id/action_clientFragment_to_clientEditFragment"
+            app:destination="@id/clientEditFragment" />
+        <action
+            android:id="@+id/action_clientFragment_to_clientRegisterFragment"
+            app:destination="@id/clientRegisterFragment" />
+        <action
+            android:id="@+id/action_clientFragment_to_quotationFragment"
+            app:destination="@id/quotationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cashFragment"
+        android:name="com.example.deldia.fragments.CashFragment"
+        android:label="Caja"
+        tools:layout="@layout/fragment_cash" >
+        <action
+            android:id="@+id/action_cashFragment_to_chartFragment"
+            app:destination="@id/chartFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.deldia.fragments.MapFragment"
+        android:label="Mapa"
+        tools:layout="@layout/fragment_map" >
+        <action
+            android:id="@+id/action_mapFragment_to_chartFragment"
+            app:destination="@id/chartFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_quotationFragment"
+            app:destination="@id/quotationFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_clientEditFragment"
+            app:destination="@id/clientEditFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_clientRegisterFragment"
+            app:destination="@id/clientRegisterFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_saleFragment"
+            app:destination="@id/saleFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_printActivity"
+            app:destination="@id/printActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/saleRealizedFragment"
+        android:name="com.example.deldia.fragments.SaleRealizedFragment"
+        android:label="Pedidos"
+        tools:layout="@layout/fragment_sale_realized" >
+        <action
+            android:id="@+id/action_saleRealizedFragment_to_chartFragment"
+            app:destination="@id/chartFragment" />
+        <action
+            android:id="@+id/action_saleRealizedFragment_to_printActivity"
+            app:destination="@id/printActivity" />
+        <action
+            android:id="@+id/action_saleRealizedFragment_to_dispatchFragment"
+            app:destination="@id/dispatchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/productFragment"
+        android:name="com.example.deldia.fragments.ProductFragment"
+        android:label="Inventario"
+        tools:layout="@layout/fragment_product" >
+        <action
+            android:id="@+id/action_productFragment_to_chartFragment"
+            app:destination="@id/chartFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/routeFragment"
+        android:name="com.example.deldia.fragments.RouteFragment"
+        android:label="Mi ruta"
+        tools:layout="@layout/fragment_route" >
+        <action
+            android:id="@+id/action_routeFragment_to_chartFragment"
+            app:destination="@id/chartFragment" />
+        <action
+            android:id="@+id/action_routeFragment_to_quotationFragment"
+            app:destination="@id/quotationFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_routeFragment_to_clientEditFragment"
+            app:destination="@id/clientEditFragment" />
+        <action
+            android:id="@+id/action_routeFragment_to_clientRegisterFragment"
+            app:destination="@id/clientRegisterFragment" />
+        <action
+            android:id="@+id/action_routeFragment_to_saleFragment"
+            app:destination="@id/saleFragment" />
+        <action
+            android:id="@+id/action_routeFragment_to_printActivity"
+            app:destination="@id/printActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.deldia.fragments.ProfileFragment"
+        android:label="Perfil"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_chartFragment"
+            app:destination="@id/chartFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transferFragment"
+        android:name="com.example.deldia.fragments.TransferFragment"
+        android:label="Transbordos"
+        tools:layout="@layout/fragment_transfer" >
+        <action
+            android:id="@+id/action_transferFragment_to_chartFragment"
+            app:destination="@id/chartFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/exchangeFragment"
+        android:name="com.example.deldia.fragments.ExchangeFragment"
+        android:label="Cambios al cliente"
+        tools:layout="@layout/fragment_exchange" >
+        <action
+            android:id="@+id/action_exchangeFragment_to_chartFragment"
+            app:destination="@id/chartFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/quotationFragment"
+        android:name="com.example.deldia.fragments.QuotationFragment"
+        android:label="Cotizacion"
+        tools:layout="@layout/fragment_quotation" >
+        <action
+            android:id="@+id/action_quotationFragment_to_dispatchFragment"
+            app:destination="@id/dispatchFragment" />
+        <action
+            android:id="@+id/action_quotationFragment_to_saleRealizedFragment"
+            app:destination="@id/saleRealizedFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dispatchFragment"
+        android:name="com.example.deldia.fragments.DispatchFragment"
+        android:label="Confirmar Pedido"
+        tools:layout="@layout/fragment_dispatch" >
+        <action
+            android:id="@+id/action_dispatchFragment_to_printActivity"
+            app:destination="@id/printActivity" />
+        <action
+            android:id="@+id/action_dispatchFragment_to_saleRealizedFragment"
+            app:destination="@id/saleRealizedFragment" />
+    </fragment>
+    <activity
+        android:id="@+id/printActivity"
+        android:name="com.example.deldia.PrintActivity"
+        android:label="Vista Previa"
+        tools:layout="@layout/activity_print" />
+    <fragment
+        android:id="@+id/pickingFragment"
+        android:name="com.example.deldia.fragments.PickingFragment"
+        android:label="Preparar pedido"
+        tools:layout="@layout/fragment_picking" >
+        <action
+            android:id="@+id/action_pickingFragment_to_chartFragment"
+            app:destination="@id/chartFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/clientEditFragment"
+        android:name="com.example.deldia.fragments.ClientEditFragment"
+        android:label="Editar cliente"
+        tools:layout="@layout/fragment_client_edit" >
+        <action
+            android:id="@+id/action_clientEditFragment_to_routeFragment"
+            app:destination="@id/routeFragment" />
+        <action
+            android:id="@+id/action_clientEditFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_clientEditFragment_to_saleFragment"
+            app:destination="@id/saleFragment" />
+        <action
+            android:id="@+id/action_clientEditFragment_to_quotationFragment"
+            app:destination="@id/quotationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/clientRegisterFragment"
+        android:name="com.example.deldia.fragments.ClientRegisterFragment"
+        android:label="Registro de cliente"
+        tools:layout="@layout/fragment_client_register" >
+        <action
+            android:id="@+id/action_clientRegisterFragment_to_routeFragment"
+            app:destination="@id/routeFragment" />
+        <action
+            android:id="@+id/action_clientRegisterFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_clientRegisterFragment_to_saleFragment"
+            app:destination="@id/saleFragment" />
+        <action
+            android:id="@+id/action_clientRegisterFragment_to_quotationFragment"
+            app:destination="@id/quotationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/saleFragment"
+        android:name="com.example.deldia.fragments.SaleFragment"
+        android:label="Venta directa"
+        tools:layout="@layout/fragment_sale" >
+        <action
+            android:id="@+id/action_saleFragment_to_routeFragment"
+            app:destination="@id/routeFragment" />
+        <action
+            android:id="@+id/action_saleFragment_to_printActivity"
+            app:destination="@id/printActivity" />
+        <action
+            android:id="@+id/action_saleFragment_to_saleRealizedFragment"
+            app:destination="@id/saleRealizedFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/clientSaleRealizedFragment"
+        android:name="com.example.deldia.fragments.ClientSaleRealizedFragment"
+        android:label="Ventas realizadas"
+        tools:layout="@layout/fragment_client_sale_realized" >
+        <action
+            android:id="@+id/action_clientSaleRealizedFragment_to_clientFragment"
+            app:destination="@id/clientFragment" />
+        <action
+            android:id="@+id/action_clientSaleRealizedFragment_to_printActivity"
+            app:destination="@id/printActivity" />
+    </fragment>
+</navigation>

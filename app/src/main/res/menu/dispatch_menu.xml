@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <item
+        android:id="@+id/printDispatch"
+        android:icon="@drawable/ic_baseline_storage_24"
+        android:title="Vista previa" />
+    <item
+        android:id="@+id/showDispatch"
+        android:title="Confirmar preventa"
+        android:icon="@drawable/ic_baseline_drive_file_rename_outline_24" />
+    <item
+        android:id="@+id/cancelPresale"
+        android:title="Cancelar preventa"
+        android:icon="@drawable/ic_baseline_cancel_24" />
+    <item
+        android:id="@+id/cancelDispatch"
+        android:title="Cancelar autoventa"
+        android:icon="@drawable/ic_baseline_cancel_24" />
+
+    <item
+        android:id="@+id/generateQuotation"
+        android:title="Generar Cotizacion"
+        android:icon="@drawable/ic_baseline_storage_24" />
+    <item
+        android:id="@+id/generateDispatch"
+        android:title="Generar Venta directa"
+        android:icon="@drawable/ic_baseline_near_me_24" />
+    <item
+        android:id="@+id/showDetail"
+        android:title="Mostrar detalles"
+        android:icon="@drawable/ic_baseline_style_24" />
+    <item
+        android:id="@+id/deleteOperation"
+        android:title="Borrar"
+        android:icon="@drawable/ic_baseline_delete_24" />
+</menu>

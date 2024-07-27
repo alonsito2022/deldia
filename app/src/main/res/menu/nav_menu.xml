@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/clientFragment"
+            android:icon="@drawable/ic_baseline_store_24"
+            android:checkable="true"
+            android:title="Clientes"/>
+        <item
+            android:id="@+id/productFragment"
+            android:icon="@drawable/ic_product_simple"
+            android:checkable="true"
+            android:title="Inventario"/>
+        <item
+            android:id="@+id/routeFragment"
+            android:icon="@drawable/ic_baseline_room_24"
+            android:checkable="true"
+            android:title="Mi ruta"/>
+        <item
+            android:id="@+id/mapFragment"
+            android:icon="@drawable/ic_baseline_map_24"
+            android:checkable="true"
+            android:title="Mapa"/>
+        <item
+            android:id="@+id/saleRealizedFragment"
+            android:icon="@drawable/ic_order"
+            android:checkable="true"
+            android:title="Pedidos"/>
+        <item
+            android:id="@+id/pickingFragment"
+            android:icon="@drawable/ic_product_big"
+            android:checkable="true"
+            android:title="Preparar pedido"/>
+        <item
+            android:id="@+id/transferFragment"
+            android:icon="@drawable/ic_baseline_6_ft_apart_24"
+            android:checkable="true"
+            android:title="Transbordos"/>
+        <item
+            android:id="@+id/exchangeFragment"
+            android:icon="@drawable/ic_baseline_wifi_protected_setup_24"
+            android:checkable="true"
+            android:title="Cambios al cliente"/>
+        <item
+            android:id="@+id/cashFragment"
+            android:icon="@drawable/ic_baseline_point_of_sale_24"
+            android:checkable="true"
+            android:title="Caja"/>
+        <item
+            android:id="@+id/chartFragment"
+            android:icon="@drawable/ic_baseline_bug_report_24"
+            android:checked="true"
+            android:checkable="true"
+            android:title="Graficos"/>
+        <item
+            android:id="@+id/profileFragment"
+            android:icon="@drawable/ic_baseline_account_circle_24"
+            android:checkable="true"
+            android:title="Perfil"/>
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_baseline_cloud_off_24"
+            android:checkable="true"
+            android:title="Cerrar sesion"/>
+    </group>
+
+
+</menu>

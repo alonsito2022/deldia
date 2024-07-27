@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_routes"
+        android:icon="@drawable/ic_baseline_room_24"
+        android:title="Mi ruta"/>
+    <item
+        android:id="@+id/nav_map"
+        android:icon="@drawable/ic_baseline_map_24"
+        android:title="Mapa"/>
+    <item
+        android:id="@+id/nav_sales_realized"
+        android:icon="@drawable/ic_order"
+        android:title="Pedidos"/>
+
+    <item
+        android:id="@+id/nav_products"
+        android:icon="@drawable/ic_product_simple"
+        android:title="Inventario"/>
+</menu>

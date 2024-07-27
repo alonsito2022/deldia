@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/editClient"
+        android:icon="@drawable/ic_baseline_storage_24"
+        android:title="Modificar datos del cliente" />
+    <item
+        android:id="@+id/makeAnOrder"
+        android:title="Hacer un pedido"
+        android:icon="@drawable/ic_baseline_drive_file_rename_outline_24" />
+    <item
+        android:id="@+id/withoutOrdering"
+        android:title="Visita sin compra"
+        android:icon="@drawable/ic_baseline_cancel_24" />
+
+</menu>

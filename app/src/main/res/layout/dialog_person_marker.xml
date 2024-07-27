@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_stock_V20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.3" />
+
+        <TextView
+            android:id="@+id/textViewTitlePersonName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lato"
+            android:text="NOMBRE: "
+
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewPersonFullName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lato"
+            android:text="EDWIN ZEBALLOS HUAMAN"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewDocumentTypeDisplay"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="RUC: "
+
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewPersonFullName" />
+
+        <TextView
+            android:id="@+id/textViewDocumentNumber"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lato"
+
+            android:text="20558734371"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toBottomOf="@+id/textViewPersonFullName" />
+
+        <TextView
+            android:id="@+id/textViewLabelAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="DIRECCION: "
+
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDocumentNumber" />
+
+        <TextView
+            android:id="@+id/textViewAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lato"
+            android:text="Mz Dpor 1 Comervial Valle Blancode Cerro Colorado"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDocumentNumber" />
+
+
+        <TextView
+            android:id="@+id/textViewLabelUser"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="CUADRILLA: "
+
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewAddress" />
+
+
+        <TextView
+            android:id="@+id/textViewUser"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="VENDEDOR 0 LU-25"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toBottomOf="@+id/textViewAddress" />
+
+        <TextView
+            android:id="@+id/textViewLabelCellphone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="CELULAR:"
+
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLabelUser" />
+
+
+        <TextView
+            android:id="@+id/textViewCellphone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="91..."
+
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toBottomOf="@+id/textViewUser" />
+
+        <Button
+            android:id="@+id/buttonCallPhone"
+            style="@style/ButtonStyle"
+            android:layout_width="30dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:text=""
+            android:textSize="12dp"
+            app:icon="@drawable/ic_baseline_phone_24"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textViewCellphone"
+            app:layout_constraintTop_toBottomOf="@+id/textViewUser" />
+
+        <TextView
+            android:id="@+id/textViewLabelPhysicalDistribution"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="SIS. DIST:"
+
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLabelCellphone" />
+
+        <TextView
+            android:id="@+id/textViewPhysicalDistribution"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="AER"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toBottomOf="@+id/textViewCellphone" />
+        <TextView
+            android:id="@+id/textViewLabelComment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="COMENT.:"
+
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLabelPhysicalDistribution" />
+
+        <TextView
+            android:id="@+id/textViewComment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:lines="4"
+            android:maxLines="4"
+            android:text="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toBottomOf="@+id/textViewPhysicalDistribution" />
+
+        <TextView
+            android:id="@+id/textViewTitleObs"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/lato"
+            android:text="COD ORDEN"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_without_dispatch" />
+
+
+        <EditText
+            android:id="@+id/editTextObs"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ems="10"
+            android:inputType="number"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTitleObs" />
+
+        <TextView
+            android:id="@+id/textViewTitleAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/lato"
+            android:text="DIRECCION"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextObs" />
+
+
+        <EditText
+            android:id="@+id/editTextAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ems="10"
+            android:inputType="text"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTitleAddress" />
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/googleMap"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            app:cameraZoom="10"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_put_in_pending" />
+
+        <TextView
+            android:id="@+id/textViewLatitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/googleMap" />
+
+        <TextView
+            android:id="@+id/textViewLongitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toBottomOf="@+id/googleMap" />
+
+
+        <Button
+            android:id="@+id/dialog_new_sale"
+            style="@style/ButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:width="250dp"
+            android:backgroundTint="@color/green"
+            android:text="VENTA DIRECTA"
+            app:icon="@drawable/ic_baseline_store_24"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutDailyObservation" />
+
+        <Button
+            android:id="@+id/dialog_new_dispatch"
+            style="@style/ButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:width="250dp"
+            android:text="HACER PREVENTA"
+            android:backgroundTint="@color/yellow"
+            app:icon="@drawable/ic_baseline_shopping_cart_24"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_new_sale" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutDailyObservation"
+            style="@style/SpinnerStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="OBS DE VISITA SIN COMPRA"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewComment">
+
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteDailyObservation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/dialog_without_dispatch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:width="250dp"
+            android:text="VISITA SIN COMPRA"
+            android:backgroundTint="@color/red"
+            app:icon="@drawable/ic_baseline_cancel_24"
+            style="@style/ButtonStyle"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_new_dispatch" />
+
+        <Button
+            android:id="@+id/dialog_edit_client"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:width="250dp"
+            android:text="EDITAR CLIENTE"
+            app:icon="@drawable/ic_baseline_account_circle_24"
+            style="@style/ButtonStyle"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_without_dispatch" />
+
+        <Button
+            android:id="@+id/dialog_presale_delivered"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:width="250dp"
+            android:text="ENTREGADO CONFORME"
+            app:icon="@drawable/ic_baseline_check_circle_24"
+            android:backgroundTint="@color/dark_green"
+            style="@style/ButtonStyle"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_edit_client" />
+
+        <Button
+            android:id="@+id/dialog_presale_no_delivered"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:width="250dp"
+            android:text="ENVIO FALLIDO"
+            app:icon="@drawable/ic_baseline_near_me_24"
+            android:backgroundTint="@color/fuchsia"
+            style="@style/ButtonStyle"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_presale_delivered" />
+
+
+        <Button
+            android:id="@+id/dialog_cancel_presale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:width="250dp"
+            android:text="ANULAR PREVENTA"
+            android:visibility="gone"
+            app:icon="@drawable/ic_baseline_cancel_24"
+            android:backgroundTint="@color/black"
+            style="@style/ButtonStyle"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_presale_no_delivered" />
+
+        <Button
+            android:id="@+id/dialog_cancel_sale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:width="250dp"
+            android:text="ANULAR VENTA"
+            app:icon="@drawable/ic_baseline_cancel_24"
+            android:backgroundTint="@color/black"
+            style="@style/ButtonStyle"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_cancel_presale" />
+
+
+        <Button
+            android:id="@+id/dialog_put_in_pending"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:width="250dp"
+            android:text="PONER EN PENDIENTE"
+            app:icon="@drawable/ic_baseline_watch_later_24"
+            android:backgroundTint="@color/warning_dark"
+            style="@style/ButtonStyle"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_cancel_sale" />
+
+
+        <Button
+            android:id="@+id/dialog_save_client_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:width="250dp"
+            android:backgroundTint="@color/success"
+            android:visibility="gone"
+            android:text="GUARDAR DATOS"
+            android:textColor="@color/white"
+            app:icon="@drawable/ic_baseline_wifi_protected_setup_24"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconTint="@color/icons"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/googleMap" />
+
+
+        <Button
+            android:id="@+id/dialog_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:width="250dp"
+            android:text="CERRAR"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:icon="@drawable/ic_baseline_cancel_24"
+            style="@style/ButtonStyle"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLatitude" />
+
+
+        <TextView
+            android:id="@+id/textViewLabelSalesList"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="REVISION DE HISTORIAL DE VENTAS"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_close" />
+
+        <LinearLayout
+            android:id="@+id/layoutSalesList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+
+            android:orientation="vertical"
+            android:divider="@drawable/vertical_divider_1"
+            android:showDividers="middle"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLabelSalesList">
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

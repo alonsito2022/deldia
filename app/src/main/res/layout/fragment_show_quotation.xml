@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/backgroundColor"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.ShowQuotationFragment">
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineH9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9" />
+
+    <ScrollView
+        android:id="@+id/scrollViewDetails"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineH9"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewOperationDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/guidelineH9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </ScrollView>
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintSummary"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guidelineH9">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineSubtotalInnerV5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.05" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineSubtotalInnerV35"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.35" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineSubtotalInnerV65"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.65" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineSubtotalInnerV95"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.95" />
+
+        <TextView
+            android:id="@+id/textViewDialog40"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NRO DE ITEMS"
+            android:textSize="14dp"
+            app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV35"
+            app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV5"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/textViewDialogItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV35"
+            app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV5"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDialog40" />
+
+        <TextView
+            android:id="@+id/textViewDialog41"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NRO ITEMS SELEC."
+            android:textSize="14dp"
+            app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV65"
+            app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV35"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewDialogSelectedItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0.0"
+            android:textSize="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV65"
+            app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV35"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDialog41" />
+
+        <TextView
+            android:id="@+id/textViewDialog42"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TOTAL"
+            android:textSize="14dp"
+            app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV95"
+            app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV65"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewDialogTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0.0"
+            android:textSize="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV95"
+            app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV65"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDialog42" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

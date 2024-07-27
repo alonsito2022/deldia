@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_dispatch_detail_V50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.3" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_dispatch_detail_V70"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.6" />
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_dispatch_detail_V80"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.8" />
+
+
+        <TextView
+            android:id="@+id/textViewPickingDetailProductName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:text="BALON DE 10KG MEGA GAS"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewPickingDetailProductSku"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="@id/guideline_dispatch_detail_V50"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewPickingDetailProductName" />
+
+
+        <TextView
+            android:id="@+id/textViewPickingDetailPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="S/ 120.0"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_dispatch_detail_V70"
+            app:layout_constraintStart_toEndOf="@+id/guideline_dispatch_detail_V50"
+            app:layout_constraintTop_toBottomOf="@+id/textViewPickingDetailProductName" />
+
+
+        <TextView
+            android:id="@+id/textViewPickingDetailQuantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_dispatch_detail_V80"
+            app:layout_constraintStart_toStartOf="@+id/guideline_dispatch_detail_V70"
+            app:layout_constraintTop_toBottomOf="@+id/textViewPickingDetailProductName" />
+
+
+        <TextView
+            android:id="@+id/textViewPickingDetailSubtotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="S/ 240.0"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline_dispatch_detail_V80"
+            app:layout_constraintTop_toBottomOf="@+id/textViewPickingDetailProductName" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

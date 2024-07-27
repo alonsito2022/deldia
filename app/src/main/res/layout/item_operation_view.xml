@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="2dp"
+
+        app:cardElevation="4dp"
+        app:cardCornerRadius="3dp"
+        style="@style/CustomCardViewStyle"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="4dp">
+
+            <ImageView
+                android:id="@+id/showMenu"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guidelineOrderPlaced_v10"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_more_vert_24" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineOrderPlaced_v10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.15"/>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineOrderPlaced_v25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineOrderPlaced_v85"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.8"/>
+
+
+
+            <ImageView
+                android:id="@+id/cardOperationClientIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@+id/guidelineOrderPlaced_v10"
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/ic_baseline_person_24" />
+
+
+            <TextView
+                android:id="@+id/cardOperationClientFullName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="EDWIN ZEBALLOS HUAMAN"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cardOperationClientIcon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/cardClientDocumentType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ruc"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/guidelineOrderPlaced_v10"
+                app:layout_constraintTop_toBottomOf="@+id/cardOperationClientFullName" />
+
+            <TextView
+                android:id="@+id/cardClientDocumentNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4747"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/cardClientDocumentType"
+                app:layout_constraintTop_toBottomOf="@+id/cardOperationClientFullName" />
+
+            <TextView
+                android:id="@+id/cardClientVisitDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LUNES"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@+id/guidelineOrderPlaced_v85"
+                app:layout_constraintTop_toBottomOf="@+id/cardOperationClientFullName" />
+
+            <TextView
+                android:id="@+id/cardClientObservation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="145"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/guidelineOrderPlaced_v10"
+                app:layout_constraintTop_toBottomOf="@+id/cardClientDocumentType" />
+            <TextView
+                android:id="@+id/cardClientCellphone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="92126"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/guidelineOrderPlaced_v10"
+                app:layout_constraintTop_toBottomOf="@+id/cardClientObservation" />
+
+
+            <TextView
+                android:id="@+id/cardClientGangName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GangName"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/guidelineOrderPlaced_v10"
+                app:layout_constraintTop_toBottomOf="@+id/cardClientCellphone" />
+
+            <TextView
+                android:id="@+id/cardOperationUserFullName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="PEÑA LIMA PEÑA TRISTE"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@+id/guidelineOrderPlaced_v85"
+                app:layout_constraintStart_toStartOf="@+id/guidelineOrderPlaced_v10"
+                app:layout_constraintTop_toBottomOf="@+id/cardClientGangName" />
+
+            <TextView
+                android:id="@+id/cardOperationDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="14 Jul, 2022"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guidelineOrderPlaced_v25"
+                app:layout_constraintStart_toStartOf="@+id/guidelineOrderPlaced_v10"
+                app:layout_constraintTop_toBottomOf="@+id/cardOperationUserFullName" />
+
+            <TextView
+                android:id="@+id/cardOperationDocumentNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="01001-1"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guidelineOrderPlaced_v85"
+                app:layout_constraintTop_toBottomOf="@+id/cardOperationUserFullName" />
+
+            <TextView
+                android:id="@+id/cardOperationTotal"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="S/ 44.4"
+                android:textAlignment="center"
+                android:textSize="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/guidelineOrderPlaced_v85"
+                app:layout_constraintTop_toBottomOf="@+id/cardOperationClientFullName" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

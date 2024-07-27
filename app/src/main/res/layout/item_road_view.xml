@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="2dp"
+
+        app:cardElevation="4dp"
+        app:cardCornerRadius="3dp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="4dp">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineRoute_v80"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.9"/>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineRoute_v50"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5"/>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineRoute_v60"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.75"/>
+
+
+
+            <TextView
+                android:id="@+id/cardClientFullName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="TIENDAS MASS S.A.C."
+                android:fontFamily="@font/square_condensed"
+                android:textColor="@color/indigo"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="@+id/guidelineRoute_v60"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/cardClientDocumentType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RUC: "
+                android:fontFamily="@font/abel"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardClientFullName" />
+
+            <TextView
+                android:id="@+id/cardClientDocumentNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="20601327318"
+                android:fontFamily="@font/abel"
+                android:textColor="@color/secondary_text"
+                android:textSize="14sp"
+                app:layout_constraintStart_toEndOf="@+id/cardClientDocumentType"
+                app:layout_constraintTop_toBottomOf="@+id/cardClientFullName" />
+
+            <TextView
+                android:id="@+id/cardClientAddress"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="JR. CRESPO Y CASTILLO Nro. 2087 URB. MIRONES BAJO LIMA - LIMA - LIMA"
+                android:fontFamily="@font/abel"
+                android:textColor="@color/accent"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@+id/guidelineRoute_v60"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardClientDocumentNumber" />
+
+
+
+            <TextView
+                android:id="@+id/cardWeekDayName"
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LUNES: "
+                android:fontFamily="@font/abel"
+                android:textColor="@color/secondary_text"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@+id/cardClientAddress"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/cardRouteDate" />
+
+            <TextView
+                android:id="@+id/cardRouteDate"
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="11-07-2022"
+                android:fontFamily="@font/abel"
+                android:textColor="@color/secondary_text"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@+id/cardClientAddress"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cardWeekDayName"/>
+
+            <ImageView
+                android:id="@+id/cardStatus"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="@+id/guidelineRoute_v80"
+                app:layout_constraintStart_toStartOf="@+id/guidelineRoute_v60"
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/ic_baseline_watch_later_24"
+                android:backgroundTint="@color/indigo" />
+
+            <TextView
+                android:id="@+id/cardStatusDisplay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/square_condensed"
+                android:gravity="center"
+                android:text="PENDIENTE"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/guidelineRoute_v80"
+                app:layout_constraintStart_toStartOf="@+id/guidelineRoute_v60"
+                app:layout_constraintTop_toBottomOf="@+id/cardStatus" />
+
+            <ImageView
+                android:id="@+id/moreMenu"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guidelineRoute_v80"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_more_vert_24"
+                app:tint="@color/black" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
