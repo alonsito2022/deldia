@@ -307,6 +307,7 @@ class SaleFragment : Fragment() {
     }
 
     private fun loadProductStoreInWarehouse(w: Warehouse) {
+        Log.d("Mike", "Warehouse ${w.warehouseID} ${w.warehouseName}")
         val apiInterface = UserApiService.create().getStockInWarehouse(w)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

@@ -116,7 +116,7 @@ class ChartFragment : Fragment() {
                         loadSoldProducts(user)
                         loadSales(user)
                         loadSalesOfWeek(user)
-                        autoCompleteGang.setText(user.firstName)
+//                        autoCompleteGang.setText(user.firstName, false)
 
                     }else
                         Toast.makeText(globalContext, "Elija Usuario.", Toast.LENGTH_SHORT).show()
@@ -150,7 +150,7 @@ class ChartFragment : Fragment() {
                 listGangs.add(g)
                 autoCompleteGang.setAdapter(GangAdapter(globalContext!!, R.layout.item_gang_view, listGangs, object : GangAdapter.OnItemClickListener{
                     override fun onItemClick(model: Gang) {
-                        autoCompleteGang.setText(model.name)
+                        autoCompleteGang.setText(model.name, false)
                         autoCompleteGang.dismissDropDown()
                         val inputManager = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                         autoCompleteGang.closeKeyBoard(inputManager)
@@ -182,7 +182,7 @@ class ChartFragment : Fragment() {
                 listUsers.add(u)
                 userAdapter = UserAdapter(globalContext!!, R.layout.item_user_view, listUsers, object : UserAdapter.OnItemClickListener{
                     override fun onItemClick(model: User) {
-                        autoCompleteUser.setText(model.fullName)
+                        autoCompleteUser.setText(model.fullName, false)
                         autoCompleteUser.dismissDropDown()
                         val inputManager = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                         autoCompleteUser.closeKeyBoard(inputManager)

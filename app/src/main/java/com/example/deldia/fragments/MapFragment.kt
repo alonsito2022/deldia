@@ -12,6 +12,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
 import android.os.Bundle
+import android.text.InputType
 import android.transition.AutoTransition
 import android.transition.TransitionManager
 import android.util.DisplayMetrics
@@ -60,6 +61,8 @@ import java.util.*
 
 class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var fabNewStopping: FloatingActionButton
+    private lateinit var fabToggleSearching: FloatingActionButton
+    private lateinit var cardViewSearch: CardView
 
     private var globalContext: Context? = null
     private var vehicleID: Int = 0
@@ -174,6 +177,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)
 
+        cardViewSearch = rootView.findViewById(R.id.cardViewSearch)
+
+        fabToggleSearching = rootView.findViewById(R.id.fabToggleSearching)
+        fabToggleSearching.setOnClickListener {
+            if(cardViewSearch.visibility == View.GONE){
+                cardViewSearch.visibility = View.VISIBLE
+            }else{
+                cardViewSearch.visibility = View.GONE
+            }
+
+        }
+
         fabNewStopping = rootView.findViewById(R.id.fabNewStopping)
         fabNewStopping.setOnClickListener {
 //            Toast.makeText(globalContext, "Nueva parada", Toast.LENGTH_LONG).show()
@@ -184,6 +199,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             findNavController().navigate(R.id.action_mapFragment_to_clientRegisterFragment, bundle)
 
         }
+
 
         textInputLayoutGang = rootView.findViewById(R.id.textInputLayoutGang)
 //        if (user.userID == 2){
@@ -256,7 +272,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
             route.visitDay = selectedVisitDay
 
-            autoCompleteGang.setText("")
+//            autoCompleteGang.setText("")
             sendRoute()
             // loadLocationGps()
         }
@@ -458,7 +474,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 listGangs.add(gangAll)
                 autoCompleteGang.setAdapter(GangAdapter(globalContext!!, R.layout.item_gang_view, listGangs, object : GangAdapter.OnItemClickListener{
                     override fun onItemClick(model: Gang) {
-                        autoCompleteGang.setText(model.name)
+                        autoCompleteGang.setText(model.name, false)
                         autoCompleteGang.dismissDropDown()
                         val inputManager = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                         autoCompleteGang.closeKeyBoard(inputManager)
@@ -466,6 +482,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         route.gangID = model.gangID
                     }
                 }))
+                // Asegúrate de que el dropdown se vuelve a abrir cuando el AutoCompleteTextView recupera el foco
+                autoCompleteGang.setOnFocusChangeListener { _, hasFocus ->
+                    if (hasFocus) {
+                        autoCompleteGang.showDropDown()
+                    }
+                }
                 Log.d("MIKE", "loadDistributors ok: " + listDistributors.size)
             }
 
@@ -523,8 +545,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val textViewUser = v.findViewById<TextView>(R.id.textViewUser)
         val textViewCellphone = v.findViewById<TextView>(R.id.textViewCellphone)
         val textViewPhysicalDistribution = v.findViewById<TextView>(R.id.textViewPhysicalDistribution)
-        val autoCompleteDailyObservation = v.findViewById<AutoCompleteTextView>(R.id.autoCompleteDailyObservation)
+//        val autoCompleteDailyObservation = v.findViewById<AutoCompleteTextView>(R.id.autoCompleteDailyObservation)
         val textViewComment = v.findViewById<TextView>(R.id.textViewComment)
+        val textViewPurchaseVolume = v.findViewById<TextView>(R.id.textViewPurchaseVolume)
         layoutSalesList = v.findViewById(R.id.layoutSalesList)
 
         val operation : Operation = Operation()
@@ -542,30 +565,31 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         textViewCellphone.text = p.cellphone
         textViewPhysicalDistribution.text = p.physicalDistributionDisplaySaved
         textViewComment.text = p.comment
+        textViewPurchaseVolume.text = p.purchaseVolume
 
-        var dailyObsSelected = "N.A."
-        if (p.routeObservation.isNotEmpty()){
-            dailyObsSelected = p.routeObservation
-        }
-
-        val listDailyObs = listOf(
-            "N.A.",
-            "La tienda tiene stock.",
-            "La tienda se encuentra cerrada.",
-            "El dueño no tiene dinero.",
-            "El dueño no esta presente."
-        )
-        val adapterDailyObs = ArrayAdapter(
-            globalContext!!,
-            android.R.layout.simple_spinner_dropdown_item,
-            listDailyObs
-        )
-        autoCompleteDailyObservation.keyListener = null
-        autoCompleteDailyObservation.setAdapter(adapterDailyObs)
-        autoCompleteDailyObservation.setText(
-            autoCompleteDailyObservation.adapter.getItem(listDailyObs.indexOf(dailyObsSelected)).toString(),
-            false
-        )
+//        var dailyObsSelected = "N.A."
+//        if (p.routeObservation.isNotEmpty()){
+//            dailyObsSelected = p.routeObservation
+//        }
+//
+//        val listDailyObs = listOf(
+//            "N.A.",
+//            "La tienda tiene stock.",
+//            "La tienda se encuentra cerrada.",
+//            "El dueño no tiene dinero.",
+//            "El dueño no esta presente."
+//        )
+//        val adapterDailyObs = ArrayAdapter(
+//            globalContext!!,
+//            android.R.layout.simple_spinner_dropdown_item,
+//            listDailyObs
+//        )
+//        autoCompleteDailyObservation.keyListener = null
+//        autoCompleteDailyObservation.setAdapter(adapterDailyObs)
+//        autoCompleteDailyObservation.setText(
+//            autoCompleteDailyObservation.adapter.getItem(listDailyObs.indexOf(dailyObsSelected)).toString(),
+//            false
+//        )
 
         val googleMap = v.findViewById<MapView>(R.id.googleMap)
         MapsInitializer.initialize(globalContext!!)
@@ -697,9 +721,75 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             dialog.dismiss()
         }
         dialogWithoutDispatch.setOnClickListener{
-            p.routeObservation = autoCompleteDailyObservation.text.toString()
-            sendVisitWithoutDispatch(p)
-            dialog.dismiss()
+
+            val autoCompleteObservation = AutoCompleteTextView(globalContext)
+            autoCompleteObservation.hint = "Ingresa el valor aquí"
+            autoCompleteObservation.inputType = InputType.TYPE_NULL
+            autoCompleteObservation.isCursorVisible = false
+            autoCompleteObservation.setBackgroundResource(android.R.drawable.btn_dropdown)
+//            autoCompleteObservation.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_navigate_next_24, 0) // Ícono de flecha
+
+            autoCompleteObservation.setOnClickListener {
+                autoCompleteObservation.showDropDown() // Muestra el menú desplegable manualmente
+            }
+            var dailyObsSelected = "N.A."
+            if (p.routeObservation.isNotEmpty()){
+                dailyObsSelected = p.routeObservation
+            }
+
+            val listDailyObs = listOf(
+                "N.A.",
+                "La tienda tiene stock.",
+                "La tienda se encuentra cerrada.",
+                "El dueño no tiene dinero.",
+                "El dueño no esta presente."
+            )
+            val adapterDailyObs = ArrayAdapter(
+                globalContext!!,
+                android.R.layout.simple_dropdown_item_1line,
+                listDailyObs
+            )
+//            autoCompleteObservation.keyListener = null
+            autoCompleteObservation.setAdapter(adapterDailyObs)
+            autoCompleteObservation.setText(dailyObsSelected, false)
+
+
+            val dialogObservation = AlertDialog.Builder(globalContext)
+                .setTitle("Ingresa una observación")
+                .setMessage("Por favor, selecciona un motivo")
+                .setView(autoCompleteObservation)
+                .setPositiveButton("Aceptar") { dialogObs, _ ->
+                    val userInput = autoCompleteObservation.text.toString()
+                    if (userInput.isNotBlank()) {
+                        p.routeObservation = userInput
+                        sendVisitWithoutDispatch(p)
+                    } else {
+                        Toast.makeText(globalContext, "No ingresaste ningún valor", Toast.LENGTH_SHORT).show()
+                    }
+                    dialogObs.dismiss()
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancelar") { dialogObs, _ ->
+                    dialogObs.dismiss()
+                }
+//                .setNeutralButton("S") { _, _ -> }
+                .create()
+
+            dialogObservation.show()
+
+            val positiveButton = dialogObservation.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton.setTextColor(ContextCompat.getColor(globalContext!!, R.color.white))
+            positiveButton.textSize = 12f
+            positiveButton.setBackgroundColor(ContextCompat.getColor(globalContext!!, R.color.blue_dark))
+//            positiveButton.setPadding(10, 10, 10, 10)
+
+            val negativeButton = dialogObservation.getButton(AlertDialog.BUTTON_NEGATIVE)
+            negativeButton.setTextColor(ContextCompat.getColor(globalContext!!, R.color.white))
+            negativeButton.textSize = 12f
+            negativeButton.setBackgroundColor(ContextCompat.getColor(globalContext!!, R.color.primary_dark))
+//            negativeButton.setPadding(10, 10, 10, 10)
+//            val neutralButton = dialogObservation.getButton(AlertDialog.BUTTON_NEUTRAL)
+//            neutralButton.visibility = View.GONE
         }
         dialogPresaleDelivered.setOnClickListener{
             operation.operationID = p.routeDispatchID
@@ -708,13 +798,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
         dialogPresaleNoDelivered.setOnClickListener{
             operation.operationID = p.routeDispatchID
-            operation.observation = autoCompleteDailyObservation.text.toString()
+//            operation.observation = autoCompleteDailyObservation.text.toString()
             sendPresaleNoDelivered(operation)
             dialog.dismiss()
         }
         dialogCancelPresale.setOnClickListener{
             operation.operationID = p.routeDispatchID
-            operation.observation = autoCompleteDailyObservation.text.toString()
+//            operation.observation = autoCompleteDailyObservation.text.toString()
             sendCancelPresale(operation)
             dialog.dismiss()
         }

@@ -1,11 +1,13 @@
 package com.example.deldia.retrofit
 import com.example.deldia.models.*
 import io.reactivex.Observable
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.http.*
+import java.util.concurrent.TimeUnit
 
 
 interface UserApiService {
@@ -153,13 +155,24 @@ interface UserApiService {
     @Headers("Accept: application/json", "Content-type:application/json")
     fun getUsersByGang(@Body params: Gang) : Call<ArrayList<User>>
 
+    @GET("accounting/api/v1/all_sellers/")
+    @Headers("Accept: application/json", "Content-type:application/json")
+    fun getAllSellers() : Call<ArrayList<User>>
+
     companion object {
-//        var BASE_URL = "http://38.242.197.197:9017/"
-//        var BASE_URL = "http://192.168.1.56:9017/"
-        var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"
+//        var BASE_URL = "http://38.242.197.197:9017/"5+
+        var BASE_URL = "http://192.168.1.244:9017/"
+//        var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"
+        val client = OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+
         fun create(): UserApiService {
             val retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()

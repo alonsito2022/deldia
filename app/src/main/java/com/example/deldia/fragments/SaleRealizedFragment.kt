@@ -214,6 +214,7 @@ class SaleRealizedFragment : Fragment() {
                 Toast.makeText(globalContext, "Elija Ruta.", Toast.LENGTH_SHORT).show()
         }
         loadGangs()
+        loadAllUsers()
 
     }
 
@@ -234,7 +235,7 @@ class SaleRealizedFragment : Fragment() {
                         operation.warehouseID = model.warehouse.warehouseID
                         operation.gangID = model.gangID
 
-                        loadUsers(model)
+//                        loadUsers(model)
                     }
                 })
                 autoCompleteGang.setAdapter(gangAdapter)
@@ -247,6 +248,7 @@ class SaleRealizedFragment : Fragment() {
         })
 
     }
+
     private fun loadUsers(g: Gang){
 
         val apiInterface = UserApiService.create().getUsersByGang(g)
@@ -275,8 +277,37 @@ class SaleRealizedFragment : Fragment() {
                 Log.d("MIKE", "loadUsersByGang onFailure: " + t.message.toString())
             }
         })
-
     }
+    private fun loadAllUsers(){
+
+        val apiInterface = UserApiService.create().getAllSellers()
+        apiInterface.enqueue(object : Callback<ArrayList<User>> {
+            override fun onResponse(call: Call<ArrayList<User>>, response: Response<ArrayList<User>>) {
+                listUsers = response.body()!!
+                val u: User = User()
+                u.userID = 0
+                u.fullName = "TODOS"
+                listUsers.add(u)
+                userAdapter = UserAdapter(globalContext!!, R.layout.item_user_view, listUsers, object : UserAdapter.OnItemClickListener{
+                    override fun onItemClick(model: User) {
+                        autoCompleteUser.setText(model.fullName)
+                        autoCompleteUser.dismissDropDown()
+                        val inputManager = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        autoCompleteUser.closeKeyBoard(inputManager)
+                        autoCompleteUser.clearFocus()
+                        operation.userID = model.userID
+                    }
+                })
+                autoCompleteUser.setAdapter(userAdapter)
+                Log.d("MIKE", "loadAllUsers ok: " + listUsers.size)
+            }
+
+            override fun onFailure(call: Call<ArrayList<User>>, t: Throwable) {
+                Log.d("MIKE", "loadAllUsers onFailure: " + t.message.toString())
+            }
+        })
+    }
+
     private fun View.closeKeyBoard(inputMethodManager: InputMethodManager) {
         inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
     }

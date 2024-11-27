@@ -25,7 +25,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.deldia.web.BluetoothPrint
-import com.github.barteksc.pdfviewer.PDFView
+//import com.github.barteksc.pdfviewer.PDFView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 //import com.mazenrashed.printooth.Printooth
@@ -44,7 +44,7 @@ import java.util.*
 
 class ViewActivity : AppCompatActivity() {
 
-    private lateinit var pdf_view : PDFView
+//    private lateinit var pdf_view : PDFView
     private lateinit var toolbar : Toolbar
     private lateinit var fabPrint: FloatingActionButton
 //    private var printing : Printing? = null
@@ -95,7 +95,7 @@ class ViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view)
         supportActionBar?.hide()
-        pdf_view = findViewById(R.id.pdfView)
+//        pdf_view = findViewById(R.id.pdfView)
         toolbar = findViewById(R.id.toolbar)
 
         fabPrint = findViewById(R.id.fabPrint)
@@ -145,20 +145,20 @@ class ViewActivity : AppCompatActivity() {
             val dir = File(path, "ExampleITextPDF")
             val file = File(dir, "operations.pdf")
 
-            pdfView.fromFile(file)
-                .password(null)
-                .defaultPage(0)
-                .enableSwipe(true)
-                .swipeHorizontal(false)
-                .onDraw{ canvas, pageWitdth, pageHeight, diplayedPage ->}
-                .onDrawAll{ canvas, pageWitdth, pageHeight, diplayedPage ->}
-                .onPageChange {page, pageCount ->}
-                .onPageError{page, t-> Toast.makeText(this, "Error $page", Toast.LENGTH_SHORT).show()}
-                .onTap{false}
-                .onRender{ nbPages, pageWidth, pageHeight -> pdf_view.fitToWidth()}
-                .enableAnnotationRendering(true)
-                .invalidPageColor(Color.RED)
-                .load()
+//            pdfView.fromFile(file)
+//                .password(null)
+//                .defaultPage(0)
+//                .enableSwipe(true)
+//                .swipeHorizontal(false)
+//                .onDraw{ canvas, pageWitdth, pageHeight, diplayedPage ->}
+//                .onDrawAll{ canvas, pageWitdth, pageHeight, diplayedPage ->}
+//                .onPageChange {page, pageCount ->}
+//                .onPageError{page, t-> Toast.makeText(this, "Error $page", Toast.LENGTH_SHORT).show()}
+//                .onTap{false}
+//                .onRender{ nbPages, pageWidth, pageHeight -> pdf_view.fitToWidth()}
+//                .enableAnnotationRendering(true)
+//                .invalidPageColor(Color.RED)
+//                .load()
         }
         init()
 

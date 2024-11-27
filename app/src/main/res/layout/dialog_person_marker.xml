@@ -200,6 +200,30 @@
             app:layout_constraintTop_toBottomOf="@+id/textViewPhysicalDistribution" />
 
         <TextView
+            android:id="@+id/textViewLabelPurchaseVolume"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="PUNTAJE:"
+
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewComment" />
+
+        <TextView
+            android:id="@+id/textViewPurchaseVolume"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="SI"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toBottomOf="@+id/textViewComment" />
+
+        <TextView
             android:id="@+id/textViewTitleObs"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -291,7 +315,7 @@
             app:iconPadding="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutDailyObservation" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewPurchaseVolume" />
 
         <Button
             android:id="@+id/dialog_new_dispatch"
@@ -315,6 +339,7 @@
             style="@style/SpinnerStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:hint="OBS DE VISITA SIN COMPRA"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

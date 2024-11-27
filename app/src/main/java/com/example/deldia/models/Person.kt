@@ -26,6 +26,8 @@ class Person() {
     var gangName: String = ""
     var observation: String = ""
     var comment: String = ""
+    var purchaseVolume: String = ""
+    var purchaseVolumeDisplay: String = ""
     var documentType: String = ""
     var documentTypeDisplay: String = ""
     var documentNumber: String = ""
