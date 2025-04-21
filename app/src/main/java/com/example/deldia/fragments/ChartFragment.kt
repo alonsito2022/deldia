@@ -12,10 +12,13 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.deldia.R
@@ -37,7 +40,9 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.android.synthetic.main.fragment_chart.view.*
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.card.MaterialCardView
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -55,9 +60,13 @@ class ChartFragment : Fragment() {
     private lateinit var horizontalBarChartView: BarChart
     private lateinit var editTextSearchDate: TextInputEditText
     private lateinit var btnSearch: Button
+    private lateinit var fabToggleSearch: ExtendedFloatingActionButton
+    private lateinit var cardViewSearch: MaterialCardView
+    private lateinit var scrollViewCharts: NestedScrollView
     private lateinit var textViewNumberVisits: TextView
     private lateinit var autoCompleteGang: AutoCompleteTextView
     private lateinit var autoCompleteUser: AutoCompleteTextView
+    private lateinit var radioGroupStatus: RadioGroup
 
     private var saleChartPie: SaleChartPie = SaleChartPie()
     private var saleOfWeekBarChart: SaleOfWeekBarChart = SaleOfWeekBarChart()
@@ -100,11 +109,26 @@ class ChartFragment : Fragment() {
         editTextSearchDate = view.findViewById(R.id.editTextSearchDate)
         textViewNumberVisits = view.findViewById(R.id.textViewNumberVisits)
         autoCompleteGang = view.findViewById(R.id.autoCompleteGang)
-//        autoCompleteGang.setText(preference.getData("gangName"))
         autoCompleteUser = view.findViewById(R.id.autoCompleteUser)
+        fabToggleSearch = view.findViewById(R.id.fabToggleSearch)
+        cardViewSearch = view.findViewById(R.id.cardViewSearch)
+        scrollViewCharts = view.findViewById(R.id.scrollViewCharts)
         loadDistributors()
         val simpleDate = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
         val currentDate = simpleDate.format(Date())
+
+        radioGroupStatus = view.findViewById(R.id.radioGroupStatus)
+        radioGroupStatus.setOnCheckedChangeListener{ _, checkedId ->
+            when (checkedId) {
+                R.id.radioButtonPresale -> {
+                    user.isPresale=true
+                }
+                R.id.radioButtonSale -> {
+                    user.isPresale=false
+                }
+                else -> {}
+            }
+        }
 
         textViewNumberVisits.text = currentDate
 
@@ -133,11 +157,36 @@ class ChartFragment : Fragment() {
         editTextSearchDate.setText(sdf2)
         editTextSearchDate.setOnClickListener { showDatePickerDialog() }
 
+        setupSearchPanel()
         loadSales(user)
         loadSalesOfWeek(user)
         loadSoldProducts(user)
 
     }
+
+    private fun setupSearchPanel() {
+        var isSearchVisible = false
+
+        fabToggleSearch.setOnClickListener {
+            isSearchVisible = !isSearchVisible
+            
+            // Actualizar visibilidad del panel
+            cardViewSearch.visibility = if (isSearchVisible) View.VISIBLE else View.GONE
+            
+            // Actualizar constraints del ScrollView
+            val params = scrollViewCharts.layoutParams as ConstraintLayout.LayoutParams
+            params.topToBottom = if (isSearchVisible) R.id.cardViewSearch else R.id.fabToggleSearch
+            scrollViewCharts.layoutParams = params
+            
+            // Actualizar icono y texto del FAB
+            fabToggleSearch.icon = ContextCompat.getDrawable(requireContext(),
+                if (isSearchVisible) R.drawable.ic_baseline_close_fullscreen_24
+                else R.drawable.ic_filter_alt_24)
+            
+            fabToggleSearch.text = if (isSearchVisible) "Cerrar" else "Filtros"
+        }
+    }
+
     private fun loadDistributors(){
 
         val apiInterface = UserApiService.create().getGangs()

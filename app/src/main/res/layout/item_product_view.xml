@@ -1,272 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
 
-    <androidx.cardview.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="12dp">
 
-        app:cardElevation="4dp"
-        app:cardCornerRadius="3dp"
-        app:cardUseCompatPadding="true"
-        style="@style/CustomCardViewStyle"
+        <ImageView
+            android:id="@+id/cardProductPath"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="4dp">
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline_stock_V20"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.01" />
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline_stock_V40"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.5" />
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline_stock_V60"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.7" />
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline_stock_H60"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.63" />
-
-            <ImageView
-                android:id="@+id/cardProductPath"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:visibility="gone"
-                android:src="@android:mipmap/sym_def_app_icon"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline_stock_V60"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/cardProductName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Cheetos Horneados Queso 200gx10-6.50 200gx10-6.50"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/cardProductSku"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="SKU: 300050122"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V60"
-                app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
-                app:layout_constraintTop_toBottomOf="@+id/cardProductName" />
-
-            <TextView
-                android:id="@+id/cardProductBrandName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="MARCA: LAYS"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V60"
-                app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
-                app:layout_constraintTop_toBottomOf="@+id/cardProductSku" />
-
-            <TextView
-                android:id="@+id/cardPriceSale"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="PRECIO: 0.833333"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V60"
-                app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
-                app:layout_constraintTop_toBottomOf="@+id/cardProductBrandName" />
-
-            <View
-                android:id="@+id/viewPriceSale"
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="@color/purple_200"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardPriceSale" />
-
-            <TextView
-                android:id="@+id/textViewTitleStarted"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="8dp"
-                android:text="INICIAL: "
-                android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V40"
-                app:layout_constraintTop_toBottomOf="@+id/cardPriceSale" />
-
-            <TextView
-                android:id="@+id/textViewStarted"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="0.00"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V60"
-                app:layout_constraintStart_toStartOf="@+id/guideline_stock_V40"
-                app:layout_constraintTop_toBottomOf="@+id/cardPriceSale" />
-
-            <TextView
-                android:id="@+id/textViewTitleTotalDelivered"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="8dp"
-                android:text="TOTAL ENVIADO: "
-                android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V40"
-                app:layout_constraintTop_toBottomOf="@+id/textViewStarted" />
-
-            <TextView
-                android:id="@+id/textViewTotalDelivered"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="0.00"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V60"
-                app:layout_constraintStart_toStartOf="@+id/guideline_stock_V40"
-                app:layout_constraintTop_toBottomOf="@+id/textViewStarted" />
-
-            <TextView
-                android:id="@+id/textViewTitleSold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="8dp"
-                android:text="VENDIDO: "
-                android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V40"
-                app:layout_constraintTop_toBottomOf="@+id/textViewTotalDelivered" />
-
-            <TextView
-                android:id="@+id/textViewSold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="0.00"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V60"
-                app:layout_constraintStart_toStartOf="@+id/guideline_stock_V40"
-                app:layout_constraintTop_toBottomOf="@+id/textViewTotalDelivered" />
-
-            <TextView
-                android:id="@+id/textViewTitleResiduary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="8dp"
-                android:text="EXISTENCIA: "
-                android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V40"
-                app:layout_constraintTop_toBottomOf="@+id/textViewSold" />
-
-            <TextView
-                android:id="@+id/textResiduary"
-                android:layout_width="0dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="2dp"
-                android:text="0.00"
-                android:textSize="14sp"
-                android:textColor="@color/teal_200"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V60"
-                app:layout_constraintStart_toStartOf="@+id/guideline_stock_V40"
-                app:layout_constraintTop_toBottomOf="@+id/textViewSold" />
-
-
-            <TextView
-                android:id="@+id/textViewTitleFound"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="8dp"
-                android:text="ENCONTRADO: "
-
-                android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V40"
-                app:layout_constraintTop_toBottomOf="@+id/textResiduary" />
-
-            <EditText
-                android:id="@+id/editTextFound"
-                android:layout_width="0dp"
-                android:layout_height="20dp"
-                android:inputType="number"
-                android:background="@color/purple_200"
-                android:maxLength="7"
-                android:textSize="14sp"
-                android:selectAllOnFocus="true"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V60"
-                app:layout_constraintStart_toStartOf="@+id/guideline_stock_V40"
-                app:layout_constraintTop_toBottomOf="@+id/textResiduary" />
-
-            <View
-                android:id="@+id/view2"
-                android:layout_width="60dp"
-                android:layout_height="50dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/searchview_background"
-                android:backgroundTint="@color/pink_light"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardProductName" />
-
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="COD"
-                android:textColor="@color/white"
-                android:textSize="10sp"
-                app:layout_constraintBottom_toTopOf="@+id/cardProductCode"
-                app:layout_constraintEnd_toEndOf="@+id/view2"
-                app:layout_constraintStart_toStartOf="@+id/view2" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toEndOf="@id/cardProductPath"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
                 android:id="@+id/cardProductCode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="16"
-                android:paddingBottom="12dp"
-                android:textColor="@color/white"
                 android:textSize="14sp"
+                android:textColor="@color/secondary_text"/>
+
+            <TextView
+                android:id="@+id/cardProductName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/view2"
-                app:layout_constraintEnd_toEndOf="@+id/view2"
-                app:layout_constraintStart_toStartOf="@+id/view2" />
+                android:layout_marginTop="4dp"/>
 
+            <TextView
+                android:id="@+id/cardProductBrandName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"/>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
 
+                <TextView
+                    android:id="@+id/cardPriceSale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/primary"/>
 
-    </androidx.cardview.widget.CardView>
+                <TextView
+                    android:id="@+id/cardStock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_marginStart="16dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

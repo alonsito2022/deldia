@@ -4,6 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +33,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import retrofit2.Call
@@ -44,13 +49,13 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
     private lateinit var textInputEditTextPersonSecondSurname: TextInputEditText
     private lateinit var textInputLayoutFirstSurname: TextInputLayout
     private lateinit var textInputLayoutSecondSurname: TextInputLayout
+    private lateinit var textInputLayoutDocumentNumber: TextInputLayout
+    private lateinit var textInputLayoutGang: TextInputLayout
     private lateinit var autoCompleteDocumentType: AutoCompleteTextView
     private lateinit var autoCompleteVisitDay: AutoCompleteTextView
     private lateinit var autoCompleteGang: AutoCompleteTextView
     private lateinit var textInputEditTextDocumentNumber: TextInputEditText
-    private lateinit var btnCleanGang: Button
-    private lateinit var btnSearchApi: Button
-
+    private lateinit var progressBar: ProgressBar
     private lateinit var switchStatus: Switch
     private lateinit var btnSaveAndQuote: Button
     private lateinit var btnSaveAndSell: Button
@@ -106,22 +111,25 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         autoCompleteDocumentType = view.findViewById(R.id.autoCompleteDocumentType)
         autoCompleteVisitDay = view.findViewById(R.id.autoCompleteVisitDay)
+        textInputLayoutGang = view.findViewById(R.id.textInputLayoutGang)
         autoCompleteGang = view.findViewById(R.id.autoCompleteGang)
         autoCompleteCustomerType = view.findViewById(R.id.autoCompleteCustomerType)
         autoCompleteShowcases = view.findViewById(R.id.autoCompleteShowcases)
         textInputEditTextDocumentNumber = view.findViewById(R.id.textInputEditTextDocumentNumber)
+        progressBar = view.findViewById(R.id.progressBar)
+        textInputLayoutDocumentNumber = view.findViewById(R.id.textInputLayoutDocumentNumber)
+        textInputLayoutDocumentNumber.setEndIconDrawable(R.drawable.ic_baseline_search_24) // Usa un ícono de lupa o similar
+
         textInputEditTextPersonName = view.findViewById(R.id.textInputEditTextPersonName)
         textInputEditTextPersonFirstSurname = view.findViewById(R.id.textInputEditTextPersonFirstSurname)
         textInputEditTextPersonSecondSurname = view.findViewById(R.id.textInputEditTextPersonSecondSurname)
         textInputLayoutFirstSurname = view.findViewById(R.id.textInputLayoutFirstSurname)
         textInputLayoutSecondSurname = view.findViewById(R.id.textInputLayoutSecondSurname)
         textInputEditTextComment = view.findViewById(R.id.textInputEditTextComment)
-        btnCleanGang = view.findViewById(R.id.btnCleanGang)
         btnSaveAndQuote = view.findViewById(R.id.btnSaveAndQuote)
         btnSaveAndSell = view.findViewById(R.id.btnSaveAndSell)
         btnSaveAndGoToMap = view.findViewById(R.id.btnSaveAndGoToMap)
 
-        btnSearchApi = view.findViewById(R.id.btnSearchApi)
         textInputEditTextPersonObservation = view.findViewById(R.id.textInputEditTextPersonObservation)
         textInputEditTextPersonCellPhone = view.findViewById(R.id.textInputEditTextPersonCellPhone)
 
@@ -132,29 +140,64 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
         textInputEditTextLatitude.isFocusable = false
         textInputEditTextLongitude.isFocusable = false
 
+        textInputLayoutDocumentNumber.setEndIconOnClickListener {
+            val itemSelected = autoCompleteDocumentType.text.toString()
+            val documentNumber = textInputEditTextDocumentNumber.text.toString()
+
+            val isValid = when (itemSelected) {
+                "DNI" -> documentNumber.length == 8
+                "RUC" -> documentNumber.length == 11
+                else -> false
+            }
+
+            if (isValid) {
+                person.documentType = when (itemSelected) {
+                    "DNI" -> "01"
+                    "RUC" -> "06"
+                    else -> return@setEndIconOnClickListener
+                }
+                person.documentNumber = documentNumber
+                person.isClient = true
+                fetchedPerson()
+            } else {
+                Toast.makeText(requireContext(), "Número de documento inválido", Toast.LENGTH_SHORT).show()
+                textInputEditTextPersonName.setText("")
+                textInputEditTextPersonFirstSurname.setText("")
+                textInputEditTextPersonSecondSurname.setText("")
+                textInputEditTextAddressName.setText("")
+            }
+        }
+
+        autoCompleteGang.setOnClickListener {
+            autoCompleteGang.showDropDown() // Muestra el menú desplegable al hacer clic
+        }
+
         switchStatus = view.findViewById(R.id.switchStatus)
         switchStatus.setOnCheckedChangeListener { _, isChecked ->
             person.isEnabled = isChecked
+            switchStatus.text = if (isChecked) "ACTIVO" else "INACTIVO"
         }
         person.isEnabled = true
 
-        btnCleanGang.setOnClickListener{
-            autoCompleteGang.setText("")
-        }
+        textInputEditTextDocumentNumber.addTextChangedListener(object : TextWatcher {
+            private var handler = Handler(Looper.getMainLooper())
+            private var hideKeyboardRunnable: Runnable? = null
 
-        btnSearchApi.setOnClickListener{
-            if (textInputEditTextDocumentNumber.text!!.isNotEmpty()){
-                val itemSelected = autoCompleteDocumentType.text.toString()
-                if (itemSelected=="DNI"){person.documentType = "01"}
-                else if (itemSelected=="RUC"){person.documentType = "06"}
-                person.documentNumber = textInputEditTextDocumentNumber.text.toString()
-                person.isClient = true
-                fetchedPerson()
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                hideKeyboardRunnable?.let { handler.removeCallbacks(it) } // Cancela ocultar teclado si el usuario sigue escribiendo
             }
-            else
-                Toast.makeText(globalContext, "Verificar nro documento", Toast.LENGTH_SHORT).show()
 
-        }
+            override fun afterTextChanged(editable: Editable?) {
+                if (!editable.isNullOrEmpty()) {
+                    hideKeyboardRunnable = Runnable {
+                        hideKeyboard(textInputEditTextDocumentNumber)
+                    }
+                    handler.postDelayed(hideKeyboardRunnable!!, 1000) // Ocultar teclado después de 1 segundo sin escribir
+                }
+            }
+        })
 
         val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm")
         val time = Calendar.getInstance().time
@@ -263,55 +306,90 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
             false
         )
 
-        btnSaveAndSell.setOnClickListener {
-            saveData()
-            sendClientData("S")
-        }
-        btnSaveAndQuote.setOnClickListener {
-            saveData()
-            sendClientData("Q")
-        }
-        btnSaveAndGoToMap.setOnClickListener {
-            saveData()
-            sendClientData("N")
-        }
+        btnSaveAndSell.setOnClickListener { handleSaveAndSend("S") }
+        btnSaveAndQuote.setOnClickListener { handleSaveAndSend("Q") }
+        btnSaveAndGoToMap.setOnClickListener { handleSaveAndSend("N") }
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.frg) as SupportMapFragment?
         mapView = mapFragment!!.view
         mapFragment.getMapAsync(this)
     }
+    private fun hideKeyboard(view: View) {
+        val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+    private fun saveData(): Boolean {
 
-    private fun saveData(){
+        if (person.gangID == 0) {  // RUTA
+            Toast.makeText(globalContext, "Verifique RUTA", Toast.LENGTH_SHORT).show()
+            return false
+        }
         val valueCustomerTypes = autoCompleteCustomerType.text.toString()
-        var selectedCustomerTypes = 0
-        when (valueCustomerTypes){
-            "PEPSICO" -> {selectedCustomerTypes = 0}
-            "PROPIO" -> {selectedCustomerTypes = 1}
+        val selectedCustomerTypes = when (valueCustomerTypes) {
+            "PEPSICO" -> 0
+            "PROPIO" -> 1
+            else -> -1
         }
 
         val valueShowcases = autoCompleteShowcases.text.toString()
-        var selectedShowcases = 0
-        when (valueShowcases){
-            "NO CUENTA" -> {selectedShowcases = 0}
-            "AEREO" -> {selectedShowcases = 1}
-            "2 NIVELES" -> {selectedShowcases = 2}
-            "5 NIVELES" -> {selectedShowcases = 3}
-            "6X8 NIVELES" -> {selectedShowcases = 4}
+        val selectedShowcases = when (valueShowcases) {
+            "NO CUENTA" -> 0
+            "AEREO" -> 1
+            "2 NIVELES" -> 2
+            "5 NIVELES" -> 3
+            "6X8 NIVELES" -> 4
+            else -> -1
         }
 
         val valueVisitDay = autoCompleteVisitDay.text.toString()
-        var selectedVisitDay = 0
-        when (valueVisitDay){
-            "LUNES" -> {selectedVisitDay = 0}
-            "MARTES" -> {selectedVisitDay = 1}
-            "MIERCOLES" -> {selectedVisitDay = 2}
-            "JUEVES" -> {selectedVisitDay = 3}
-            "VIERNES" -> {selectedVisitDay = 4}
-            "SABADO" -> {selectedVisitDay = 5}
-            "DOMINGO" -> {selectedVisitDay = 6}
+        val selectedVisitDay = when (valueVisitDay) {
+            "LUNES" -> 0
+            "MARTES" -> 1
+            "MIERCOLES" -> 2
+            "JUEVES" -> 3
+            "VIERNES" -> 4
+            "SABADO" -> 5
+            "DOMINGO" -> 6
+            else -> -1
         }
 
-        person.documentNumber = textInputEditTextDocumentNumber.text.toString()
+        // Validaciones de DNI y RUC antes de asignar
+        val docNumber = textInputEditTextDocumentNumber.text.toString()
+        if (person.documentType == "01" && docNumber.length != 8) {  // DNI
+            Toast.makeText(globalContext, "Verifique DNI", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if (person.documentType == "06" && docNumber.length != 11) {  // RUC
+            Toast.makeText(globalContext, "Verifique RUC", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validación de ubicación antes de asignar
+        val latitudeText = textInputEditTextLatitude.text.toString()
+        if (latitudeText.isEmpty()) {
+            Toast.makeText(globalContext, "Verifique posición", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        val nameText = textInputEditTextPersonName.text.toString()
+        if (nameText.isEmpty()) {
+            Toast.makeText(globalContext, "Verifique nombre", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        val addressText = textInputEditTextAddressName.text.toString()
+        if (addressText.isEmpty() && person.documentType == "06") {
+            Toast.makeText(globalContext, "Verifique dirección", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        val codeText = textInputEditTextPersonObservation.text.toString()
+        if (codeText.isEmpty()) {
+            Toast.makeText(globalContext, "Verifique codigo", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Asignación de valores después de pasar las validaciones
+        person.documentNumber = docNumber
         person.name = textInputEditTextPersonName.text.toString()
         person.firstSurname = textInputEditTextPersonFirstSurname.text.toString()
         person.secondSurname = textInputEditTextPersonSecondSurname.text.toString()
@@ -324,41 +402,37 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
         person.observation = textInputEditTextPersonObservation.text.toString()
         person.cellphone = textInputEditTextPersonCellPhone.text.toString()
 
-
-        if(textInputEditTextLatitude.text.toString().isNotEmpty()){
-            if(textInputEditTextAddressName.text.toString().isNotEmpty()){
-                val valueDistrict = autoCompleteDistrict.text.toString()
-                var selectedDistrict = ""
-                when (valueDistrict) {
-                    "JOSE LUIS BUSTAMANTE Y RIVERO" -> {selectedDistrict = "040129"}
-                    "SOCABAYA" -> {selectedDistrict = "040119"}
-                    "SABANDIA" -> {selectedDistrict = "040113"}
-                    "CHARACATO" -> {selectedDistrict = "040104"}
-                    "QUEQUEÑA" -> {selectedDistrict = "040112"}
-                    "YARABAMBA" -> {selectedDistrict = "040124"}
-                    "MOLLEBAYA" -> {selectedDistrict = "040108"}
-                }
-
-                person.district = selectedDistrict
-                person.address = textInputEditTextAddressName.text.toString()
-                person.latitude = textInputEditTextLatitude.text.toString().toDouble()
-                person.longitude = textInputEditTextLongitude.text.toString().toDouble()
-
-            }
-            else
-                Toast.makeText(globalContext, "Verifique direccion", Toast.LENGTH_SHORT).show()
+        val valueDistrict = autoCompleteDistrict.text.toString()
+        val selectedDistrict = when (valueDistrict) {
+            "JOSE LUIS BUSTAMANTE Y RIVERO" -> "040129"
+            "SOCABAYA" -> "040119"
+            "SABANDIA" -> "040113"
+            "CHARACATO" -> "040104"
+            "QUEQUEÑA" -> "040112"
+            "YARABAMBA" -> "040124"
+            "MOLLEBAYA" -> "040108"
+            else -> ""
         }
-        else
-            Toast.makeText(globalContext, "Verifique posicion", Toast.LENGTH_SHORT).show()
+
+        person.district = selectedDistrict
+        person.address = addressText
+        person.latitude = latitudeText.toDouble()
+        person.longitude = textInputEditTextLongitude.text.toString().toDouble()
+
+        return true
     }
 
     private fun fetchedPerson(){
+        progressBar.visibility = View.VISIBLE  // 🔴 Mostrar loader
+
         val apiInterface = UserApiService.create().getDocumentConsultation(person)
         apiInterface.enqueue(object : Callback<Person> {
             override fun onResponse(
                 call: Call<Person>,
                 response: Response<Person>
             ) {
+                progressBar.visibility = View.GONE  // ✅ Ocultar loader
+
                 if (response.body() != null) {
                     val personTemp = response.body()!!
                     textInputEditTextPersonName.setText(personTemp.name)
@@ -378,12 +452,24 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
             }
 
             override fun onFailure(call: Call<Person>, t: Throwable) {
+                progressBar.visibility = View.GONE  // ✅ Ocultar loader incluso si hay error
                 Log.d("MIKE", "Algo salio mal..." + t.message.toString())
             }
         })
 
     }
-
+    private fun setButtonsEnabled(enabled: Boolean) {
+        btnSaveAndSell.isEnabled = enabled
+        btnSaveAndQuote.isEnabled = enabled
+        btnSaveAndGoToMap.isEnabled = enabled
+    }
+    private fun handleSaveAndSend(action: String) {
+        if (saveData()) {
+            // Deshabilita los botones mientras se envían los datos
+            setButtonsEnabled(false)
+            sendClientData(action)
+        }
+    }
     private fun sendClientData(act: String = "N"){
         val apiInterface = UserApiService.create().sendUpdateClientData(person)
         apiInterface.enqueue(object : Callback<Person> {
@@ -515,18 +601,9 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
 
                 textInputEditTextLatitude.setText(it.latitude.toString())
                 textInputEditTextLongitude.setText(it.longitude.toString())
-                /*if (mapView != null){
-                    val locationButton= (mapView?.findViewById<View>(Integer.parseInt("1"))?.parent as View).findViewById<View>(Integer.parseInt("2"))
-                    val rlp =  locationButton.layoutParams as RelativeLayout.LayoutParams
-                    rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0)
-                    rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
-                    rlp.setMargins(0, 0, 30, 30)
-                }*/
-
 
             }
         }
-
     }
 
 
@@ -536,37 +613,24 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
         apiInterface.enqueue(object : Callback<ArrayList<Gang>> {
             override fun onResponse(call: Call<ArrayList<Gang>>, response: Response<ArrayList<Gang>>) {
                 listGangs = response.body()!!
-                autoCompleteGang.setAdapter(GangAdapter(globalContext!!, R.layout.item_gang_view, listGangs, object : GangAdapter.OnItemClickListener{
-                    override fun onItemClick(model: Gang) {
-                        autoCompleteGang.setText(model.name)
-                        autoCompleteGang.dismissDropDown()
-                        val inputManager = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        autoCompleteGang.closeKeyBoard(inputManager)
-                        autoCompleteGang.clearFocus()
-                        person.gangID = model.gangID
-                        person.gangName = model.name
+                val gangNames = listGangs.map { it.name } // Extrae solo los nombres
 
+                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, gangNames)
+                autoCompleteGang.setAdapter(adapter)
 
-                    }
-                }))
-                autoCompleteGang.setText(gangName)
-                person.gangID = gangID
-                person.gangName = gangName
-
-                Log.d("MIKE", "gangName: " + person.gangName)
-
+                autoCompleteGang.setOnItemClickListener { _, _, position, _ ->
+                    val selectedGang = listGangs[position]
+                    autoCompleteGang.setText(selectedGang.name, false) // Establece el valor sin autocompletar
+                    person.gangID = selectedGang.gangID
+                    person.gangName = selectedGang.name
+                }
             }
 
             override fun onFailure(call: Call<ArrayList<Gang>>, t: Throwable) {
-                Log.d("MIKE", "fetchApiDistributors onFailure: " + t.message.toString())
+                Log.d("MIKE", "fetchApiDistributors onFailure: ${t.message}")
             }
-
         })
 
     }
-    private fun View.closeKeyBoard(inputMethodManager: InputMethodManager) {
 
-        inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
-
-    }
 }

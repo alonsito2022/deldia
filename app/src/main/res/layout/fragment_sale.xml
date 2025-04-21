@@ -7,206 +7,228 @@
     android:layout_height="match_parent"
     tools:context=".fragments.SaleFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/colorOnBackground"
-        android:padding="8dp">
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_sale_H90"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.9" />
-
-        <TextView
-            android:id="@+id/textViewClientNames"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textViewClientAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewClientNames" />
-
-
-        <android.widget.SearchView
-            android:id="@+id/searchViewProduct"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/searchview_background"
-            android:iconifiedByDefault="false"
-            android:queryHint="Ingrese nombre del producto"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewClientAddress" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewProductStore"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/searchViewProduct"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="@+id/guideline_sale_H90"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <View
-            android:id="@+id/dividerLayoutList2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerViewProductStore" />
+        android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_height="0dp"
             android:layout_width="match_parent"
-            android:padding="4dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/dividerLayoutList2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            >
+            android:layout_height="wrap_content"
+            android:background="?attr/colorOnBackground"
+            android:padding="16dp">
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guidelineSubtotalInnerV1"
-                android:layout_width="wrap_content"
+            <!-- Información del Cliente -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardViewClientInfo"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.18" />
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guidelineSubtotalInnerV5"
-                android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cliente:"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/textViewClientNames"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:textColor="@color/primary_dark"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Dirección:"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/textViewClientAddress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:textColor="@color/primary_dark"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Barra de búsqueda -->
+            <android.widget.SearchView
+                android:id="@+id/searchViewProduct"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.35" />
+                android:background="@drawable/searchview_background"
+                android:iconifiedByDefault="false"
+                android:queryHint="Ingrese nombre del producto"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/cardViewClientInfo"/>
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guidelineSubtotalInnerV35"
-                android:layout_width="wrap_content"
+            <!-- Lista de productos -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewProductStore"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:clipToPadding="false"
+                android:paddingBottom="120dp"
+                android:scrollbars="vertical"
+                android:fadeScrollbars="false"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/searchViewProduct"
+                app:layout_constraintBottom_toTopOf="@+id/bottomBar"/>
+
+            <!-- Barra inferior -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/bottomBar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.5" />
+                android:layout_marginTop="8dp"
+                app:cardElevation="8dp"
+                app:layout_constraintBottom_toBottomOf="parent">
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guidelineSubtotalInnerV65"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.65" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guidelineSubtotalInnerV95"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.80" />
+                    <Button
+                        android:id="@+id/buttonRefresh"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:backgroundTint="@color/olive"
+                        app:icon="@drawable/ic_baseline_wifi_protected_setup_24"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-            <Button
-                android:id="@+id/buttonRefresh"
-                android:layout_width="50dp"
-                android:layout_height="60dp"
-                style="@style/ButtonStyle"
-                app:icon="@drawable/ic_baseline_wifi_protected_setup_24"
-                android:backgroundTint="@color/olive"
-                app:iconGravity="textStart"
-                app:iconPadding="0dp"
+                    <Switch
+                        android:id="@+id/switchShowImages"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:checked="true"
+                        android:text="Ver imágenes"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/buttonRefresh"
+                        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/guidelineSubtotalInnerV1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                    <LinearLayout
+                        android:id="@+id/linearLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
-            <Switch
-                android:id="@+id/switchShowImages"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:checked="true"
-                style="@style/CustomSwitchStyle"
-                app:layout_constraintEnd_toEndOf="@id/guidelineSubtotalInnerV5"
-                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV1"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="UseSwitchCompatOrMaterialXml" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:gravity="center"
+                            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView40"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ITEMS"
-                app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV35"
-                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV5"
-                app:layout_constraintTop_toTopOf="parent" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Items"
+                                android:textStyle="bold" />
 
+                            <TextView
+                                android:id="@+id/textViewItems"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="@color/primary_dark"
+                                android:textSize="16sp" />
+                        </LinearLayout>
 
-            <TextView
-                android:id="@+id/textViewItems"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV35"
-                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV5"
-                app:layout_constraintTop_toBottomOf="@+id/textView40" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:gravity="center"
+                            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView41"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PAGO"
-                app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV65"
-                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV35"
-                app:layout_constraintTop_toTopOf="parent" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pago"
+                                android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textViewSubtotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0.0"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV65"
-                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV35"
-                app:layout_constraintTop_toBottomOf="@+id/textView41" />
+                            <TextView
+                                android:id="@+id/textViewSubtotal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="S/ 0.00"
+                                android:textColor="@color/primary_dark"
+                                android:textSize="16sp" />
+                        </LinearLayout>
 
-            <TextView
-                android:id="@+id/textView42"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TOTAL"
-                app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV95"
-                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV65"
-                app:layout_constraintTop_toTopOf="parent" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textViewTotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0.0"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV95"
-                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV65"
-                app:layout_constraintTop_toBottomOf="@+id/textView42" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/textViewTotal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="S/ 0.00"
+                                android:textColor="@color/primary_dark"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/fabSummary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/warning"
+                        android:text="Resumen"
+                        android:textColor="@android:color/white"
+                        app:icon="@drawable/ic_baseline_shopping_cart_24"
+                        app:iconGravity="textStart"
+                        app:iconTint="@android:color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/fabSummary"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        app:fabSize="normal"
-        android:backgroundTint="@color/warning"
-        android:elevation="6dp"
-        app:tint="@android:color/white"
-        android:src="@drawable/ic_baseline_shopping_cart_24"/>
+    </androidx.core.widget.NestedScrollView>
 
 </FrameLayout>

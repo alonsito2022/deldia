@@ -20,16 +20,20 @@
         android:id="@+id/imageViewIcon"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:src="@drawable/ic_baseline_lock_24"
-        app:layout_constraintBottom_toBottomOf="@+id/imageViewMarker"
+        android:background="@drawable/round_black"
+        android:src="@drawable/sol"
+        app:layout_constraintBottom_toTopOf="@+id/imageViewMarker"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/yellow" />
+
     <TextView
         android:id="@+id/textViewNum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_marginTop="4dp"
         android:gravity="center"
         android:text="20"
         android:textColor="@color/white"
@@ -37,5 +41,5 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/imageViewMarker" />
 </androidx.constraintlayout.widget.ConstraintLayout >

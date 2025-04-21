@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">DelDia</string>
+    <string name="app_name_full">DISTRIBUCIONES\n&quot;DELDIA&quot;</string>
+    <string name="app_logo_description">Logo de la aplicación Distribuciones DELDIA</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button_text">Entrar</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
     <!-- TODO: Remove or change this placeholder text -->

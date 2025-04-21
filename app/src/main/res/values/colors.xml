@@ -1,43 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <color name="purple_200">#81D4FA</color>
+    <color name="purple_500">#03A9F4</color>
+    <color name="purple_700">#0288D1</color>
+    <color name="teal_200">#FF9800</color>
+    <color name="teal_700">#F57C00</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="danger">#de4f54</color>
-    <color name="success">#6dc248</color>
-    <color name="warning">#ffc341</color>
-    <color name="warning_dark">#ffa03a</color>
-    <color name="indigo">#1c5eb2</color>
-    <color name="blue_dark">#3F51B5</color>
+    <color name="danger">#EF5350</color>
+    <color name="success">#66BB6A</color>
+    <color name="warning">#FFA726</color>
+    <color name="warning_dark">#F57C00</color>
+    <color name="indigo">#039BE5</color>
+    <color name="blue_dark">#0277BD</color>
 
-    <color name="primary">#0f5998</color>
-    <color name="primary_dark">#444c4f</color>
-    <color name="primary_light">#C5CAE9</color>
-    <color name="accent">#278be3</color>
-    <color name="olive">#CDDC39</color>
+    <color name="primary">#03A9F4</color>
+    <color name="primary_dark">#0288D1</color>
+    <color name="primary_light">#B3E5FC</color>
+    <color name="accent">#FF9800</color>
+    <color name="olive">#FFB74D</color>
 
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
 
-    <color name="yellow">#FBCB0A</color>
-    <color name="fuchsia">#f012be</color>
-    <color name="green">#FF009200</color>
-    <color name="dark_green">#125B50</color>
-    <color name="red">#D32F2F</color>
+    <color name="yellow">#FFB300</color>
+    <color name="fuchsia">#EC407A</color>
+    <color name="green">#26A69A</color>
+    <color name="dark_green">#00897B</color>
+    <color name="red">#EF5350</color>
+    <color name="maroon">#D32F2F</color>
+    <color name="brown">#795548</color>
 
-    <color name="green_dark">#2da44e</color>
-    <color name="green_light">#bed77b</color>
-    <color name="pink_light">#ff6ca3</color>
-    <color name="red_light">#ff7374</color>
-    <color name="blue_light">#5092b3</color>
-    <color name="orange_light">#e3bd50</color>
-    <color name="teal_light">#6cc6ce</color>
+    <color name="green_dark">#00897B</color>
+    <color name="green_light">#80CBC4</color>
+    <color name="pink_light">#F48FB1</color>
+    <color name="red_light">#EF9A9A</color>
+    <color name="blue_light">#4FC3F7</color>
+    <color name="orange_light">#FFB74D</color>
+    <color name="teal_light">#80DEEA</color>
     <color  name="mtrl_textinput_default_box_stroke_color">@color/divider</color>
 </resources>

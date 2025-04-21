@@ -6,187 +6,211 @@
     android:layout_height="match_parent"
     tools:context=".fragments.QuotationFragment">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/colorOnBackground"
-        android:padding="8dp">
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_sale_H90"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.9" />
+        android:background="?attr/colorOnBackground">
 
-        <TextView
-            android:id="@+id/textViewClientNames"
+        <!-- Header con información del cliente -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardViewClientInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_margin="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textViewClientAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewClientNames" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:id="@+id/textViewClientNamesLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre:"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/textViewClientNames"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:id="@+id/textViewClientAddressLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dirección:"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/textViewClientAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Barra de búsqueda -->
         <android.widget.SearchView
             android:id="@+id/searchViewProduct"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             android:background="@drawable/searchview_background"
             android:iconifiedByDefault="false"
             android:queryHint="Ingrese nombre ó codigo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewClientAddress" />
+            app:layout_constraintTop_toBottomOf="@+id/cardViewClientInfo"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewProductStore"
+        <!-- Lista de productos scrolleable -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollViewProducts"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="@+id/guideline_sale_H90"
-            app:layout_constraintTop_toBottomOf="@+id/searchViewProduct" />
-
-        <View
-            android:id="@+id/dividerLayoutList2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerViewProductStore" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_height="0dp"
-            android:layout_width="match_parent"
-            android:padding="4dp"
             android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/dividerLayoutList2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/searchViewProduct"
+            app:layout_constraintBottom_toTopOf="@+id/bottomBar">
 
-            >
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewProductStore"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="16dp"
+                android:clipToPadding="false"
+                android:paddingBottom="8dp"/>
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guidelineSubtotalInnerV1"
-                android:layout_width="wrap_content"
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- Barra inferior con controles -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="8dp"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.20" />
+                android:padding="12dp">
 
-       <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guidelineSubtotalInnerV5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.40" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonRefresh"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:backgroundTint="@color/olive"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_baseline_wifi_protected_setup_24"
+                    app:iconGravity="textTop"
+                    app:iconSize="30dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guidelineSubtotalInnerV35"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.60" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchShowImages"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Ver imágenes"
+                    android:textColor="@color/blue_dark"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toEndOf="@+id/buttonRefresh"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
+                <LinearLayout
+                    android:id="@+id/layoutCounters"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonSummary"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="16dp">
 
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guidelineSubtotalInnerV95"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.8" />
+                        <TextView
+                            android:id="@+id/textView40"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Items: "
+                            android:textStyle="bold"
+                            android:textSize="16sp"/>
 
+                        <TextView
+                            android:id="@+id/textViewItems"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"/>
+                    </LinearLayout>
 
-            <Button
-                android:id="@+id/buttonRefresh"
-                android:layout_width="50dp"
-                android:layout_height="60dp"
-                style="@style/ButtonStyle"
-                app:icon="@drawable/ic_baseline_wifi_protected_setup_24"
-                android:backgroundTint="@color/olive"
-                app:iconGravity="textStart"
-                app:iconPadding="0dp"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
 
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/guidelineSubtotalInnerV1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                        <TextView
+                            android:id="@+id/textView42"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total: S/ "
+                            android:textStyle="bold"
+                            android:textSize="16sp"/>
 
-            <Switch
-                android:id="@+id/switchShowImages"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:checked="true"
-                android:textColor="@color/blue_dark"
+                        <TextView
+                            android:id="@+id/textViewTotal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0.00"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"/>
+                    </LinearLayout>
+                </LinearLayout>
 
-                app:layout_constraintEnd_toEndOf="@id/guidelineSubtotalInnerV5"
-                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV1"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="UseSwitchCompatOrMaterialXml" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonSummary"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:backgroundTint="@color/orange_light"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_baseline_shopping_cart_24"
+                    app:iconGravity="textTop"
+                    app:iconSize="30dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <TextView
-                android:id="@+id/textView40"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ITEMS"
-                app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV35"
-                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV5"
-                app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
-
-            <TextView
-                android:id="@+id/textViewItems"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV35"
-                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV5"
-                app:layout_constraintTop_toBottomOf="@+id/textView40" />
-
-
-            <TextView
-                android:id="@+id/textView42"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TOTAL"
-                app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV95"
-                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV35"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textViewTotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0.0"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV95"
-                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV35"
-                app:layout_constraintTop_toBottomOf="@+id/textView42" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/fabSummary"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        app:fabSize="normal"
-        android:backgroundTint="@color/warning"
-        android:elevation="6dp"
-        app:tint="@android:color/white"
-        android:src="@drawable/ic_baseline_shopping_cart_24"/>
 
 </FrameLayout>

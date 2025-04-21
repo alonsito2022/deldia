@@ -37,24 +37,21 @@ import retrofit2.Response
 
 class ClientEditFragment : Fragment(), OnMapReadyCallback {
 
+    // UI Components
     private lateinit var textInputEditTextPersonName: TextInputEditText
     private lateinit var textInputEditTextPersonFirstSurname: TextInputEditText
     private lateinit var textInputEditTextPersonSecondSurname: TextInputEditText
     private lateinit var textInputLayoutFirstSurname: TextInputLayout
     private lateinit var textInputLayoutSecondSurname: TextInputLayout
-
+    private lateinit var textInputLayoutDocumentNumber: TextInputLayout
+    private lateinit var textInputLayoutGang: TextInputLayout
     private lateinit var autoCompleteDocumentType: AutoCompleteTextView
     private lateinit var autoCompleteVisitDay: AutoCompleteTextView
     private lateinit var autoCompleteGang: AutoCompleteTextView
     private lateinit var textInputEditTextDocumentNumber: TextInputEditText
-    private lateinit var btnCleanGang: Button
-    private lateinit var btnSearchApi: Button
-
+    private lateinit var progressBar: ProgressBar
     private lateinit var switchStatus: Switch
-    private lateinit var btnSaveAndQuote: Button
-    private lateinit var btnSaveAndSell: Button
     private lateinit var btnSaveAndGoToMap: Button
-
     private lateinit var textInputEditTextAddressName: TextInputEditText
     private lateinit var autoCompleteDistrict: AutoCompleteTextView
     private lateinit var autoCompleteCustomerType: AutoCompleteTextView
@@ -65,14 +62,17 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
     private lateinit var textInputEditTextPersonObservation: TextInputEditText
     private lateinit var textInputEditTextPersonCellPhone: TextInputEditText
 
+    // Map Related
     private lateinit var mMap: GoogleMap
     var mapView: View? = null
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
+    // Data Models
     private var person: Person = Person()
     private var searchPerson: Person = Person()
     private var listGangs = arrayListOf<Gang>()
 
+    // Context and Preferences
     private var globalContext: Context? = null
     private lateinit var preference: Preference
 
@@ -80,117 +80,196 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         globalContext = this.activity
         preference = Preference(globalContext)
-        val bundle = arguments
-        searchPerson.personID = bundle!!.getInt("personID")
+        arguments?.let { searchPerson.personID = it.getInt("personID") }
         loadDistributors()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(globalContext!!)
-
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_client_edit, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun initViews(view: View) {
         autoCompleteDocumentType = view.findViewById(R.id.autoCompleteDocumentType)
         autoCompleteVisitDay = view.findViewById(R.id.autoCompleteVisitDay)
+        textInputLayoutGang = view.findViewById(R.id.textInputLayoutGang)
         autoCompleteGang = view.findViewById(R.id.autoCompleteGang)
         autoCompleteCustomerType = view.findViewById(R.id.autoCompleteCustomerType)
         autoCompleteShowcases = view.findViewById(R.id.autoCompleteShowcases)
         textInputEditTextDocumentNumber = view.findViewById(R.id.textInputEditTextDocumentNumber)
+        progressBar = view.findViewById(R.id.progressBar)
+        textInputLayoutDocumentNumber = view.findViewById(R.id.textInputLayoutDocumentNumber)
+        textInputLayoutDocumentNumber.setEndIconDrawable(R.drawable.ic_baseline_search_24)
         textInputEditTextPersonName = view.findViewById(R.id.textInputEditTextPersonName)
         textInputEditTextPersonFirstSurname = view.findViewById(R.id.textInputEditTextPersonFirstSurname)
         textInputEditTextPersonSecondSurname = view.findViewById(R.id.textInputEditTextPersonSecondSurname)
         textInputLayoutFirstSurname = view.findViewById(R.id.textInputLayoutFirstSurname)
         textInputLayoutSecondSurname = view.findViewById(R.id.textInputLayoutSecondSurname)
         textInputEditTextComment = view.findViewById(R.id.textInputEditTextComment)
+        switchStatus = view.findViewById(R.id.switchStatus)
+        btnSaveAndGoToMap = view.findViewById(R.id.btnSaveAndGoToMap)
         textInputEditTextPersonObservation = view.findViewById(R.id.textInputEditTextPersonObservation)
         textInputEditTextPersonCellPhone = view.findViewById(R.id.textInputEditTextPersonCellPhone)
-        btnCleanGang = view.findViewById(R.id.btnCleanGang)
-        btnSaveAndQuote = view.findViewById(R.id.btnSaveAndQuote)
-        btnSaveAndSell = view.findViewById(R.id.btnSaveAndSell)
-        btnSaveAndGoToMap = view.findViewById(R.id.btnSaveAndGoToMap)
-        btnSearchApi = view.findViewById(R.id.btnSearchApi)
-
         textInputEditTextAddressName = view.findViewById(R.id.textInputEditTextAddressName)
         autoCompleteDistrict = view.findViewById(R.id.autoCompleteDistrict)
         textInputEditTextLatitude = view.findViewById(R.id.textInputEditTextLatitude)
         textInputEditTextLongitude = view.findViewById(R.id.textInputEditTextLongitude)
-//        textInputEditTextLatitude.isFocusable = false
-//        textInputEditTextLongitude.isFocusable = false
+    }
 
-        switchStatus = view.findViewById(R.id.switchStatus)
+    private fun clearPersonFields() {
+        textInputEditTextPersonName.setText("")
+        textInputEditTextPersonFirstSurname.setText("")
+        textInputEditTextPersonSecondSurname.setText("")
+        textInputEditTextAddressName.setText("")
+    }
+
+    private fun setupAutoCompleteTextView(adapter: ArrayAdapter<String>, autoCompleteTextView: AutoCompleteTextView) {
+        autoCompleteTextView.keyListener = null
+        autoCompleteTextView.setAdapter(adapter)
+    }
+
+    private fun setTextWithAdapter(autoCompleteTextView: AutoCompleteTextView, value: String) {
+        autoCompleteTextView.setText(autoCompleteTextView.adapter.getItem(value.indexOf(value)).toString(), false)
+    }
+
+
+    private fun validateDocumentNumber(documentType: String, documentNumber: String): Boolean {
+        return when (documentType) {
+            "DNI" -> documentNumber.length == 8
+            "RUC" -> documentNumber.length == 11
+            else -> false
+        }
+    }
+
+
+    private fun updatePersonUI(personTemp: Person) {
+        textInputEditTextPersonName.setText(personTemp.name)
+        textInputEditTextPersonFirstSurname.setText(personTemp.firstSurname)
+        textInputEditTextPersonSecondSurname.setText(personTemp.secondSurname)
+        person.apply {
+            name = personTemp.name
+            firstSurname = personTemp.firstSurname
+            secondSurname = personTemp.secondSurname
+            if (documentType == "06") {
+                textInputEditTextAddressName.setText(personTemp.address)
+                address = personTemp.address
+            }
+        }
+    }
+
+    private fun fetchPersonData() {
+        UserApiService.create().getDocumentConsultation(person).enqueue(object : Callback<Person> {
+            override fun onResponse(call: Call<Person>, response: Response<Person>) {
+                response.body()?.let { personTemp ->
+                    updatePersonUI(personTemp)
+                }
+            }
+            override fun onFailure(call: Call<Person>, t: Throwable) {
+                Log.d("MIKE", "Algo salió mal... ${t.message}")
+            }
+        })
+    }
+
+    private fun setupListeners() {
+        textInputLayoutDocumentNumber.setEndIconOnClickListener {
+            val itemSelected = autoCompleteDocumentType.text.toString()
+            val documentNumber = textInputEditTextDocumentNumber.text.toString()
+            if (validateDocumentNumber(itemSelected, documentNumber)) {
+                person.documentType = when (itemSelected) {
+                    "DNI" -> "01"
+                    "RUC" -> "06"
+                    else -> return@setEndIconOnClickListener
+                }
+                person.documentNumber = documentNumber
+                person.isClient = true
+                fetchPersonData()
+            } else {
+                Toast.makeText(requireContext(), "Número de documento inválido", Toast.LENGTH_SHORT).show()
+                clearPersonFields()
+            }
+        }
+
+        autoCompleteGang.setOnClickListener {
+            autoCompleteGang.showDropDown()
+        }
+
         switchStatus.setOnCheckedChangeListener { _, isChecked ->
             person.isEnabled = isChecked
+            switchStatus.text = if (isChecked) "ACTIVO" else "INACTIVO"
         }
 
-        btnCleanGang.setOnClickListener{
-            autoCompleteGang.setText("")
-        }
+        btnSaveAndGoToMap.setOnClickListener { handleSaveAndSend("N") }
+    }
 
-        btnSearchApi.setOnClickListener{
-            if (textInputEditTextDocumentNumber.text!!.isNotEmpty()){
-                val itemSelected = autoCompleteDocumentType.text.toString()
-                if (itemSelected=="DNI"){person.documentType = "01"}
-                else if (itemSelected=="RUC"){person.documentType = "06"}
-                person.documentNumber = textInputEditTextDocumentNumber.text.toString()
-                person.isClient = true
-                fetchedPerson()
-            }
-            else
-                Toast.makeText(globalContext, "Verificar nro documento", Toast.LENGTH_SHORT).show()
-
-        }
-
+    private fun setupMap() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.frg) as SupportMapFragment?
         mapView = mapFragment!!.view
         mapFragment.getMapAsync(this)
-
-
     }
 
-    private fun fetchedPerson(){
-        val apiInterface = UserApiService.create().getDocumentConsultation(person)
-        apiInterface.enqueue(object : Callback<Person> {
-            override fun onResponse(
-                call: Call<Person>,
-                response: Response<Person>
-            ) {
-                if (response.body() != null) {
-                    val personTemp = response.body()!!
-                    textInputEditTextPersonName.setText(personTemp.name)
-                    textInputEditTextPersonFirstSurname.setText(personTemp.firstSurname)
-                    textInputEditTextPersonSecondSurname.setText(personTemp.secondSurname)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initViews(view)
+        setupListeners()
+        setupMap()
+    }
 
-                    person.name = personTemp.name
-                    person.firstSurname = personTemp.firstSurname
-                    person.secondSurname = personTemp.secondSurname
-
-                    if (person.documentType == "06") {
-                        textInputEditTextAddressName.setText(personTemp.address)
-                        person.address = personTemp.address
-                    }
-
+    /**
+     * Carga los distribuidores desde la API y actualiza la lista de gangs.
+     */
+    private fun loadDistributors() {
+        UserApiService.create().getGangs().enqueue(object : Callback<java.util.ArrayList<Gang>> {
+            override fun onResponse(call: Call<java.util.ArrayList<Gang>>, response: Response<java.util.ArrayList<Gang>>) {
+                listGangs = response.body()!!
+                val gangNames = listGangs.map { it.name }
+                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, gangNames)
+                autoCompleteGang.setAdapter(adapter)
+                autoCompleteGang.setOnItemClickListener { _, _, position, _ ->
+                    val selectedGang = listGangs[position]
+                    autoCompleteGang.setText(selectedGang.name, false)
+                    person.gangID = selectedGang.gangID
+                    person.gangName = selectedGang.name
                 }
+                loadClient(searchPerson)
             }
-
-            override fun onFailure(call: Call<Person>, t: Throwable) {
-                Log.d("MIKE", "Algo salio mal..." + t.message.toString())
+            override fun onFailure(call: Call<java.util.ArrayList<Gang>>, t: Throwable) {
+                Log.d("MIKE", "fetchApiDistributors onFailure: ${t.message}")
             }
         })
-
     }
 
-    private fun View.closeKeyBoard(inputMethodManager: InputMethodManager) {
+//    private fun fetchedPerson(){
+//        val apiInterface = UserApiService.create().getDocumentConsultation(person)
+//        apiInterface.enqueue(object : Callback<Person> {
+//            override fun onResponse(
+//                call: Call<Person>,
+//                response: Response<Person>
+//            ) {
+//                if (response.body() != null) {
+//                    val personTemp = response.body()!!
+//                    textInputEditTextPersonName.setText(personTemp.name)
+//                    textInputEditTextPersonFirstSurname.setText(personTemp.firstSurname)
+//                    textInputEditTextPersonSecondSurname.setText(personTemp.secondSurname)
+//
+//                    person.name = personTemp.name
+//                    person.firstSurname = personTemp.firstSurname
+//                    person.secondSurname = personTemp.secondSurname
+//
+//                    if (person.documentType == "06") {
+//                        textInputEditTextAddressName.setText(personTemp.address)
+//                        person.address = personTemp.address
+//                    }
+//
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<Person>, t: Throwable) {
+//                Log.d("MIKE", "Algo salio mal..." + t.message.toString())
+//            }
+//        })
+//
+//    }
 
-        inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
-
-    }
     private fun loadClient(p: Person) {
         val apiInterface = UserApiService.create().getPersonByID(p)
         apiInterface.enqueue(object : Callback<Person> {
@@ -281,7 +360,7 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
 
                     }
 
-                    autoCompleteGang.setText(person.gangName)
+                    autoCompleteGang.setText(person.gangName, false)
 
                     textInputEditTextAddressName.setText(person.address)
                     textInputEditTextLatitude.setText(person.latitude.toString())
@@ -290,34 +369,12 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
 
                     val listDistrict = listOf(
                         "JOSE LUIS BUSTAMANTE Y RIVERO",
-                        "ALTO SELVA ALEGRE",
-                        "JACOBO HUNTER",
-                        "MARIANO MELGAR",
-                        "YURA",
-                        "YARABAMBA",
-                        "YANAHUARA",
-                        "VITOR",
-                        "UCHUMAYO",
-                        "TIABAYA",
                         "SOCABAYA",
-                        "STA RITA DE SIGUAS",
-                        "SANTA ISABEL DE SIGUAS",
-                        "SAN JUAN DE TARUCANI",
-                        "SAN JUAN DE SIGUAS",
-                        "SACHACA",
                         "SABANDIA",
-                        "QUEQUEÑA",
-                        "POLOBAYA",
-                        "POCSI",
-                        "PAUCARPATA",
-                        "MOLLEBAYA",
-                        "MIRAFLORES",
-                        "LA JOYA",
-                        "CHIGUATA",
                         "CHARACATO",
-                        "CERRO COLORADO",
-                        "CAYMA",
-                        "AREQUIPA"
+                        "QUEQUEÑA",
+                        "YARABAMBA",
+                        "MOLLEBAYA"
                     )
                     val adapterDistrict = ArrayAdapter(
                         globalContext!!,
@@ -338,18 +395,7 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
                         )
                     }
 
-                    btnSaveAndSell.setOnClickListener {
-                        saveData()
-                        sendClientData("S")
-                    }
-                    btnSaveAndQuote.setOnClickListener {
-                        saveData()
-                        sendClientData("Q")
-                    }
-                    btnSaveAndGoToMap.setOnClickListener {
-                        saveData()
-                        sendClientData("N")
-                    }
+                    btnSaveAndGoToMap.setOnClickListener { handleSaveAndSend("N") }
 
                     val markerMap =  MarkerOptions().position(LatLng(person.latitude, person.longitude))
                         .title(person.fullName).draggable(true)
@@ -387,98 +433,221 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
         })
     }
 
-    private fun saveData(){
-        val valueCustomerTypes = autoCompleteCustomerType.text.toString()
-        var selectedCustomerTypes = 0
-        when (valueCustomerTypes){
-            "PEPSICO" -> {selectedCustomerTypes = 0}
-            "PROPIO" -> {selectedCustomerTypes = 1}
-        }
-
+    private fun getSelectedShowcases(): Int {
         val valueShowcases = autoCompleteShowcases.text.toString()
-        var selectedShowcases = 0
-        when (valueShowcases){
-            "NO CUENTA" -> {selectedShowcases = 0}
-            "AEREO" -> {selectedShowcases = 1}
-            "2 NIVELES" -> {selectedShowcases = 2}
-            "5 NIVELES" -> {selectedShowcases = 3}
-            "6X8 NIVELES" -> {selectedShowcases = 4}
+        return when (valueShowcases) {
+            "NO CUENTA" -> 0
+            "AEREO" -> 1
+            "2 NIVELES" -> 2
+            "5 NIVELES" -> 3
+            "6X8 NIVELES" -> 4
+            else -> -1
         }
-
-        val valueVisitDay = autoCompleteVisitDay.text.toString()
-        var selectedVisitDay = 0
-        when (valueVisitDay){
-            "LUNES" -> {selectedVisitDay = 0}
-            "MARTES" -> {selectedVisitDay = 1}
-            "MIERCOLES" -> {selectedVisitDay = 2}
-            "JUEVES" -> {selectedVisitDay = 3}
-            "VIERNES" -> {selectedVisitDay = 4}
-            "SABADO" -> {selectedVisitDay = 5}
-            "DOMINGO" -> {selectedVisitDay = 6}
-        }
-
-        person.documentNumber = textInputEditTextDocumentNumber.text.toString()
-        person.name = textInputEditTextPersonName.text.toString()
-        person.firstSurname = textInputEditTextPersonFirstSurname.text.toString()
-        person.secondSurname = textInputEditTextPersonSecondSurname.text.toString()
-        person.comment = textInputEditTextComment.text.toString()
-        person.isClient = true
-
-        person.visitDay = selectedVisitDay
-        person.showcases = selectedShowcases
-        person.customerType = selectedCustomerTypes
-        person.observation =textInputEditTextPersonObservation.text.toString()
-        person.cellphone =textInputEditTextPersonCellPhone.text.toString()
-
-        if(textInputEditTextLatitude.text !== null){
-            if(textInputEditTextAddressName.text !== null){
-                val valueDistrict = autoCompleteDistrict.text.toString()
-                var selectedDistrict = ""
-                when (valueDistrict) {
-                    "JOSE LUIS BUSTAMANTE Y RIVERO" -> {selectedDistrict = "040129"}
-                    "ALTO SELVA ALEGRE" -> {selectedDistrict = "040128"}
-                    "JACOBO HUNTER" -> {selectedDistrict = "040127"}
-                    "MARIANO MELGAR" -> {selectedDistrict = "040126"}
-                    "YURA" -> {selectedDistrict = "040125"}
-                    "YARABAMBA" -> {selectedDistrict = "040124"}
-                    "YANAHUARA" -> {selectedDistrict = "040123"}
-                    "VITOR" -> {selectedDistrict = "040122"}
-                    "UCHUMAYO" -> {selectedDistrict = "040121"}
-                    "TIABAYA" -> {selectedDistrict = "040120"}
-                    "SOCABAYA" -> {selectedDistrict = "040119"}
-                    "STA RITA DE SIGUAS" -> {selectedDistrict = "040118"}
-                    "SANTA ISABEL DE SIGUAS" -> {selectedDistrict = "040117"}
-                    "SAN JUAN DE TARUCANI" -> {selectedDistrict = "040116"}
-                    "SAN JUAN DE SIGUAS" -> {selectedDistrict = "040115"}
-                    "SACHACA" -> {selectedDistrict = "040114"}
-                    "SABANDIA" -> {selectedDistrict = "040113"}
-                    "QUEQUEÑA" -> {selectedDistrict = "040112"}
-                    "POLOBAYA" -> {selectedDistrict = "040111"}
-                    "POCSI" -> {selectedDistrict = "040110"}
-                    "PAUCARPATA" -> {selectedDistrict = "040109"}
-                    "MOLLEBAYA" -> {selectedDistrict = "040108"}
-                    "MIRAFLORES" -> {selectedDistrict = "040107"}
-                    "LA JOYA" -> {selectedDistrict = "040106"}
-                    "CHIGUATA" -> {selectedDistrict = "040105"}
-                    "CHARACATO" -> {selectedDistrict = "040104"}
-                    "CERRO COLORADO" -> {selectedDistrict = "040103"}
-                    "CAYMA" -> {selectedDistrict = "040102"}
-                    "AREQUIPA" -> {selectedDistrict = "040101"}
-                }
-
-                person.district = selectedDistrict
-                person.address = textInputEditTextAddressName.text.toString()
-                person.latitude = textInputEditTextLatitude.text.toString().toDouble()
-                person.longitude = textInputEditTextLongitude.text.toString().toDouble()
-            }
-            else
-                Toast.makeText(globalContext, "Verifique direccion", Toast.LENGTH_SHORT).show()
-        }
-        else
-            Toast.makeText(globalContext, "Verifique posicion", Toast.LENGTH_SHORT).show()
     }
 
+    private fun getSelectedCustomerType(): Int {
+        val valueCustomerTypes = autoCompleteCustomerType.text.toString()
+        return when (valueCustomerTypes) {
+            "PEPSICO" -> 0
+            "PROPIO" -> 1
+            else -> -1
+        }
+    }
 
+    private fun getSelectedDistrict(): String {
+        val valueDistrict = autoCompleteDistrict.text.toString()
+        return when (valueDistrict) {
+            "JOSE LUIS BUSTAMANTE Y RIVERO" -> "040129"
+            "SOCABAYA" -> "040119"
+            "SABANDIA" -> "040113"
+            "CHARACATO" -> "040104"
+            "QUEQUEÑA" -> "040112"
+            "YARABAMBA" -> "040124"
+            "MOLLEBAYA" -> "040108"
+            else -> ""
+        }
+    }
+    private fun getSelectedVisitDay(): Int {
+        val selectedDay = autoCompleteVisitDay.text.toString()
+        return when (selectedDay) {
+            "LUNES" -> 0
+            "MARTES" -> 1
+            "MIERCOLES" -> 2
+            "JUEVES" -> 3
+            "VIERNES" -> 4
+            "SABADO" -> 5
+            "DOMINGO" -> 6
+            else -> -1 // Valor por defecto o error
+        }
+    }
+
+    private fun validateRequiredFields(): Boolean {
+        if (person.gangID == 0) {
+            Toast.makeText(globalContext, "Verifique RUTA", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        val docNumber = textInputEditTextDocumentNumber.text.toString()
+        if (person.documentType == "01" && docNumber.length != 8) {  // DNI
+            Toast.makeText(globalContext, "Verifique DNI", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if (person.documentType == "06" && docNumber.length != 11) {  // RUC
+            Toast.makeText(globalContext, "Verifique RUC", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if (textInputEditTextPersonName.text.isNullOrEmpty()) {
+            Toast.makeText(globalContext, "Verifique nombre", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if (textInputEditTextLatitude.text.isNullOrEmpty()) {
+            Toast.makeText(globalContext, "Verifique posición", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        val addressText = textInputEditTextAddressName.text.toString()
+        if (addressText.isEmpty() && person.documentType == "06") {
+            Toast.makeText(globalContext, "Verifique dirección", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        val codeText = textInputEditTextPersonObservation.text.toString()
+        if (codeText.isEmpty()) {
+            Toast.makeText(globalContext, "Verifique codigo", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        return true
+    }
+
+//    private fun saveData(): Boolean {
+//
+//        if (person.gangID == 0) {  // RUTA
+//            Toast.makeText(globalContext, "Verifique RUTA", Toast.LENGTH_SHORT).show()
+//            return false
+//        }
+//
+//        val valueCustomerTypes = autoCompleteCustomerType.text.toString()
+//        val selectedCustomerTypes = when (valueCustomerTypes) {
+//            "PEPSICO" -> 0
+//            "PROPIO" -> 1
+//            else -> -1
+//        }
+//
+//        val valueShowcases = autoCompleteShowcases.text.toString()
+//        val selectedShowcases = when (valueShowcases) {
+//            "NO CUENTA" -> 0
+//            "AEREO" -> 1
+//            "2 NIVELES" -> 2
+//            "5 NIVELES" -> 3
+//            "6X8 NIVELES" -> 4
+//            else -> -1
+//        }
+//
+//        val valueVisitDay = autoCompleteVisitDay.text.toString()
+//        val selectedVisitDay = when (valueVisitDay) {
+//            "LUNES" -> 0
+//            "MARTES" -> 1
+//            "MIERCOLES" -> 2
+//            "JUEVES" -> 3
+//            "VIERNES" -> 4
+//            "SABADO" -> 5
+//            "DOMINGO" -> 6
+//            else -> -1
+//        }
+//
+//        // Validaciones de DNI y RUC antes de asignar
+//        val docNumber = textInputEditTextDocumentNumber.text.toString()
+//        if (person.documentType == "01" && docNumber.length != 8) {  // DNI
+//            Toast.makeText(globalContext, "Verifique DNI", Toast.LENGTH_SHORT).show()
+//            return false
+//        }
+//        if (person.documentType == "06" && docNumber.length != 11) {  // RUC
+//            Toast.makeText(globalContext, "Verifique RUC", Toast.LENGTH_SHORT).show()
+//            return false
+//        }
+//
+//        // Validación de ubicación antes de asignar
+//        val latitudeText = textInputEditTextLatitude.text.toString()
+//        if (latitudeText.isEmpty()) {
+//            Toast.makeText(globalContext, "Verifique posición", Toast.LENGTH_SHORT).show()
+//            return false
+//        }
+//
+//        val nameText = textInputEditTextPersonName.text.toString()
+//        if (nameText.isEmpty()) {
+//            Toast.makeText(globalContext, "Verifique nombre", Toast.LENGTH_SHORT).show()
+//            return false
+//        }
+//
+//        val addressText = textInputEditTextAddressName.text.toString()
+//        if (addressText.isEmpty() && person.documentType == "06") {
+//            Toast.makeText(globalContext, "Verifique dirección", Toast.LENGTH_SHORT).show()
+//            return false
+//        }
+//
+//        person.documentNumber = docNumber
+//        person.name = textInputEditTextPersonName.text.toString()
+//        person.firstSurname = textInputEditTextPersonFirstSurname.text.toString()
+//        person.secondSurname = textInputEditTextPersonSecondSurname.text.toString()
+//        person.comment = textInputEditTextComment.text.toString()
+//        person.isClient = true
+//
+//        person.visitDay = selectedVisitDay
+//        person.showcases = selectedShowcases
+//        person.customerType = selectedCustomerTypes
+//        person.observation =textInputEditTextPersonObservation.text.toString()
+//        person.cellphone =textInputEditTextPersonCellPhone.text.toString()
+//
+//        val valueDistrict = autoCompleteDistrict.text.toString()
+//        val selectedDistrict = when (valueDistrict) {
+//            "JOSE LUIS BUSTAMANTE Y RIVERO" -> "040129"
+//            "SOCABAYA" -> "040119"
+//            "SABANDIA" -> "040113"
+//            "CHARACATO" -> "040104"
+//            "QUEQUEÑA" -> "040112"
+//            "YARABAMBA" -> "040124"
+//            "MOLLEBAYA" -> "040108"
+//            else -> ""
+//        }
+//
+//        person.district = selectedDistrict
+//        person.address = addressText
+//        person.latitude = latitudeText.toDouble()
+//        person.longitude = textInputEditTextLongitude.text.toString().toDouble()
+//
+//        return true
+//    }
+
+    private fun savePersonData(): Boolean {
+        if (!validateRequiredFields()) return false
+
+        person.apply {
+            documentNumber = textInputEditTextDocumentNumber.text.toString()
+            name = textInputEditTextPersonName.text.toString()
+            firstSurname = textInputEditTextPersonFirstSurname.text.toString()
+            secondSurname = textInputEditTextPersonSecondSurname.text.toString()
+            comment = textInputEditTextComment.text.toString()
+            isClient = true
+            visitDay = getSelectedVisitDay()
+            showcases = getSelectedShowcases()
+            customerType = getSelectedCustomerType()
+            observation = textInputEditTextPersonObservation.text.toString()
+            cellphone = textInputEditTextPersonCellPhone.text.toString()
+            district = getSelectedDistrict()
+            address = textInputEditTextAddressName.text.toString()
+            latitude = textInputEditTextLatitude.text.toString().toDouble()
+            longitude = textInputEditTextLongitude.text.toString().toDouble()
+        }
+        return true
+    }
+
+    private fun setButtonsEnabled(enabled: Boolean) {
+        btnSaveAndGoToMap.isEnabled = enabled
+    }
+
+    private fun handleSaveAndSend(action: String) {
+        if (savePersonData()) {
+            setButtonsEnabled(false)
+            sendClientData(action)
+        }
+    }
     private fun sendClientData(act: String = "N"){
         val apiInterface = UserApiService.create().sendUpdateClientData(person)
         apiInterface.enqueue(object : Callback<Person> {
@@ -489,11 +658,7 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
                 if (response.body() != null) {
                     person = response.body()!!
 
-                    if(act == "S")
-                        goToSale(person)
-                    else if(act == "Q")
-                        goToQuotation(person)
-                    else if(act == "N")
+                   if(act == "N")
                         goToMap()
                 }
             }
@@ -505,47 +670,6 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-
-    private fun goToQuotation(p: Person){
-
-        val bundle = Bundle()
-
-        bundle.putInt("userID", preference.getData("userID").toInt())
-        bundle.putInt("vehicleID", preference.getData("vehicleID").toInt())
-        bundle.putString("vehicleLicensePlate",  preference.getData("vehicleLicensePlate"))
-        bundle.putInt("personID",p.personID)
-        bundle.putString("personFullName",p.fullName)
-        bundle.putString("personAddress",p.address)
-        bundle.putString("personDocumentNumber",p.documentNumber)
-        bundle.putString("personDocumentType",p.documentType)
-        bundle.putString("physicalDistribution",p.physicalDistribution)
-        bundle.putString("physicalDistributionDisplay",p.physicalDistributionDisplay)
-        bundle.putString("routeDate",p.routeDate)
-
-        findNavController().navigate(R.id.action_clientEditFragment_to_quotationFragment, bundle)
-
-    }
-
-
-    private fun goToSale(p: Person){
-
-        val bundle = Bundle()
-
-        bundle.putInt("userID", preference.getData("userID").toInt())
-        bundle.putInt("vehicleID", preference.getData("vehicleID").toInt())
-        bundle.putString("vehicleLicensePlate",  preference.getData("vehicleLicensePlate"))
-        bundle.putInt("personID",p.personID)
-        bundle.putString("personFullName",p.fullName)
-        bundle.putString("personAddress",p.address)
-        bundle.putString("personDocumentNumber",p.documentNumber)
-        bundle.putString("personDocumentType",p.documentType)
-        bundle.putString("physicalDistribution",p.physicalDistribution)
-        bundle.putString("physicalDistributionDisplay",p.physicalDistributionDisplay)
-        bundle.putString("routeDate",p.routeDate)
-
-        findNavController().navigate(R.id.action_clientEditFragment_to_saleFragment, bundle)
-
-    }
     private fun goToMap(){
 
         val bundle = Bundle()
@@ -557,66 +681,28 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
 
     }
 
+    private fun fetchLocation() {
+        val task = fusedLocationProviderClient.lastLocation
+        if (ActivityCompat.checkSelfPermission(globalContext!!, android.Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(globalContext!!, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(globalContext as Activity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
+            return
+        }
+        task.addOnSuccessListener {
+            if (it != null) {
+                mMap.isMyLocationEnabled = true
+            }
+        }
+    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         mMap.uiSettings.isZoomControlsEnabled = true
-
         fetchLocation()
     }
 
-    private fun fetchLocation() {
-        val task= fusedLocationProviderClient.lastLocation
-        if(ActivityCompat.checkSelfPermission(globalContext!!, android.Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(globalContext!!, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ){
-            ActivityCompat.requestPermissions(globalContext as Activity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
-            return
-        }
-        task.addOnSuccessListener {
-            if (it!=null){
-                // Toast.makeText(globalContext, "lat ${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
-                mMap.isMyLocationEnabled = true
-                /*if (mapView != null){
-                    val locationButton= (mapView?.findViewById<View>(Integer.parseInt("1"))?.parent as View).findViewById<View>(Integer.parseInt("2"))
-                    val rlp =  locationButton.layoutParams as RelativeLayout.LayoutParams
-                    rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0)
-                    rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
-                    rlp.setMargins(0, 0, 30, 30)
-                }*/
 
-
-            }
-        }
-
-    }
-    private fun loadDistributors(){
-
-        val apiInterface = UserApiService.create().getGangs()
-        apiInterface.enqueue(object : Callback<java.util.ArrayList<Gang>>{
-            override fun onResponse(call: Call<java.util.ArrayList<Gang>>, response: Response<java.util.ArrayList<Gang>>) {
-                listGangs = response.body()!!
-                autoCompleteGang.setAdapter(GangAdapter(globalContext!!, R.layout.item_gang_view, listGangs, object : GangAdapter.OnItemClickListener{
-                    override fun onItemClick(model: Gang) {
-                        autoCompleteGang.setText(model.name)
-                        autoCompleteGang.dismissDropDown()
-                        val inputManager = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        autoCompleteGang.closeKeyBoard(inputManager)
-                        autoCompleteGang.clearFocus()
-                        person.gangID = model.gangID
-                        person.gangName = model.name
-                    }
-                }))
-                loadClient(searchPerson)
-            }
-
-            override fun onFailure(call: Call<java.util.ArrayList<Gang>>, t: Throwable) {
-                Log.d("MIKE", "fetchApiDistributors onFailure: " + t.message.toString())
-            }
-
-        })
-
-    }
 }

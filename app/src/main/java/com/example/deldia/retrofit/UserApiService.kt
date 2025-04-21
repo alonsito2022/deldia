@@ -31,6 +31,10 @@ interface UserApiService {
     @Headers("Accept: application/json", "Content-type:application/json")
     fun getStockInWarehouse(@Body params: Warehouse) : Observable<ArrayList<Product>>
 
+    @POST("sales/api/v1/get_product_stock_by_sale_and_warehouse/")
+    @Headers("Accept: application/json", "Content-type:application/json")
+    fun getStockBySaleAndWarehouse(@Body params: Operation) : Observable<ArrayList<Product>>
+
     @POST("dispatches/api/v1/get_sales_in_warehouse/")
     @Headers("Accept: application/json", "Content-type:application/json")
     fun getSalesInWarehouse(@Body params: Operation) : Call<ArrayList<Operation>>
@@ -79,6 +83,10 @@ interface UserApiService {
     @Headers("Accept: application/json", "Content-type:application/json")
     fun sendUpdateQuotationData(@Body params: Operation) : Call<Operation>
 
+    @POST("dispatches/api/v1/devolution_of_delivery/")
+    @Headers("Accept: application/json", "Content-type:application/json")
+    fun sendDevolutionDeliveryData(@Body params: Operation) : Call<Operation>
+
     @POST("dispatches/api/v1/terminate_quotation/")
     @Headers("Accept: application/json", "Content-type:application/json")
     fun sendTerminateQuotationData(@Body params: Operation) : Call<Operation>
@@ -89,7 +97,7 @@ interface UserApiService {
 
     @POST("dispatches/api/v1/filter_client_by_action/")
     @Headers("Accept: application/json", "Content-type:application/json")
-    fun getFilterClient(@Body params: RequestFilterPerson) : Call<ArrayList<Person>>
+    fun getFilterClient(@Body params: RequestFilterPerson): Call<ResponseFilterPerson> // Changed return type
 
     @POST("dispatches/api/v1/get_daily_route/")
     @Headers("Accept: application/json", "Content-type:application/json")
@@ -127,6 +135,10 @@ interface UserApiService {
     @Headers("Accept: application/json", "Content-type:application/json")
     fun saveCancelPresale(@Body params: Operation) : Call<Operation>
 
+    @POST("dispatches/api/v1/decline_sale_from_the_app/")
+    @Headers("Accept: application/json", "Content-type:application/json")
+    fun saveDeclinedSale(@Body params: Person) : Call<ResponseApi>
+
     @POST("dispatches/api/v1/cancel_sale/")
     @Headers("Accept: application/json", "Content-type:application/json")
     fun cancelDispatchData(@Body params: Operation) : Call<Operation>
@@ -160,8 +172,7 @@ interface UserApiService {
     fun getAllSellers() : Call<ArrayList<User>>
 
     companion object {
-//        var BASE_URL = "http://38.242.197.197:9017/"5+
-        var BASE_URL = "http://192.168.1.244:9017/"
+        var BASE_URL = "http://192.168.1.20:9017/"
 //        var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"
         val client = OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)

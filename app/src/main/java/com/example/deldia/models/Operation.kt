@@ -38,10 +38,15 @@ class Operation() {
     var userFullName: String = ""
     var operationTime: String = ""
     var total: Double = 0.0
+    var totalPurchased: Double = 0.0
+    var totalPaid: Double = 0.0
+    var totalPending: Double = 0.0
+    var totalReturned: Double = 0.0
     var numberToCurrency: String = ""
     var documentTypeDisplay: String = ""
     var routeDate: String = ""
     var routeObservation: String = ""
+//    var routeDispatchTotalSold: Double = 0.0
     var routeStatus: String = ""
     var messageStatus: String = ""
     var pseSent: Boolean = false
@@ -49,22 +54,19 @@ class Operation() {
     var paymentMethods: MutableMap<String, Double> = mutableMapOf()
     var details: MutableList<OperationDetail> = mutableListOf()
 
-    class OperationDetail(){
+    class OperationDetail(
+        var productTariffID: Int,
+        var price: Double,
+        var quantity: Int
+    ){
 
-        var productTariffID: Int = 0
-        var price: Double = 0.0
-        var quantity: Int = 0
-        var stockChecked: Double = 0.0
-        var batchCode: String = ""
-        var batchStock: Double = 0.0
+        constructor() : this(0, 0.0, 0)
 
         var productID: Int = 0
-        var productPurchaseName: String = ""
         var productSaleName: String = ""
-        var unitName: String = ""
         var subtotal: Double = 0.0
-        // var remainingQuantity: Int = 0
 
+        var stockChecked: Double = 0.0
         var enlisted: Boolean = false
     }
 }

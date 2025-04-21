@@ -36,7 +36,7 @@ import com.google.android.material.snackbar.Snackbar
 //import com.mazenrashed.printooth.ui.ScanningActivity
 //import com.mazenrashed.printooth.utilities.Printing
 //import com.mazenrashed.printooth.utilities.PrintingCallback
-import kotlinx.android.synthetic.main.activity_view.*
+//import kotlinx.android.synthetic.main.activity_view.*
 import java.io.File
 import java.io.IOException
 import java.io.OutputStream

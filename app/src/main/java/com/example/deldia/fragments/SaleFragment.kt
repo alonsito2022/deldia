@@ -3,6 +3,8 @@ package com.example.deldia.fragments
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -25,6 +27,7 @@ import com.example.deldia.models.Person
 import com.example.deldia.models.Product
 import com.example.deldia.models.Warehouse
 import com.example.deldia.retrofit.UserApiService
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.database.DatabaseReference
@@ -49,7 +52,7 @@ class SaleFragment : Fragment() {
     private lateinit var searchViewProduct: SearchView
     private lateinit var recyclerViewProductStore: RecyclerView
     private lateinit var productSaleAdapter: ProductSaleAdapter
-    private lateinit var fabSummary: FloatingActionButton
+    private lateinit var fabSummary: MaterialButton
 
     private lateinit var textViewTotal: TextView
     private lateinit var textViewItems: TextView
@@ -62,8 +65,6 @@ class SaleFragment : Fragment() {
     private lateinit var switchShowImages: Switch
     private lateinit var refreshLayout: SwipeRefreshLayout
     private lateinit var buttonRefresh: Button
-    private lateinit var database: FirebaseDatabase
-    private lateinit var pickingReference: DatabaseReference
 
     private var globalContext: Context? = null
 
@@ -71,7 +72,6 @@ class SaleFragment : Fragment() {
     private var person: Person = Person()
     private var operation: Operation = Operation()
     private var list = arrayListOf<Product>()
-    private var firebaseList = arrayListOf<Product>()
     private lateinit var preference: Preference
 
 
@@ -79,18 +79,16 @@ class SaleFragment : Fragment() {
 
     private lateinit var layoutPaymentList: LinearLayout
     private lateinit var layoutListItem: LinearLayout
-
-    lateinit var dbHelper: MySQLiteHelper
-    private var nroItem: Int = 1
-
+    private lateinit var loadingLayout: FrameLayout
+    private lateinit var currentDialog: AlertDialog
+    private lateinit var dialogClose: Button
+    private lateinit var dialogSave: Button
+    private var isProcessing = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         globalContext = this.activity
         preference = Preference(globalContext)
-        dbHelper = MySQLiteHelper(globalContext!!)
-        database = FirebaseDatabase.getInstance()
-        pickingReference = database.getReference("picking")
         val bundle = arguments
         operation.userID = bundle!!.getInt("userID")
         warehouse.warehouseID = bundle.getInt("vehicleID")
@@ -121,8 +119,7 @@ class SaleFragment : Fragment() {
         if(person.documentType=="01") person.documentTypeDisplay="DNI"
         else if(person.documentType=="06") person.documentTypeDisplay="RUC"
 
-
-        loadProductStoreInWarehouse(warehouse)
+        loadProductStoreInWarehouse()
     }
 
     private fun loadDocumentType(){
@@ -169,61 +166,73 @@ class SaleFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_sale, container, false)
     }
 
+    private fun setupRecyclerView() {
+        // Configurar el LayoutManager con optimizaciones
+        val layoutManager = LinearLayoutManager(requireContext())
+        recyclerViewProductStore.apply {
+            this.layoutManager = layoutManager
+            setHasFixedSize(true)
+            setItemViewCacheSize(20)
+            isNestedScrollingEnabled = true  // Habilitar scroll
+            recycledViewPool.setMaxRecycledViews(0, 15)
+        }
+
+        productSaleAdapter = ProductSaleAdapter(list).apply {
+            setHasStableIds(true)
+            setOnQuantityChangeListener(object : ProductSaleAdapter.OnQuantityChangeListener{
+                override fun onQuantityChanged(id: Int, quantity: String) {
+                    val pos = list.indexOfFirst { it.productID == id }
+
+                    if (pos != -1) {
+                        var newSubtotal = 0.0
+                        var newQuantity = 0
+                        val product = list[pos]
+                        if(quantity.isNotBlank()){
+                            if(quantity.toInt() <= product.stock){
+                                newQuantity = quantity.toInt()
+                                newSubtotal = quantity.toInt() * product.priceSale
+                            }
+                        }
+                        product.quantity = newQuantity
+                        product.subtotal = newSubtotal
+                        updateTotal()
+                    }
+                }
+                override fun onItemClick(id: Int) {
+                    val pos = list.indexOfFirst { it.productID == id }
+                    openModal(list[pos])
+                }
+            })
+        }
+        recyclerViewProductStore.adapter = productSaleAdapter
+
+
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val paymentRef = pickingReference.child("gangs").child(preference.getData("gangID")).child("users").child(preference.getData("userID"))
-        paymentRef.setValue(null)
-        switchShowImages = view.findViewById(R.id.switchShowImages)
-        switchShowImages.setOnCheckedChangeListener { _, isChecked ->
-            list.forEach { item ->item.showImage=isChecked}
-            recyclerViewProductStore.adapter?.notifyDataSetChanged()
-        }
+//        val paymentRef = pickingReference.child("gangs").child(preference.getData("gangID")).child("users").child(preference.getData("userID"))
+//        paymentRef.setValue(null)
 
         textViewClientNames = view.findViewById(R.id.textViewClientNames)
         textViewClientAddress = view.findViewById(R.id.textViewClientAddress)
         textViewClientNames.text = person.fullName
         textViewClientAddress.text = person.address
         recyclerViewProductStore = view.findViewById(R.id.recyclerViewProductStore)
-        recyclerViewProductStore.layoutManager = LinearLayoutManager(globalContext)
-        recyclerViewProductStore.setHasFixedSize(true)
+        switchShowImages = view.findViewById(R.id.switchShowImages)
+        switchShowImages.setOnCheckedChangeListener { _, isChecked ->
+            list.forEach { item ->item.showImage=isChecked}
+            recyclerViewProductStore.adapter?.notifyDataSetChanged()
+        }
+
+        setupRecyclerView()
 
 
-        productSaleAdapter = ProductSaleAdapter(list)
-
-        productSaleAdapter.setOnQuantityChangeListener(object : ProductSaleAdapter.OnQuantityChangeListener{
-            override fun onQuantityChanged(id: Int, quantity: String) {
-                val pos = list.indexOfFirst { it.productID == id }
-
-                if (pos != -1) {
-                    var newSubtotal = 0.0
-                    var newQuantity = 0
-                    val product = list[pos]
-                    if(quantity.isNotBlank()){
-                        if(quantity.toInt() <= product.stock) {
-                            newQuantity = quantity.toInt()
-                            newSubtotal = quantity.toInt() * product.priceSale
-                        }
-                    }
-                    product.quantity = newQuantity
-                    product.subtotal = newSubtotal
-                    updateTotal()
-                    updateFirebaseItem(product)
-                }
-            }
-            override fun onItemClick(id: Int) {
-                val pos = list.indexOfFirst { it.productID == id }
-                openModal(list[pos])
-            }
-
-        })
-
-        recyclerViewProductStore.adapter= productSaleAdapter
 
         textViewTotal = view.findViewById(R.id.textViewTotal)
         buttonRefresh = view.findViewById(R.id.buttonRefresh)
         buttonRefresh.setOnClickListener {
-            loadProductStoreInWarehouse(warehouse)
+            loadProductStoreInWarehouse()
         }
         textViewItems = view.findViewById(R.id.textViewItems)
         textViewSubtotal = view.findViewById(R.id.textViewSubtotal)
@@ -306,43 +315,18 @@ class SaleFragment : Fragment() {
         }
     }
 
-    private fun loadProductStoreInWarehouse(w: Warehouse) {
-        Log.d("Mike", "Warehouse ${w.warehouseID} ${w.warehouseName}")
-        val apiInterface = UserApiService.create().getStockInWarehouse(w)
+    private fun loadProductStoreInWarehouse() {
+        val apiInterface = UserApiService.create().getStockInWarehouse(warehouse)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ responseData ->
-                Log.d("Mike", responseData?.size.toString())
-                if(responseData != null && responseData.isNotEmpty()){
-                    list = responseData
+                responseData?.let {
+                    list.clear()
+                    list.addAll(it)
                     productSaleAdapter.getFilter(list)
                 }
-            }, { error ->
-                Log.d("Mike", error.toString())
-            })
-
+            }, { error -> Log.e("SaleFragment", "Error loading products: ${error.message}") })
     }
-    private fun updateFirebaseItem(product: Product){
-        val paymentRef = pickingReference.child("gangs").child(preference.getData("gangID")).child("users").child(preference.getData("userID"))
-        var code: String = product.productCode
-        if (product.productCode.contains("."))
-            code = product.productCode.split(".")[0]
-
-        product.firebaseID = code.toInt()
-
-        paymentRef.child("details").child("${code}").setValue(product)
-        nroItem += 1
-
-        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm")
-        val currentDate = sdf.format(Date())
-
-        paymentRef.child("userID").setValue(preference.getData("userID").toInt())
-        paymentRef.child("userName").setValue(preference.getData("userName"))
-        paymentRef.child("lastPickingDate").setValue(currentDate)
-        paymentRef.child("clientFullName").setValue(person.fullName)
-        paymentRef.child("total").setValue(textViewTotal.text.toString().toDouble())
-    }
-
 
     private fun openModal(p: Product){
         val inflater = LayoutInflater.from(globalContext)
@@ -365,7 +349,153 @@ class SaleFragment : Fragment() {
         }
     }
 
-    private fun addInfo(){
+    private fun validateSale(): Boolean {
+        // Validar que haya al menos un producto seleccionado
+        if (list.none { it.quantity > 0 }) {
+            Toast.makeText(globalContext, "Debe seleccionar al menos un producto", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validar que todos los productos tengan precio válido
+        val invalidPrices = list.filter { it.quantity > 0 && it.priceSale <= 0 }
+        if (invalidPrices.isNotEmpty()) {
+            Toast.makeText(globalContext, "Hay productos con precios inválidos", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validar que no se exceda el stock disponible
+        val exceedingStock = list.filter { it.quantity > it.stock }
+        if (exceedingStock.isNotEmpty()) {
+            Toast.makeText(globalContext, "La cantidad excede el stock disponible", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validar que el cliente esté seleccionado
+        if (person.personID <= 0) {
+            Toast.makeText(globalContext, "Debe seleccionar un cliente", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validar que el almacén esté seleccionado
+        if (warehouse.warehouseID <= 0) {
+            Toast.makeText(globalContext, "Debe seleccionar un almacén", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validar que el tipo de entrega esté seleccionado
+        if (autoCompletePhysicalDistribution.text.isNullOrEmpty()) {
+            Toast.makeText(globalContext, "Debe seleccionar el tipo de entrega", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validar que el tipo de documento esté seleccionado
+        if (autoCompleteDocumentType.text.isNullOrEmpty()) {
+            Toast.makeText(globalContext, "Debe seleccionar el tipo de documento", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validar que el monto pagado coincida con el total
+        val totalSale = textViewTotal.text.toString().toDoubleOrNull() ?: 0.0
+        val totalPaid = textViewSubtotal.text.toString().toDoubleOrNull() ?: 0.0
+        if (totalSale != totalPaid) {
+            Toast.makeText(globalContext, "El monto pagado debe ser igual al total de la venta", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        return true
+    }
+
+    private fun showLoading() {
+        loadingLayout.visibility = View.VISIBLE
+        dialogClose.isEnabled = false
+        dialogSave.isEnabled = false
+    }
+
+    private fun hideLoading() {
+        loadingLayout.visibility = View.GONE
+        dialogClose.isEnabled = true
+        dialogSave.isEnabled = true
+    }
+
+    private fun registerRestDispatch() {
+        if (!validateSale()) return
+
+        when(autoCompletePhysicalDistribution.text.toString()) {
+            "TIRAS" -> operation.physicalDistribution = "01"
+            "SUELTAS" -> operation.physicalDistribution = "02"
+            "NO APLICA" -> operation.physicalDistribution = "NA"
+        }
+        when(autoCompleteDocumentType.text.toString()) {
+            "TICKET" -> operation.documentType = "01"
+            "BOLETA" -> operation.documentType = "02"
+            "FACTURA" -> operation.documentType = "03"
+        }
+
+        operation.clientID = person.personID
+        operation.warehouseID = warehouse.warehouseID
+        operation.paymentMethods = paymentMethodList
+
+        list.forEach {
+            if(it.quantity > 0) {
+                val detail = Operation.OperationDetail().apply {
+                    productTariffID = it.productTariffID
+                    price = it.priceSale
+                    quantity = it.quantity
+                }
+                operation.details.add(detail)
+            }
+        }
+
+        if (operation.userID > 0) {
+            showLoading()
+            isProcessing = true
+            sendApiDispatch(operation.operationID)
+        } else {
+            Toast.makeText(globalContext, "Verificar usuario", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun sendApiDispatch(id: Int) {
+        val apiInterface = UserApiService.create().sendDispatchData(operation)
+        apiInterface.enqueue(object : Callback<Operation> {
+            override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
+                hideLoading()
+                isProcessing = false
+                
+                if (response.body() != null) {
+                    operation = response.body()!!
+                    val bundle = arguments
+                    bundle!!.putString("operationID", operation.operationID.toString())
+
+                    val documentType = autoCompleteDocumentType.text.toString()
+                    when {
+                        documentType == "TICKET" -> {
+                            findNavController().navigate(R.id.action_saleFragment_to_printActivity, bundle)
+                        }
+                        operation.pseSent -> {
+                            findNavController().navigate(R.id.action_saleFragment_to_printActivity, bundle)
+                        }
+                        else -> {
+                            Toast.makeText(globalContext, operation.messageStatus, Toast.LENGTH_LONG).show()
+                            findNavController().navigate(R.id.action_saleFragment_to_saleRealizedFragment, bundle)
+                        }
+                    }
+                    currentDialog.dismiss()
+                } else {
+                    Toast.makeText(globalContext, "Error al procesar la venta", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Operation>, t: Throwable) {
+                hideLoading()
+                isProcessing = false
+                Log.e("SaleFragment", "Error en sendApiDispatch: ${t.message}")
+                Toast.makeText(globalContext, "Error de conexión: ${t.message}", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    private fun addInfo() {
         val inflater = LayoutInflater.from(globalContext)
         val v = inflater.inflate(R.layout.dialog_confirm_dispatch, null)
         val buttonAddPayment = v.findViewById<Button>(R.id.buttonAddPayment)
@@ -376,6 +506,9 @@ class SaleFragment : Fragment() {
         textViewDialogItems = v.findViewById(R.id.textViewDialogItems)
         autoCompletePhysicalDistribution = v.findViewById(R.id.autoCompletePhysicalDistribution)
         autoCompleteDocumentType = v.findViewById(R.id.autoCompleteDocumentType)
+        loadingLayout = v.findViewById(R.id.loadingLayout)
+        dialogClose = v.findViewById(R.id.dialog_close)
+        dialogSave = v.findViewById(R.id.dialog_terminate)
         loadDocumentType()
         loadPhysicalDistribution()
         val editTextMethodPrice = v.findViewById<TextInputEditText>(R.id.editTextMethodPrice)
@@ -396,33 +529,7 @@ class SaleFragment : Fragment() {
             val total: String = textViewTotal.text.toString()
             editTextMethodPrice.setText(total)
         }
-        paymentMethodList.forEach { (key, value) ->
 
-            val inflaterPaymentMethod = LayoutInflater.from(globalContext)
-            val viewPaymentMethod = inflaterPaymentMethod.inflate(R.layout.item_payment_method, null)
-            val textViewPaymentMethodName = viewPaymentMethod.findViewById<TextView>(R.id.textViewPaymentMethodName)
-            val textViewPaymentMethodPrice = viewPaymentMethod.findViewById<TextView>(R.id.textViewPaymentMethodPrice)
-            val btnRemove = viewPaymentMethod.findViewById<Button>(R.id.buttonRemovePaymentMethodItem)
-
-            var way: String = "CONTADO"
-            when(key){
-                "cash" -> way = "CONTADO"
-                "yape" -> way = "YAPE"
-                "bcp" -> way = "BCP - DEPOSITO"
-                "credit" -> way = "CREDITO"
-            }
-            Log.d("MIKE", "way... $way value... $value")
-            textViewPaymentMethodName.text = way
-            textViewPaymentMethodPrice.text = "S/ $value"
-
-            btnRemove.setOnClickListener {
-                removePaymentMethodItem(viewPaymentMethod)
-                paymentMethodList.remove(key)
-                updatePaymentMethodTotal()
-            }
-
-            layoutPaymentList.addView(viewPaymentMethod)
-        }
         buttonAddPayment.setOnClickListener {
             if (editTextMethodPrice.text.toString().isNotEmpty()){
                 var selectedItem = "cash"
@@ -430,10 +537,10 @@ class SaleFragment : Fragment() {
                 val amount = editTextMethodPrice.text.toString().toDouble()
 
                 when (value) {
-                    "EFECTIVO" -> {selectedItem = "cash"}
-                    "YAPE" -> {selectedItem = "yape"}
-                    "BCP" -> {selectedItem = "bcp"}
-                    "CREDITO" -> {selectedItem = "credit"}
+                    "CONTADO" -> selectedItem = "cash"
+                    "YAPE" -> selectedItem = "yape"
+                    "BCP - DEPOSITO" -> selectedItem = "bcp"
+                    "CREDITO" -> selectedItem = "credit"
                 }
 
                 val searchPaymentMethod = paymentMethodList.filter { (key, _) -> key == selectedItem }
@@ -496,8 +603,6 @@ class SaleFragment : Fragment() {
 
                 editTextPrice.setOnKeyListener(View.OnKeyListener {v, keycode, event ->
                     if (event.action == KeyEvent.ACTION_UP){
-                        Log.d("MIKE", keycode.toString())
-                        Log.d("MIKE", editTextPrice.text.toString())
                         val textPrice = editTextPrice.text.toString()
                         if (textPrice.isNotEmpty() && textPrice.toDouble() > 0){
                             item.priceSale = textPrice.toDouble()
@@ -522,7 +627,7 @@ class SaleFragment : Fragment() {
                         item.quantity += 1
                         textViewQuantity.text = item.quantity.toString()
                         updateTotal()
-                        updateFirebaseItem(item)
+//                        updateFirebaseItem(item)
 //                        recyclerViewProductStore.adapter?.notifyDataSetChanged()
                         recyclerViewProductStore.adapter?.notifyItemChanged(item.positionInAdapter)
                     }
@@ -533,7 +638,7 @@ class SaleFragment : Fragment() {
                         item.quantity -= 1
                         textViewQuantity.text = item.quantity.toString()
                         updateTotal()
-                        updateFirebaseItem(item)
+//                        updateFirebaseItem(item)
 //                        recyclerViewProductStore.adapter?.notifyDataSetChanged()
                         recyclerViewProductStore.adapter?.notifyItemChanged(item.positionInAdapter)
                     }
@@ -543,33 +648,23 @@ class SaleFragment : Fragment() {
 
         }
 
-        val dialogClose = v.findViewById<Button>(R.id.dialog_close)
-        val dialogUpdate = v.findViewById<Button>(R.id.dialog_update)
-        dialogUpdate.visibility = View.GONE
-        val dialogSave = v.findViewById<Button>(R.id.dialog_terminate)
-
-
         val addDialog = AlertDialog.Builder(globalContext)
         addDialog.setView(v)
         addDialog.setTitle("RESUMEN DE VENTA")
+        addDialog.setCancelable(false)
 
-        val dialog: AlertDialog = addDialog.create()
-        dialog.show()
-        dialogClose.setOnClickListener{
-            dialog.dismiss()
-        }
-        dialogSave.setOnClickListener{
-            val payed = textViewSubtotal.text.toString().toDouble()
-            val totalSale = textViewTotal.text.toString().toDouble()
-            if (totalSale >= 0 && totalSale == payed) {
-                dialogSave.isEnabled = false
-                registerRestDispatch()
-                Toast.makeText(globalContext, "Venta registrada.", Toast.LENGTH_SHORT).show()
+        currentDialog = addDialog.create()
+        currentDialog.show()
 
-            }else {
-                Toast.makeText(globalContext, "Verificar Venta.", Toast.LENGTH_SHORT).show()
+        dialogClose.setOnClickListener {
+            if (!isProcessing) {
+                currentDialog.dismiss()
             }
-            dialog.dismiss()
+        }
+
+        dialogSave.setOnClickListener {
+            if (isProcessing) return@setOnClickListener
+            registerRestDispatch()
         }
     }
 
@@ -591,87 +686,5 @@ class SaleFragment : Fragment() {
 
     private fun View.closeKeyBoard(inputMethodManager: InputMethodManager) {
         inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
-    }
-
-    private fun registerRestDispatch(){
-
-        when(autoCompletePhysicalDistribution.text.toString()){
-            "TIRAS"->operation.physicalDistribution="01"
-            "SUELTAS"->operation.physicalDistribution="02"
-            "NO APLICA"->operation.physicalDistribution="NA"
-        }
-        when(autoCompleteDocumentType.text.toString()){
-            "TICKET"->operation.documentType="01"
-            "BOLETA"->operation.documentType="02"
-            "FACTURA"->operation.documentType="03"
-        }
-
-        operation.clientID = person.personID
-        operation.warehouseID = warehouse.warehouseID
-        operation.paymentMethods = paymentMethodList
-
-        dbHelper.addOperation(
-            operation.clientID, operation.warehouseID, operation.userID, "06",
-            SimpleDateFormat("yyyy-MM-dd").format(Date()), preference.getData("userName"),
-            person.fullName, person.documentTypeDisplay, person.documentNumber, person.visitDayDisplay,
-            preference.getData("gangName"), textViewDialogTotal.text.toString().toDouble()
-        )
-        operation.operationID = dbHelper.lastInsertOperation()
-        val lastID = operation.operationID
-
-        list.forEach {
-            if(it.quantity>0){
-                val detail: Operation.OperationDetail = Operation.OperationDetail()
-                detail.productTariffID = it.productTariffID
-                detail.price = it.priceSale
-                detail.quantity = it.quantity
-
-                operation.details.add(detail)
-                dbHelper.addOperationDetail(operation.operationID, it.productTariffID, it.quantity, it.priceSale, it.productSaleName, it.priceSale * it.quantity)
-            }
-        }
-        if (operation.userID>0)
-            sendApiDispatch(lastID)
-        else
-            Toast.makeText(globalContext, "Verificar user", Toast.LENGTH_LONG).show()
-
-    }
-
-    private fun sendApiDispatch(id: Int){
-
-        val apiInterface = UserApiService.create().sendDispatchData(operation)
-        apiInterface.enqueue(object : Callback<Operation> {
-            override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
-                if (response.body() != null) {
-                    operation = response.body()!!
-                    val bundle = arguments
-                    bundle!!.putString("operationID", operation.operationID.toString())
-
-                    val documentType = autoCompleteDocumentType.text.toString()
-
-                    if (documentType=="TICKET"){
-                        findNavController().navigate(R.id.action_saleFragment_to_printActivity, bundle)
-                    }else{
-                        if (operation.pseSent){
-                            findNavController().navigate(R.id.action_saleFragment_to_printActivity, bundle)
-                        }else{
-                            Toast.makeText(globalContext, operation.messageStatus, Toast.LENGTH_LONG).show()
-                            findNavController().navigate(R.id.action_saleFragment_to_saleRealizedFragment, bundle)
-                        }
-                    }
-
-                    val paymentRef = pickingReference.child("gangs").child(preference.getData("gangID")).child("users").child(preference.getData("userID"))
-                    paymentRef.setValue(null)
-                    dbHelper.deleteOperation(id)
-                }
-
-            }
-
-            override fun onFailure(call: Call<Operation>, t: Throwable) {
-                Log.d("MIKE", "sendApiQuotation onFailure: " + t.message.toString())
-            }
-
-        })
-
     }
 }

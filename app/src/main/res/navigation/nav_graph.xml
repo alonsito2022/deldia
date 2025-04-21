@@ -98,6 +98,9 @@
         <action
             android:id="@+id/action_mapFragment_to_printActivity"
             app:destination="@id/printActivity" />
+        <action
+            android:id="@+id/action_mapFragment_to_creditNoteFragment"
+            app:destination="@id/creditNoteFragment" />
     </fragment>
     <fragment
         android:id="@+id/saleRealizedFragment"
@@ -278,5 +281,14 @@
         <action
             android:id="@+id/action_clientSaleRealizedFragment_to_printActivity"
             app:destination="@id/printActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/creditNoteFragment"
+        android:name="com.example.deldia.fragments.CreditNoteFragment"
+        android:label="Devolución de venta"
+        tools:layout="@layout/fragment_credit_note" >
+        <action
+            android:id="@+id/action_creditNoteFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
 </navigation>

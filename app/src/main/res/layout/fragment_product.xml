@@ -6,107 +6,58 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ProductFragment">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/colorOnBackground"
-        android:padding="8dp">
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_route_H20"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.23" />
-
+        android:padding="16dp">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayoutSearchDate"
-            style="@style/CustomTextInputLayoutFilledBoxStyle"
+            android:id="@+id/textInputLayoutWarehouse"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="FECHA DE CONSULTA"
-            app:endIconMode="clear_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:hint="Seleccionar Almacén"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextSearchDate"
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteWarehouse"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false"
-                android:fontFamily="@font/nexa_light"
-                android:inputType="date" />
+                android:inputType="none"
+                android:focusable="false"/>
+
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/btnSearch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            style="@style/ButtonStyle"
-            android:text="Consultar"
-            app:icon="@drawable/ic_baseline_search_24"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutSearchDate" />
-
-        <Button
-            android:id="@+id/btnSaveCheckStock"
-            style="@style/ButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:backgroundTint="@color/green_dark"
-            android:text="Guardar Cambios"
-            app:icon="@drawable/ic_baseline_near_me_24"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnSearch" />
-
         <TextView
-            android:id="@+id/textViewGangName"
-            android:layout_width="0dp"
+            android:id="@+id/textViewTitle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:text="Cuadrilla"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnSaveCheckStock" />
+            android:text="Listado de Productos"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintTop_toBottomOf="@id/textInputLayoutWarehouse"/>
 
         <android.widget.SearchView
             android:id="@+id/searchViewProduct"
             style="@style/SearchViewStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:iconifiedByDefault="false"
-            android:queryHint="Ingrese nombre del producto"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewGangName"/>
+            android:queryHint="Buscar producto"
+            app:layout_constraintTop_toBottomOf="@id/textViewTitle"/>
 
-
-        <ScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewStock"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/searchViewProduct">
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewStock"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-
-        </ScrollView>
+            android:layout_marginTop="8dp"
+            android:clipToPadding="false"
+            app:layout_constraintTop_toBottomOf="@id/searchViewProduct"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

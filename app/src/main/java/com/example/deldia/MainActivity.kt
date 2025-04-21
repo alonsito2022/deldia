@@ -23,7 +23,7 @@ import com.example.deldia.models.User
 import com.example.deldia.retrofit.UserApiService
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
-import kotlinx.android.synthetic.main.activity_main.*
+//import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -43,11 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var preference: Preference
 
-    private lateinit var alarmManager: AlarmManager
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var calendar: Calendar
-
-    private var user: User = User()
+    private var user: User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
 //        oscar version
 //        supportActionBar?.hide();//Ocultar ActivityBar anterior
-        toolbar = findViewById(R.id.include2) as Toolbar
+        toolbar = findViewById(R.id.include2)
         setSupportActionBar(toolbar)
 //        oscar version
 
@@ -66,10 +62,13 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
         navController = findNavController(R.id.fragmentContainerView)
-        appBarConfiguration = AppBarConfiguration(navController.graph,drawerLayout)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.productFragment, R.id.routeFragment, R.id.mapFragment),
+            drawerLayout
+        )
         // the title in the action bar will automatically be updated when the destination changes
-        setupActionBarWithNavController(navController, drawer_layout)
-        navView.setupWithNavController(navController)
+//        setupActionBarWithNavController(navController, drawer_layout)
+        setupActionBarWithNavController(navController, appBarConfiguration)
 
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
         drawerLayout.addDrawerListener(toggle)
@@ -82,18 +81,17 @@ class MainActivity : AppCompatActivity() {
         bundle.putInt("vehicleID", preference.getData("vehicleID").toInt())
         bundle.putString("vehicleLicensePlate", preference.getData("vehicleLicensePlate"))
 
-        bottomNavigationView.setOnItemSelectedListener {
-            it.isChecked = true
-//            navView.menu.findItem(it.itemId).isChecked = true
-            when(it.itemId){
-                R.id.nav_products -> navController.navigate(R.id.productFragment, bundle)
-                R.id.nav_routes -> navController.navigate(R.id.routeFragment, bundle)
-                R.id.nav_map -> navController.navigate(R.id.mapFragment, bundle)
-                R.id.nav_sales_realized -> navController.navigate(R.id.saleRealizedFragment, bundle)
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            val destination = when (item.itemId) {
+                R.id.nav_products -> R.id.productFragment
+                R.id.nav_routes -> R.id.routeFragment
+                R.id.nav_map -> R.id.mapFragment
+                R.id.nav_sales_realized -> R.id.saleRealizedFragment
+                else -> null
             }
+            destination?.let { navController.navigate(it, bundle) }
             true
         }
-
 
         navView.setNavigationItemSelectedListener {
 
@@ -132,57 +130,44 @@ class MainActivity : AppCompatActivity() {
         loadUser(preference.getData("userID").toInt())
 
 
-//        createNotificationChannel()
-
-//        setAlarm()
-
-
-
-
     }
+    private fun validateSession(user: User) {
+        val gangSaved = preference.getData("gangID").toInt()
+        val gangToday = user.gang.gangID
+        val sessionTokenSaved = preference.getData("token")
+        val sessionTokenToday = SimpleDateFormat("yyyy-MM-dd").format(Date())
 
+        if (preference.getData("isStaff").isNullOrBlank() && sessionTokenSaved.isNullOrBlank()) {
+            preference.clearPreference()
+            GoToActivityAsNewTask(this, LoginActivity::class.java)
+            return
+        }
+
+        if (sessionTokenSaved != sessionTokenToday) {
+            Toast.makeText(applicationContext, "Sesión finalizada", Toast.LENGTH_SHORT).show()
+            preference.clearPreference()
+            GoToActivityAsNewTask(this, LoginActivity::class.java)
+            return
+        }
+
+        if (gangSaved != gangToday || gangToday == 0) {
+            Toast.makeText(applicationContext, "Verificar cuadrilla", Toast.LENGTH_SHORT).show()
+            preference.clearPreference()
+            GoToActivityAsNewTask(this, LoginActivity::class.java)
+            return
+        }
+
+        if (preference.getData("isStaff") == "false") checkWorkTime()
+    }
     private fun loadUser(id: Int) = if (id > 0){
         val u = User()
         u.userID=id
         val apiInterface = UserApiService.create().getUser(u)
         apiInterface.enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
-
-                if (response.body() != null) {
-                    user = response.body()!!
-
-
-
-                    val gangSaved = preference.getData("gangID").toInt()
-                    val gangToday = user.gang.gangID
-                    val sessionTokenSaved = preference.getData("token")
-                    val sessionTokenToday = SimpleDateFormat("yyyy-MM-dd").format(Date()).toString()
-
-                    Log.d("MIKE", "sessionTokenSaved: $sessionTokenSaved")
-                    Log.d("MIKE", "sessionTokenToday: $sessionTokenToday")
-                    Log.d("MIKE", "gangSaved: $gangSaved")
-                    Log.d("MIKE", "gangToday: $gangToday")
-
-                    if(preference.getData("isStaff").isNullOrBlank() && preference.getData("token").isNullOrBlank()){
-                        preference.clearPreference()
-                        GoToActivityAsNewTask(this@MainActivity, LoginActivity::class.java)
-                    }else{
-
-                        if(sessionTokenSaved != sessionTokenToday){
-                            Toast.makeText(applicationContext, "Session finalizada. Guardada: ${sessionTokenSaved}. Today: ${sessionTokenToday}", Toast.LENGTH_SHORT).show()
-                            preference.clearPreference()
-                            GoToActivityAsNewTask(this@MainActivity, LoginActivity::class.java)
-                        }else if(gangSaved != gangToday || gangToday == 0){
-                            if (gangToday == 0)
-                                Toast.makeText(applicationContext, "Sin cuadrilla. Guardada: ${gangSaved}. Today: ${gangToday}", Toast.LENGTH_SHORT).show()
-                            else
-                                Toast.makeText(applicationContext, "Verificar cuadrilla. Guardada: ${gangSaved}. Today: ${gangToday}", Toast.LENGTH_SHORT).show()
-                            preference.clearPreference()
-                            GoToActivityAsNewTask(this@MainActivity, LoginActivity::class.java)
-                        }else if(preference.getData("isStaff") == "false")
-                            checkWorkTime()
-
-                    }
+                response.body()?.let {
+                    user = it
+                    validateSession(it)
                 }
             }
 
@@ -193,52 +178,6 @@ class MainActivity : AppCompatActivity() {
     }
     else{
         Toast.makeText(applicationContext, "userID invalido.", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun createNotificationChannel(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val name : CharSequence = "foxyReminderChannel"
-            val description = "Channel for alarm"
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel("foxy", name, importance)
-            channel.description = description
-            val notificationManager = getSystemService(
-                NotificationManager::class.java
-            )
-
-        }
-    }
-
-    private fun setAlarm(){
-
-        calendar = Calendar.getInstance()
-//        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm")
-//        val currentDate = sdf.format(Date())
-        // calendar.time = sdf.parse(currentDate)
-        calendar.set(
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH),
-            20,
-            58,
-            0
-        )
-
-
-        alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, AlarmReceiver::class.java)
-
-        val pendingFlags: Int = if (Build.VERSION.SDK_INT >= 23)
-            (PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        else
-            PendingIntent.FLAG_UPDATE_CURRENT
-        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, pendingFlags)
-        alarmManager.setRepeating(
-            AlarmManager.RTC, calendar.timeInMillis,
-            AlarmManager.INTERVAL_DAY, pendingIntent
-        )
-
-        Toast.makeText(this, "alarm set", Toast.LENGTH_SHORT).show()
     }
 
     private fun checkWorkTime(){

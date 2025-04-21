@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
@@ -320,18 +321,24 @@ class ClientFragment : Fragment() {
         })
 
     }
-
+    private fun setInputLength(maxLength: Int) {
+        val filters = arrayOf<InputFilter>(InputFilter.LengthFilter(maxLength))
+        textInputEditTextSuggest.filters = filters
+    }
     private val onCheckedChangeListener =
         RadioGroup.OnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.radioButtonName -> {
                     requestFilterPerson.criteria="name"
+//                    setInputLength(200)
                 }
                 R.id.radioButtonDni -> {
                     requestFilterPerson.criteria="dni"
+//                    setInputLength(8)
                 }
                 R.id.radioButtonRuc -> {
                     requestFilterPerson.criteria="ruc"
+//                    setInputLength(11)
                 }
                 else -> {
                 }
@@ -340,40 +347,48 @@ class ClientFragment : Fragment() {
 
     private fun loadClients(w: RequestFilterPerson) {
         val apiInterface = UserApiService.create().getFilterClient(w)
-        apiInterface.enqueue(object : Callback<ArrayList<Person>> {
+        apiInterface.enqueue(object : Callback<ResponseFilterPerson> { // Changed callback type
             override fun onResponse(
-                call: Call<ArrayList<Person>>,
-                response: Response<ArrayList<Person>>
+                call: Call<ResponseFilterPerson>, // Changed response type
+                response: Response<ResponseFilterPerson> // Changed response type
             ) {
-                var list = arrayListOf<Person>()
+                if (response.code() == 200) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        if (responseBody.results?.size!! > 0) {
+                            val list = responseBody.results
+                            recyclerViewClient.layoutManager = LinearLayoutManager(globalContext)
+                            recyclerViewClient.setHasFixedSize(true)
+                            recyclerViewClient.adapter = ClientAdapter(list, object : ClientAdapter.OnItemClickListener {
+                                override fun editClient(model: Person) {
+                                    editInfo(model)
+                                }
 
-                if (response.body() != null) {
+                                override fun dispatchClient(model: Person) {
+                                    goToQuotation(model)
+                                }
 
-                    list = response.body()!!
-
-                    recyclerViewClient.layoutManager = LinearLayoutManager(globalContext)
-                    recyclerViewClient.setHasFixedSize(true)
-                    recyclerViewClient.adapter= ClientAdapter(list, object : ClientAdapter.OnItemClickListener {
-
-                        override fun editClient(model: Person) {
-                            editInfo(model)
+                                override fun searchSales(model: Person) {
+                                    searchSalesInfo(model)
+                                }
+                            })
+                        } else if (responseBody.message != null) {
+                            // No clients found, display the message
+                            Toast.makeText(globalContext, responseBody.message, Toast.LENGTH_LONG).show()
                         }
-
-                        override fun dispatchClient(model: Person) {
-                            goToQuotation(model)
-                        }
-
-                        override fun searchSales(model: Person) {
-                            searchSalesInfo(model)
-                        }
-
-                    })
-
+                    } else {
+                        // Handle the case where responseBody is null
+                        Toast.makeText(globalContext, "Error: Response body is null", Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    // Handle unsuccessful response
+                    Toast.makeText(globalContext, "Error: ${response.code()}", Toast.LENGTH_LONG).show()
                 }
             }
 
-            override fun onFailure(call: Call<ArrayList<Person>>, t: Throwable) {
+            override fun onFailure(call: Call<ResponseFilterPerson>, t: Throwable) { // Changed callback type
                 Log.d("MIKE", "getFilterClient. Algo salio mal..." + t.message.toString())
+                Toast.makeText(globalContext, "Error: ${t.message}", Toast.LENGTH_LONG).show()
             }
         })
     }

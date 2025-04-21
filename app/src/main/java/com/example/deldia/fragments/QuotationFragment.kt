@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.widget.SwitchCompat
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ import com.example.deldia.models.Product
 import com.example.deldia.models.Warehouse
 import com.example.deldia.models.Person
 import com.example.deldia.retrofit.UserApiService
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.database.DatabaseReference
@@ -34,17 +36,17 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class QuotationFragment : Fragment() {
 
-//    private lateinit var textInputEditTextClientNames: TextInputEditText
     private lateinit var textViewClientNames: TextView
     private lateinit var textViewClientAddress: TextView
     private lateinit var searchViewProduct: SearchView
     private lateinit var recyclerViewProductStore: RecyclerView
     private lateinit var productQuotationAdapter: ProductQuotationAdapter
-    private lateinit var fabSummary: FloatingActionButton
+    private lateinit var buttonSummary: MaterialButton
 
     private lateinit var textViewTotal: TextView
     private lateinit var textViewItems: TextView
@@ -53,10 +55,8 @@ class QuotationFragment : Fragment() {
     private lateinit var textViewDialogItems: TextView
     private lateinit var autoCompletePhysicalDistribution: AutoCompleteTextView
 
-    private lateinit var switchShowImages: Switch
+    private lateinit var switchShowImages: SwitchCompat
     private lateinit var buttonRefresh: Button
-    private lateinit var database: FirebaseDatabase
-    private lateinit var pickingReference: DatabaseReference
 
     private var globalContext: Context? = null
 
@@ -64,55 +64,131 @@ class QuotationFragment : Fragment() {
     private var person: Person = Person()
     private var operation: Operation = Operation()
     private var list = arrayListOf<Product>()
-    private var firebaseList = arrayListOf<Product>()
     private lateinit var preference: Preference
-    private var nroItem: Int = 1
 
-//    private var paymentMethodList: MutableMap<String, Double> = mutableMapOf()
-
-//    private lateinit var layoutPaymentList: LinearLayout
     private lateinit var layoutListItem: LinearLayout
 
+    private lateinit var loadingLayout: FrameLayout
+    private lateinit var currentDialog: AlertDialog
+    private lateinit var dialogClose: Button
+    private lateinit var dialogSave: Button
+    private var isProcessing = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         globalContext = this.activity
         preference = Preference(globalContext)
 
-//        database = FirebaseDatabase.getInstance()
-//        pickingReference = database.getReference("picking")
-
-        val bundle = arguments
-        operation.userID = bundle!!.getInt("userID")
-        warehouse.warehouseID = 3  // warehouse central
-        warehouse.warehouseName = bundle.getString("vehicleLicensePlate").toString()
-        person.personID = bundle.getInt("personID")
-        person.fullName = bundle.getString("personFullName").toString()
-        person.address = bundle.getString("personAddress").toString()
-        person.documentNumber = bundle.getString("personDocumentNumber").toString()
-        person.documentType = bundle.getString("personDocumentType").toString()
-        person.physicalDistribution = bundle.getString("physicalDistribution").toString()
-        person.physicalDistributionDisplay = bundle.getString("physicalDistributionDisplay").toString()
-        operation.routeDate = bundle.getString("routeDate").toString()
-
-        loadProductStoreInWarehouse(warehouse)
+        initializeData(arguments)
+        loadProductStoreInWarehouse()
 
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_quotation, container, false)
     }
 
+    private fun setupUI(view: View) {
+        textViewClientNames = view.findViewById(R.id.textViewClientNames)
+        textViewClientAddress = view.findViewById(R.id.textViewClientAddress)
+        textViewTotal = view.findViewById(R.id.textViewTotal)
+        textViewItems = view.findViewById(R.id.textViewItems)
+        buttonSummary = view.findViewById(R.id.buttonSummary)
+        buttonRefresh = view.findViewById(R.id.buttonRefresh)
+        switchShowImages = view.findViewById(R.id.switchShowImages)
+        searchViewProduct = view.findViewById(R.id.searchViewProduct)
+        recyclerViewProductStore = view.findViewById(R.id.recyclerViewProductStore)
+
+        textViewClientNames.text = person.fullName
+        textViewClientAddress.text = person.address
+
+        setupRecyclerView()
+        setupSearchView()
+        setupListeners()
+    }
+    private fun setupRecyclerView() {
+        recyclerViewProductStore.layoutManager = LinearLayoutManager(requireContext())
+        recyclerViewProductStore.setHasFixedSize(true)
+        productQuotationAdapter = ProductQuotationAdapter(list).apply {
+            setOnQuantityChangeListener(object : ProductQuotationAdapter.OnQuantityChangeListener {
+                override fun onQuantityChanged(id: Int, quantity: String) {
+                    updateProductQuantity(id, quantity)
+                }
+                override fun onItemClick(id: Int) {
+                    list.find { it.productID == id }?.let { openModal(it) }
+                }
+            })
+        }
+        recyclerViewProductStore.adapter = productQuotationAdapter
+    }
+    private fun setupSearchView() {
+        searchViewProduct.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = false
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterProducts(newText)
+                return true
+            }
+        })
+    }
+    private fun setupListeners() {
+        switchShowImages.setOnCheckedChangeListener { _, isChecked ->
+            list.forEach { it.showImage = isChecked }
+            recyclerViewProductStore.adapter?.notifyDataSetChanged()
+        }
+        buttonRefresh.setOnClickListener { loadProductStoreInWarehouse() }
+        buttonSummary.setOnClickListener { showSummaryDialog() }
+    }
+    private fun updateProductQuantity(id: Int, quantity: String) {
+        list.find { it.productID == id }?.let { product ->
+            val newQuantity = quantity.toIntOrNull()?.takeIf { it <= product.stock } ?: 0
+            product.quantity = newQuantity
+            product.subtotal = newQuantity * product.priceSale
+            updateTotal()
+        }
+    }
+    private fun filterProducts(query: String?) {
+        val filteredList = list.filter {
+            it.productSaleName.contains(query ?: "", ignoreCase = true) ||
+                    it.productCode.toString().contains(query ?: "")
+        } as ArrayList<Product>
+        productQuotationAdapter.getFilter(filteredList)
+    }
+    private fun showSummaryDialog() {
+        if (list.none { it.quantity > 0 }) {
+            Toast.makeText(requireContext(), "No hay productos en la cotización.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_quotation, null)
+        val dialog = AlertDialog.Builder(requireContext()).setView(dialogView).setTitle("Resumen de Preventa").create()
+
+        val btnClose = dialogView.findViewById<Button>(R.id.dialog_close)
+        val btnSave = dialogView.findViewById<Button>(R.id.dialog_save)
+        btnClose.setOnClickListener { dialog.dismiss() }
+        btnSave.setOnClickListener {
+            if (textViewTotal.text.toString().toDoubleOrNull() ?: 0.0 > 0) {
+                registerQuotation()
+                Toast.makeText(requireContext(), "Cotización registrada.", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Verificar cotización.", Toast.LENGTH_SHORT).show()
+            }
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+    private fun registerQuotation() {
+        operation.apply {
+            clientID = person.personID
+            warehouseID = warehouse.warehouseID
+            documentType = "05"
+            details = list.filter { it.quantity > 0 }.map {
+                Operation.OperationDetail(it.productTariffID, it.priceSale, it.quantity)
+            }.toMutableList()
+        }
+        sendApiQuotation()
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-//        val paymentRef = pickingReference.child("gangs").child(preference.getData("gangID")).child("users").child(preference.getData("userID"))
-//        paymentRef.setValue(null)
-
+//        setupUI(view)
         switchShowImages = view.findViewById(R.id.switchShowImages)
         switchShowImages.setOnCheckedChangeListener { _, isChecked ->
             list.forEach { item ->item.showImage=isChecked}
@@ -157,10 +233,9 @@ class QuotationFragment : Fragment() {
         textViewTotal = view.findViewById(R.id.textViewTotal)
         buttonRefresh = view.findViewById(R.id.buttonRefresh)
         buttonRefresh.setOnClickListener {
-            loadProductStoreInWarehouse(warehouse)
+            loadProductStoreInWarehouse()
         }
         textViewItems = view.findViewById(R.id.textViewItems)
-//        textViewSubtotal = view.findViewById(R.id.textViewSubtotal)
         searchViewProduct = view.findViewById(R.id.searchViewProduct)
         searchViewProduct.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -172,7 +247,7 @@ class QuotationFragment : Fragment() {
                 val filterList: ArrayList<Product> = ArrayList()
                 newText?.let {
                     list.forEachIndexed{ _, product ->
-                        if(product.productSaleName.lowercase().contains(newText.lowercase()) or product.productCode.toString().contains(newText)){
+                        if(product.productSaleName.lowercase().contains(newText.lowercase()) or product.productCode.contains(newText)){
                             filterList.add(product)
                         }
                     }
@@ -186,15 +261,34 @@ class QuotationFragment : Fragment() {
             }
         })
 
-        fabSummary = view.findViewById(R.id.fabSummary)
-        fabSummary.setOnClickListener {
+        buttonSummary = view.findViewById(R.id.buttonSummary)
+        buttonSummary.setOnClickListener {
             addInfo()
             updateTotal()
-            // updatePaymentMethodTotal()
-
-
         }
     }
+
+    private fun initializeData(bundle: Bundle?) {
+        bundle?.let {
+            operation.userID = it.getInt("userID")
+            warehouse.apply {
+                warehouseID = 3
+                warehouseName = it.getString("vehicleLicensePlate", "")
+            }
+            person.apply {
+                personID = it.getInt("personID")
+                fullName = it.getString("personFullName", "")
+                address = it.getString("personAddress", "")
+                documentNumber = it.getString("personDocumentNumber", "")
+                documentType = it.getString("personDocumentType", "")
+                physicalDistribution = it.getString("physicalDistribution", "")
+                physicalDistributionDisplay = it.getString("physicalDistributionDisplay", "")
+            }
+            operation.routeDate = it.getString("routeDate", "")
+        }
+    }
+
+
     private fun loadPhysicalDistribution(){
         val listPhysicalDistribution = listOf("TIRAS", "SUELTAS", "NO APLICA")
         val adapter = ArrayAdapter(
@@ -227,40 +321,18 @@ class QuotationFragment : Fragment() {
         }
     }
 
-    private fun loadProductStoreInWarehouse(w: Warehouse) {
-        val apiInterface = UserApiService.create().getStockInWarehouse(w)
+    private fun loadProductStoreInWarehouse() {
+        UserApiService.create().getStockInWarehouse(warehouse)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ responseData ->
-                Log.d("Mike", responseData?.size.toString())
-                if(responseData != null && responseData.isNotEmpty()){
-                    list = responseData
+                responseData?.let {
+                    list.clear()
+                    list.addAll(it)
                     productQuotationAdapter.getFilter(list)
                 }
-            }, { error ->
-                Log.d("Mike", error.toString())
-            })
-
+            }, { error -> Log.e("QuotationFragment", "Error loading products: ${'$'}{error.message}") })
     }
-//    private fun updateFirebaseItem(product: Product){
-//        val paymentRef = pickingReference.child("gangs").child(preference.getData("gangID")).child("users").child(preference.getData("userID"))
-//        var code: String = product.productCode
-//        if (product.productCode.contains("."))
-//            code = product.productCode.split(".")[0]
-//        product.firebaseID = code.toInt()
-//        paymentRef.child("details").child("${code}").setValue(product)
-//        nroItem += 1
-//
-//        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm")
-//        val currentDate = sdf.format(Date())
-//
-//        paymentRef.child("userID").setValue(preference.getData("userID").toInt())
-//        paymentRef.child("userName").setValue(preference.getData("userName"))
-//        paymentRef.child("lastPickingDate").setValue(currentDate)
-//        paymentRef.child("clientFullName").setValue(person.fullName)
-//        paymentRef.child("total").setValue(textViewTotal.text.toString().toDouble())
-//    }
-
 
     private fun openModal(p: Product){
         val inflater = LayoutInflater.from(globalContext)
@@ -278,6 +350,18 @@ class QuotationFragment : Fragment() {
         }
     }
 
+    private fun showLoading() {
+        loadingLayout.visibility = View.VISIBLE
+        dialogClose.isEnabled = false
+        dialogSave.isEnabled = false
+    }
+
+    private fun hideLoading() {
+        loadingLayout.visibility = View.GONE
+        dialogClose.isEnabled = true
+        dialogSave.isEnabled = true
+    }
+
     private fun addInfo(){
         val inflater = LayoutInflater.from(globalContext)
         val v = inflater.inflate(R.layout.dialog_confirm_quotation, null)
@@ -285,6 +369,7 @@ class QuotationFragment : Fragment() {
         textViewDialogTotal = v.findViewById(R.id.textViewDialogTotal)
         textViewDialogItems = v.findViewById(R.id.textViewDialogItems)
         autoCompletePhysicalDistribution = v.findViewById(R.id.autoCompletePhysicalDistribution)
+        loadingLayout = v.findViewById(R.id.loadingLayout)
         loadPhysicalDistribution()
         list.forEach { item ->
 
@@ -309,14 +394,11 @@ class QuotationFragment : Fragment() {
 
                 editTextPrice.setOnKeyListener(View.OnKeyListener {v, keycode, event ->
                     if (event.action == KeyEvent.ACTION_UP){
-                        Log.d("MIKE", keycode.toString())
-                        Log.d("MIKE", editTextPrice.text.toString())
                         val textPrice = editTextPrice.text.toString()
                         if (textPrice.isNotEmpty() && textPrice.toDouble() > 0){
                             item.priceSale = textPrice.toDouble()
                             updateTotal()
                         }
-
                     }
                     false
                 })
@@ -347,7 +429,6 @@ class QuotationFragment : Fragment() {
                         textViewQuantity.text = item.quantity.toString()
                         updateTotal()
 //                        updateFirebaseItem(item)
-//                        recyclerViewProductStore.adapter?.notifyDataSetChanged()
                         recyclerViewProductStore.adapter?.notifyItemChanged(item.positionInAdapter)
                     }
 
@@ -356,36 +437,84 @@ class QuotationFragment : Fragment() {
 
         }
 
-        val dialogClose = v.findViewById<Button>(R.id.dialog_close)
-        val dialogSave = v.findViewById<Button>(R.id.dialog_save)
-
+        dialogClose = v.findViewById(R.id.dialog_close)
+        dialogSave = v.findViewById(R.id.dialog_save)
 
         val addDialog = AlertDialog.Builder(globalContext)
         addDialog.setView(v)
         addDialog.setTitle("RESUMEN DE PREVENTA")
+        addDialog.setCancelable(false)
 
-        val dialog: AlertDialog = addDialog.create()
-        dialog.show()
+        currentDialog = addDialog.create()
+        currentDialog.show()
+
         dialogClose.setOnClickListener{
-            dialog.dismiss()
-        }
-        dialogSave.setOnClickListener{
-//            val payed = textViewSubtotal.text.toString().toDouble()
-            val totalSale = textViewTotal.text.toString().toDouble()
-            if (totalSale >= 0 ) {
-                dialogSave.isEnabled = false
-                registerRestQuotation()
-                Toast.makeText(globalContext, "Cotizacion registrada.", Toast.LENGTH_SHORT).show()
-
-            }else {
-                Toast.makeText(globalContext, "Verificar cotizacion.", Toast.LENGTH_SHORT).show()
+            if (!isProcessing) {
+                currentDialog.dismiss()
             }
-            dialog.dismiss()
+        }
+
+        dialogSave.setOnClickListener{
+            if (isProcessing) return@setOnClickListener
+
+            val totalSale = textViewTotal.text.toString().toDouble()
+            if (totalSale > 0) {
+                isProcessing = true
+                showLoading()
+                registerRestQuotation()
+            } else {
+                Toast.makeText(globalContext, "Verificar cotización.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
+    private fun validateQuotation(): Boolean {
+        // Validar que haya al menos un producto seleccionado
+        if (list.none { it.quantity > 0 }) {
+            Toast.makeText(globalContext, "Debe seleccionar al menos un producto", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validar que todos los productos tengan precio válido
+        val invalidPrices = list.filter { it.quantity > 0 && it.priceSale <= 0 }
+        if (invalidPrices.isNotEmpty()) {
+            Toast.makeText(globalContext, "Hay productos con precios inválidos", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validar que no se exceda el stock disponible
+        val exceedingStock = list.filter { it.quantity > it.stock }
+        if (exceedingStock.isNotEmpty()) {
+            Toast.makeText(globalContext, "La cantidad excede el stock disponible", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validar que el cliente esté seleccionado
+        if (person.personID <= 0) {
+            Toast.makeText(globalContext, "Debe seleccionar un cliente", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validar que el almacén esté seleccionado
+        if (warehouse.warehouseID <= 0) {
+            Toast.makeText(globalContext, "Debe seleccionar un almacén", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // Validar que el tipo de entrega esté seleccionado
+        if (autoCompletePhysicalDistribution.text.isNullOrEmpty()) {
+            Toast.makeText(globalContext, "Debe seleccionar el tipo de entrega", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        return true
+    }
 
     private fun registerRestQuotation(){
+        if (!validateQuotation()) {
+            return
+        }
+
         when(autoCompletePhysicalDistribution.text.toString()){
             "TIRAS"->operation.physicalDistribution="01"
             "SUELTAS"->operation.physicalDistribution="02"
@@ -414,7 +543,6 @@ class QuotationFragment : Fragment() {
     }
 
     private fun sendApiQuotation(){
-
         val apiInterface = UserApiService.create().sendQuotationData(operation)
         apiInterface.enqueue(object : Callback<Operation>{
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
@@ -424,20 +552,22 @@ class QuotationFragment : Fragment() {
 
                     bundle!!.putInt("userID", operation.userID)
                     bundle.putInt("vehicleID", warehouse.warehouseID)
+                    currentDialog.dismiss()
                     findNavController().navigate(R.id.action_quotationFragment_to_saleRealizedFragment, bundle)
-
-//                    val paymentRef = pickingReference.child("gangs").child(preference.getData("gangID")).child("users").child(preference.getData("userID"))
-//                    paymentRef.setValue(null)
+                } else {
+                    hideLoading()
+                    isProcessing = false
+                    Toast.makeText(globalContext, "Error al procesar la preventa", Toast.LENGTH_LONG).show()
                 }
-
             }
 
             override fun onFailure(call: Call<Operation>, t: Throwable) {
+                hideLoading()
+                isProcessing = false
                 Log.d("MIKE", "sendApiQuotation onFailure: " + t.message.toString())
+                Toast.makeText(globalContext, "Error de conexión: ${t.message}", Toast.LENGTH_LONG).show()
             }
-
         })
-
     }
 
 

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/colorOnBackground"
-        android:padding="8dp">
+        android:padding="16dp">
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_sale_H90"
             android:layout_width="wrap_content"
@@ -21,11 +21,10 @@
 
         <TextView
             android:id="@+id/textViewClientNames"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="NOMBRE O RAZON SOCIAL"
-            android:textColor="@color/primary_dark"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="Nombre:"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,44 +32,47 @@
             android:id="@+id/searchViewProduct"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:queryHint="Ingrese nombre del producto"
-            android:iconifiedByDefault="false"
-            app:layout_constraintTop_toBottomOf="@+id/textViewClientNames"
+            android:layout_marginTop="8dp"
             android:background="@drawable/searchview_background"
+            android:iconifiedByDefault="false"
+            android:queryHint="Ingrese nombre ó codigo"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewClientNames" />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewProductStore"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/searchViewProduct"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/guideline_sale_H90"
-            app:layout_constraintEnd_toEndOf="parent" />
-
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/searchViewProduct" />
 
 
         <View
             android:id="@+id/dividerLayoutList2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/recyclerViewProductStore" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_height="0dp"
             android:layout_width="match_parent"
-            android:padding="4dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/dividerLayoutList2"
+            android:padding="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            >
+            app:layout_constraintTop_toBottomOf="@+id/dividerLayoutList2">
 
-            <androidx.constraintlayout.widget.Guideline
+
+        <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guidelineSubtotalInnerV1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -136,6 +138,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="ITEMS"
+                android:textStyle="bold"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV35"
                 app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV5"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -146,6 +150,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
+                android:textSize="18sp"
+                android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV35"
                 app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV5"
@@ -156,6 +162,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="PAGO"
+                android:textStyle="bold"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV65"
                 app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV35"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -165,6 +173,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0.0"
+                android:textSize="18sp"
+                android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV65"
                 app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV35"
@@ -175,6 +185,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TOTAL"
+                android:textStyle="bold"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV95"
                 app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV65"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -184,6 +196,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0.0"
+                android:textSize="18sp"
+                android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV95"
                 app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV65"

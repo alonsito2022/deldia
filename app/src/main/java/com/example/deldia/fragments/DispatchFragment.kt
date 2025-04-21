@@ -75,6 +75,12 @@ class DispatchFragment : Fragment() {
 
     private lateinit var layoutPaymentList: LinearLayout
     private lateinit var layoutListItem: LinearLayout
+    private lateinit var loadingLayout: FrameLayout
+    private lateinit var currentDialog: AlertDialog
+    private lateinit var dialogClose: Button
+//    private lateinit var dialogUpdate: Button
+    private lateinit var dialogTerminate: Button
+    private var isProcessing = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -250,7 +256,7 @@ class DispatchFragment : Fragment() {
             textViewDialogTotal.text = totalF1.toString()
             textViewDialogItems.text = counter.toString()
 
-            val subtotal:Double = textViewDialogSubtotal.text.toString().toDouble()
+            val subtotal:Double = textViewDialogSubtotal.text.toString().replace("S/", "").trim().toDouble()
             val balance: Double = totalF1 - subtotal
             editTextMethodPrice.setText(balance.toString())
 
@@ -300,6 +306,20 @@ class DispatchFragment : Fragment() {
             dialog.dismiss()
         }
     }
+    private fun showLoading() {
+        loadingLayout.visibility = View.VISIBLE
+        dialogClose.isEnabled = false
+//        dialogUpdate.isEnabled = false
+        dialogTerminate.isEnabled = false
+    }
+
+    private fun hideLoading() {
+        loadingLayout.visibility = View.GONE
+        dialogClose.isEnabled = true
+//        dialogUpdate.isEnabled = true
+        dialogTerminate.isEnabled = true
+    }
+
     private fun addInfo(){
         val inflater = LayoutInflater.from(globalContext)
         val v = inflater.inflate(R.layout.dialog_confirm_dispatch, null)
@@ -483,56 +503,92 @@ class DispatchFragment : Fragment() {
             }
         }
 
-
-        val dialogClose = v.findViewById<Button>(R.id.dialog_close)
-        val dialogUpdate = v.findViewById<Button>(R.id.dialog_update)
-        val dialogTerminate = v.findViewById<Button>(R.id.dialog_terminate)
-
+        loadingLayout = v.findViewById(R.id.loadingLayout)
+        dialogClose = v.findViewById(R.id.dialog_close)
+//        dialogUpdate = v.findViewById(R.id.dialog_update)
+        dialogTerminate = v.findViewById(R.id.dialog_terminate)
 
         val addDialog = AlertDialog.Builder(globalContext)
         addDialog.setView(v)
         addDialog.setTitle("RESUMEN DE VENTA")
+        addDialog.setCancelable(false)
 
-        val dialog: AlertDialog = addDialog.create()
-        dialog.show()
+        currentDialog = addDialog.create()
+        currentDialog.show()
+
         dialogClose.setOnClickListener{
-            dialog.dismiss()
+            if (!isProcessing) {
+                currentDialog.dismiss()
+            }
         }
         
         dialogTerminate.setOnClickListener{
+            if (isProcessing) return@setOnClickListener
+
             val payed = textViewSubtotal.text.toString().toDouble()
             val totalSale = textViewTotal.text.toString().toDouble()
             if (totalSale >= 0 && totalSale == payed) {
-                dialogUpdate.visibility = View.INVISIBLE
-                dialogTerminate.visibility = View.INVISIBLE
+                isProcessing = true
+                showLoading()
                 terminateRestQuotation()
-                Toast.makeText(globalContext, "Venta finalizada.", Toast.LENGTH_SHORT).show()
-            }else {
+            } else {
                 Toast.makeText(globalContext, "Verificar Venta.", Toast.LENGTH_SHORT).show()
-                dialogUpdate.visibility = View.VISIBLE
+//                dialogUpdate.visibility = View.VISIBLE
                 dialogTerminate.visibility = View.VISIBLE
             }
-            dialog.dismiss()
         }
 
-        dialogUpdate.setOnClickListener{
-            val totalSale = textViewTotal.text.toString().toDouble()
-            if (totalSale > 0) {
-                updateRestQuotation()
-                Toast.makeText(globalContext, "Cotizacion actualizada.", Toast.LENGTH_SHORT).show()
-            }else {
-                Toast.makeText(globalContext, "Verificar cotizacion.", Toast.LENGTH_SHORT).show()
-            }
-            dialog.dismiss()
-        }
+//        dialogUpdate.setOnClickListener{
+//            val totalSale = textViewTotal.text.toString().toDouble()
+//            if (totalSale > 0) {
+//                updateRestQuotation()
+//                Toast.makeText(globalContext, "Cotizacion actualizada.", Toast.LENGTH_SHORT).show()
+//            }else {
+//                Toast.makeText(globalContext, "Verificar cotizacion.", Toast.LENGTH_SHORT).show()
+//            }
+//            currentDialog.dismiss()
+//        }
     }
 
     private fun terminateRestQuotation(){
+        // 1. Validación de tipo de documento
+        if (autoCompleteDocumentType.text.isNullOrEmpty()) {
+            Toast.makeText(globalContext, "Seleccione un tipo de documento", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // 2. Validación de distribución física
+        if (autoCompletePhysicalDistribution.text.isNullOrEmpty()) {
+            Toast.makeText(globalContext, "Seleccione un tipo de distribución física", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // 3. Validación de métodos de pago
+        if (paymentMethodList.isEmpty()) {
+            Toast.makeText(globalContext, "Debe agregar al menos un método de pago", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // 4. Validación del total y monto pagado
+        val totalVenta = textViewTotal.text.toString().toDoubleOrNull() ?: 0.0
+        val totalPagado = textViewSubtotal.text.toString().toDoubleOrNull() ?: 0.0
+        if (totalVenta <= 0) {
+            Toast.makeText(globalContext, "El total de la venta debe ser mayor a 0", Toast.LENGTH_LONG).show()
+            return
+        }
+        if (totalVenta != totalPagado) {
+            Toast.makeText(globalContext, "El monto pagado debe ser igual al total de la venta", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // Procesar distribución física
         when(autoCompletePhysicalDistribution.text.toString()){
             "TIRAS"->operation.physicalDistribution="01"
             "SUELTAS"->operation.physicalDistribution="02"
             "NO APLICA"->operation.physicalDistribution="NA"
         }
+
+        // Procesar tipo de documento
         when(autoCompleteDocumentType.text.toString()){
             "TICKET"->operation.documentType="01"
             "BOLETA"->operation.documentType="02"
@@ -540,38 +596,50 @@ class DispatchFragment : Fragment() {
         }
 
         operation.paymentMethods = paymentMethodList
-
         operation.details.clear()
 
+        // 5. Validación de productos
+        var hayProductos = false
         list.forEach {
-            if(it.quantity>0){
+            if(it.quantity > 0){
+                if (it.priceSale <= 0) {
+                    Toast.makeText(globalContext, "Hay productos con precio inválido", Toast.LENGTH_LONG).show()
+                    return
+                }
                 val detail: Operation.OperationDetail = Operation.OperationDetail()
                 detail.productTariffID = it.productTariffID
                 detail.price = it.priceSale
                 detail.quantity = it.quantity
-
                 operation.details.add(detail)
+                hayProductos = true
             }
         }
-        if (operation.userID>0)
-            sendApiTerminateQuotation()
-        else
-            Toast.makeText(globalContext, "Verificar user", Toast.LENGTH_LONG).show()
 
+        if (!hayProductos) {
+            Toast.makeText(globalContext, "Debe agregar al menos un producto", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // 6. Validación de usuario
+        if (operation.userID <= 0) {
+            Toast.makeText(globalContext, "Verificar user", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        sendApiTerminateQuotation()
     }
 
     private fun sendApiTerminateQuotation(){
-
         val apiInterface = UserApiService.create().sendTerminateQuotationData(operation)
         apiInterface.enqueue(object : Callback<Operation>{
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
                 if (response.body() != null) {
                     operation = response.body()!!
-                    // HERE
                     val bundle = arguments
                     bundle!!.putString("operationID", operation.operationID.toString())
 
                     val documentType = autoCompleteDocumentType.text.toString()
+                    currentDialog.dismiss()
 
                     if (documentType=="TICKET"){
                         findNavController().navigate(R.id.action_dispatchFragment_to_printActivity, bundle)
@@ -583,17 +651,20 @@ class DispatchFragment : Fragment() {
                             findNavController().navigate(R.id.action_dispatchFragment_to_saleRealizedFragment, bundle)
                         }
                     }
-
+                } else {
+                    hideLoading()
+                    isProcessing = false
+                    Toast.makeText(globalContext, "Error al procesar el pedido", Toast.LENGTH_LONG).show()
                 }
-
             }
 
             override fun onFailure(call: Call<Operation>, t: Throwable) {
-                Log.d("MIKE", "sendApiUpdateQuotation onFailure: " + t.message.toString())
+                hideLoading()
+                isProcessing = false
+                Log.d("MIKE", "sendApiTerminateQuotation onFailure: " + t.message.toString())
+                Toast.makeText(globalContext, "Error de conexión: ${t.message}", Toast.LENGTH_LONG).show()
             }
-
         })
-
     }
     private fun updateRestQuotation(){
 

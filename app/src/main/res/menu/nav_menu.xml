@@ -34,21 +34,25 @@
             android:id="@+id/pickingFragment"
             android:icon="@drawable/ic_product_big"
             android:checkable="true"
+            android:visible="false"
             android:title="Preparar pedido"/>
         <item
             android:id="@+id/transferFragment"
             android:icon="@drawable/ic_baseline_6_ft_apart_24"
             android:checkable="true"
+            android:visible="false"
             android:title="Transbordos"/>
         <item
             android:id="@+id/exchangeFragment"
             android:icon="@drawable/ic_baseline_wifi_protected_setup_24"
             android:checkable="true"
+            android:visible="false"
             android:title="Cambios al cliente"/>
         <item
             android:id="@+id/cashFragment"
             android:icon="@drawable/ic_baseline_point_of_sale_24"
             android:checkable="true"
+            android:visible="false"
             android:title="Caja"/>
         <item
             android:id="@+id/chartFragment"

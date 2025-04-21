@@ -14,19 +14,23 @@
     <item
         android:id="@+id/cancelPresale"
         android:title="Cancelar preventa"
+        android:visible="false"
         android:icon="@drawable/ic_baseline_cancel_24" />
     <item
         android:id="@+id/cancelDispatch"
         android:title="Cancelar autoventa"
+        android:visible="false"
         android:icon="@drawable/ic_baseline_cancel_24" />
 
     <item
         android:id="@+id/generateQuotation"
         android:title="Generar Cotizacion"
+        android:visible="false"
         android:icon="@drawable/ic_baseline_storage_24" />
     <item
         android:id="@+id/generateDispatch"
         android:title="Generar Venta directa"
+        android:visible="false"
         android:icon="@drawable/ic_baseline_near_me_24" />
     <item
         android:id="@+id/showDetail"
@@ -35,5 +39,6 @@
     <item
         android:id="@+id/deleteOperation"
         android:title="Borrar"
+        android:visible="false"
         android:icon="@drawable/ic_baseline_delete_24" />
 </menu>

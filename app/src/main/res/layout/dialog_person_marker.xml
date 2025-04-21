@@ -191,8 +191,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:fontFamily="@font/lato"
-            android:lines="4"
-            android:maxLines="4"
+            android:lines="3"
+            android:maxLines="3"
             android:text="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
 
             app:layout_constraintEnd_toEndOf="parent"
@@ -222,6 +222,43 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
             app:layout_constraintTop_toBottomOf="@+id/textViewComment" />
+
+        <TextView
+            android:id="@+id/textViewLabelTotalBalance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="DEUDA:"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLabelPurchaseVolume" />
+
+        <TextView
+            android:id="@+id/textViewTotalBalance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:text="0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
+            app:layout_constraintTop_toBottomOf="@+id/textViewPurchaseVolume" />
+
+        <TextView
+            android:id="@+id/textViewRouteObservation"
+            android:visibility="gone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/lato"
+            android:textSize="20sp"
+            android:text="EL DUEÑO NO TIENE PLATA"
+            android:textColor="@color/danger"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTotalBalance" />
 
         <TextView
             android:id="@+id/textViewTitleObs"
@@ -280,7 +317,7 @@
             app:cameraZoom="10"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dialog_put_in_pending" />
+            app:layout_constraintTop_toBottomOf="@+id/dialog_declined" />
 
         <TextView
             android:id="@+id/textViewLatitude"
@@ -315,7 +352,7 @@
             app:iconPadding="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewPurchaseVolume" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewRouteObservation" />
 
         <Button
             android:id="@+id/dialog_new_dispatch"
@@ -465,6 +502,38 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/dialog_cancel_sale" />
+
+        <Button
+            android:id="@+id/dialog_generate_credit_note"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:width="250dp"
+            android:text="DEVOLUCION"
+            app:icon="@drawable/ic_baseline_transform_24"
+            android:backgroundTint="@color/teal_700"
+            style="@style/ButtonStyle"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_put_in_pending" />
+
+        <Button
+            android:id="@+id/dialog_declined"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:width="250dp"
+            android:text="RECHAZAR VENTA"
+            app:icon="@drawable/ic_baseline_cancel_24"
+            android:backgroundTint="@color/black"
+            style="@style/ButtonStyle"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_generate_credit_note" />
 
 
         <Button

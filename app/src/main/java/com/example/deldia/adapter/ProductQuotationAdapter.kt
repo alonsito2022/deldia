@@ -16,6 +16,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.deldia.R
 import com.example.deldia.models.Product
+import com.squareup.picasso.Callback
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import kotlin.math.roundToInt
 
@@ -23,6 +25,13 @@ class ProductQuotationAdapter(var dataSet: ArrayList<Product>): RecyclerView.Ada
 
     private var context: Context? = null
     private var onQuantityChangeListener: OnQuantityChangeListener? = null
+    private var picasso: Picasso
+
+    init {
+        // Configurar Picasso con caché
+        picasso = Picasso.get()
+        picasso.setIndicatorsEnabled(false) // Desactivar indicadores de debug
+    }
 
     interface OnQuantityChangeListener {
         fun onQuantityChanged(id:Int, quantity: String)
@@ -37,6 +46,7 @@ class ProductQuotationAdapter(var dataSet: ArrayList<Product>): RecyclerView.Ada
         this.dataSet = filterDataSet
         notifyDataSetChanged()
     }
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val cardViewProduct: CardView
         val guidelineStockV20: Guideline
@@ -111,25 +121,50 @@ class ProductQuotationAdapter(var dataSet: ArrayList<Product>): RecyclerView.Ada
         context = parent.context
         return ViewHolder(view)
     }
+
     private fun coverPixelToDP(dps: Int): Float {
         val scale: Float = context!!.resources.displayMetrics.density
         return (dps * scale)
     }
+
+    private fun loadImage(imageUrl: String, imageView: ImageView) {
+        // Primero intentar cargar desde caché
+        picasso.load(imageUrl.replace(".png", "_thumb_100.png"))
+            .networkPolicy(NetworkPolicy.OFFLINE)
+            .placeholder(R.drawable.ic_baseline_reorder_24) // Placeholder mientras carga
+            .error(R.drawable.ic_baseline_cancel_24) // Imagen en caso de error
+            .into(imageView, object : Callback {
+                override fun onSuccess() {
+                    // Imagen cargada exitosamente desde caché
+                }
+
+                override fun onError(e: Exception) {
+                    // Si falla la carga desde caché, intentar desde la red
+                    picasso.load(imageUrl.replace(".png", "_thumb_100.png"))
+                        .placeholder(R.drawable.ic_baseline_reorder_24)
+                        .error(R.drawable.ic_baseline_cancel_24)
+                        .into(imageView)
+                }
+            })
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataSet[position]
-        Picasso.get().load(item.productPath.replace(".png", "_thumb_100.png")).into(holder.cardProductPath)
-        holder.cardViewProduct.startAnimation(AnimationUtils.loadAnimation(holder.itemView.context, R.anim.anim_four))
-        if(!item.showImage) {
+        item.positionInAdapter = position
+
+        // Cargar imagen con caché
+        if(item.showImage) {
+            holder.cardProductPath.visibility = View.VISIBLE
+            holder.guidelineStockV20.setGuidelinePercent(0.2f)
+            holder.cardProductName.textSize = coverPixelToDP(8)
+            loadImage(item.productPath, holder.cardProductPath)
+        } else {
             holder.cardProductPath.visibility = View.GONE
             holder.guidelineStockV20.setGuidelinePercent(0.025f)
             holder.cardProductName.textSize = coverPixelToDP(10)
         }
-        else {
-            holder.cardProductPath.visibility = View.VISIBLE
-            holder.guidelineStockV20.setGuidelinePercent(0.2f)
-            holder.cardProductName.textSize = coverPixelToDP(8)
-        }
 
+        holder.cardViewProduct.startAnimation(AnimationUtils.loadAnimation(holder.itemView.context, R.anim.anim_four))
         holder.cardProductCode.text = item.productCode
         holder.cardProductName.text = item.productShortName
         holder.cardProductSize.text = item.productSize
@@ -141,5 +176,4 @@ class ProductQuotationAdapter(var dataSet: ArrayList<Product>): RecyclerView.Ada
     override fun getItemCount(): Int {
         return dataSet.size
     }
-
 }

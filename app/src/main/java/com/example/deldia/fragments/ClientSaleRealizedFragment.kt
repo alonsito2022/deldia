@@ -81,7 +81,7 @@ class ClientSaleRealizedFragment : Fragment() {
         textViewValueClientFullName.text = operation.clientFullName
         textViewValueClientAddress.text = operation.clientAddress
         autoCompleteGang = view.findViewById(R.id.autoCompleteGang)
-        autoCompleteGang.setText(preference.getData("gangName"))
+//        autoCompleteGang.setText(preference.getData("gangName"))
         radioButtonStatusPending = view.findViewById(R.id.radioButtonStatusPending)
         radioButtonStatusCompleted = view.findViewById(R.id.radioButtonStatusCompleted)
         radioGroupStatus = view.findViewById(R.id.radioGroupStatus)
@@ -95,6 +95,9 @@ class ClientSaleRealizedFragment : Fragment() {
                 }
                 else -> {}
             }
+        }
+        autoCompleteGang.setOnClickListener {
+            autoCompleteGang.showDropDown() // Muestra el menú desplegable al hacer clic
         }
 
         textViewSaleTotal = view.findViewById(R.id.textViewSaleTotal)
@@ -119,7 +122,7 @@ class ClientSaleRealizedFragment : Fragment() {
         btnSearch.setOnClickListener{
             if(operation.operationStartDate.isNotEmpty() && operation.operationEndDate.isNotEmpty()) {
                 loadDispatches()
-                autoCompleteGang.setText("")
+//                autoCompleteGang.setText("")
 
             }else
                 Toast.makeText(globalContext, "Elija fecha.", Toast.LENGTH_SHORT).show()
@@ -135,11 +138,11 @@ class ClientSaleRealizedFragment : Fragment() {
                 listGangs = response.body()!!
                 autoCompleteGang.setAdapter(GangAdapter(globalContext!!, R.layout.item_gang_view, listGangs, object : GangAdapter.OnItemClickListener{
                     override fun onItemClick(model: Gang) {
-                        autoCompleteGang.setText(model.name)
+                        autoCompleteGang.setText(model.name, false)
                         autoCompleteGang.dismissDropDown()
-                        val inputManager = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        autoCompleteGang.closeKeyBoard(inputManager)
-                        autoCompleteGang.clearFocus()
+//                        val inputManager = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//                        autoCompleteGang.closeKeyBoard(inputManager)
+//                        autoCompleteGang.clearFocus()
                         operation.warehouseID = model.warehouse.warehouseID
 
                     }

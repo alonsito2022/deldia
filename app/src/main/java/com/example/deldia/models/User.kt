@@ -14,6 +14,7 @@ class User(){
     var phone: String=""
     var isSuperuser: Boolean = false
     var isStaff: Boolean = false
+    var isPresale: Boolean = true
     var lastLogin: String=""
     var groups: MutableList<Group> = mutableListOf()
     var subsidiary: Subsidiary = Subsidiary()

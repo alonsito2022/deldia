@@ -40,9 +40,15 @@ class Person() {
     var message: String = ""
     var error: Boolean = false
 
+    var totalCharged: Double = 0.0
+    var totalDischarged: Double = 0.0
+    var totalBalance: Double = 0.0
     var routeStatus: String = ""
     var routeObservation: String = ""
     var routeStatusDisplay: String = ""
     var routeDate: String = ""
     var routeDispatchID: Int = 0
+    var routeDispatchTotalSold: Double = 0.0
+
+    var userID: Int = 0
 }

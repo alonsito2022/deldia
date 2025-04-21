@@ -37,16 +37,11 @@ class ProductFragment : Fragment() {
     private lateinit var recyclerViewStock: RecyclerView
     private lateinit var searchViewProduct: SearchView
     private lateinit var productAdapter: ProductAdapter
-    private lateinit var editTextSearchDate: TextInputEditText
-    private lateinit var btnSearch: Button
-    private lateinit var btnSaveCheckStock: Button
-    private lateinit var textViewGangName: TextView
+    private lateinit var autoCompleteWarehouse: AutoCompleteTextView
 
     private var productList = arrayListOf<Product>()
-
+    private var warehouseList = arrayListOf<Warehouse>()
     private var globalContext: Context? = null
-    private var vehicleID: Int = 0
-    private var vehicleLicensePlate: String = ""
     private var warehouse: Warehouse = Warehouse()
     private var operation: Operation = Operation()
 
@@ -57,10 +52,17 @@ class ProductFragment : Fragment() {
         globalContext = this.activity
         preference = Preference(globalContext)
         val bundle = arguments
-        vehicleID = bundle!!.getInt("vehicleID")
-        vehicleLicensePlate = bundle.getString("vehicleLicensePlate").toString()
-        warehouse.warehouseID = vehicleID
-        warehouse.warehouseName = vehicleLicensePlate
+        warehouse.warehouseID = bundle!!.getInt("vehicleID")
+        warehouse.warehouseName = bundle.getString("vehicleLicensePlate").toString()
+        
+        // Agregar almacén actual a la lista
+        warehouseList.add(warehouse)
+        
+        // Agregar almacén central
+        val centralWarehouse = Warehouse()
+        centralWarehouse.warehouseID = 3
+        centralWarehouse.warehouseName = "A-1 Almacen Central"
+        warehouseList.add(centralWarehouse)
     }
 
     override fun onCreateView(
@@ -74,88 +76,103 @@ class ProductFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        textViewGangName = view.findViewById(R.id.textViewGangName)
-        textViewGangName.text = "CUADRILLA:" + preference.getData("gangName")
+        setupWarehouseSelector(view)
+        setupRecyclerView(view)
+        setupSearchView(view)
 
+        val sdf3 = SimpleDateFormat("yyyy-MM-dd").format(Date())
+        warehouse.otherDate = sdf3
+        operation.operationDate = sdf3
+        
+        // Cargar productos del almacén inicial
+        loadProductStoreInWarehouse(warehouse.warehouseID)
+    }
+
+    private fun setupWarehouseSelector(view: View) {
+        autoCompleteWarehouse = view.findViewById(R.id.autoCompleteWarehouse)
+        
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            warehouseList.map { it.warehouseName }
+        )
+        
+        autoCompleteWarehouse.setAdapter(adapter)
+        
+        // Seleccionar el almacén actual por defecto
+        autoCompleteWarehouse.setText(warehouse.warehouseName, false)
+        
+        autoCompleteWarehouse.setOnItemClickListener { _, _, position, _ ->
+            val selectedWarehouse = warehouseList[position]
+            loadProductStoreInWarehouse(selectedWarehouse.warehouseID)
+        }
+    }
+
+    private fun setupRecyclerView(view: View) {
         recyclerViewStock = view.findViewById(R.id.recyclerViewStock)
         recyclerViewStock.layoutManager = LinearLayoutManager(globalContext)
         recyclerViewStock.setHasFixedSize(true)
+        
         productAdapter = ProductAdapter(productList, object : ProductAdapter.OnItemClickListener {
             override fun onItemClick(model: Product) {
                 openModal(model)
-//                            recovery.clientID = model.id!!
-//                            recovery.clientName = model.names
-
             }
             override fun keyUp(model: Product, position: Int) {
-//                            recyclerViewStock.adapter?.notifyItemChanged(position)
+                // No necesitamos esta funcionalidad
             }
-
         })
         recyclerViewStock.adapter = productAdapter
+    }
+
+    private fun setupSearchView(view: View) {
         searchViewProduct = view.findViewById(R.id.searchViewProduct)
-        searchViewProduct.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+        searchViewProduct.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                val filterList: ArrayList<Product> = ArrayList()
-
+                val filterList = ArrayList<Product>()
                 newText?.let {
-                    productList.forEachIndexed{ _, model ->
-                        if(model.productSaleName.lowercase().contains(newText.lowercase())){
-                            filterList.add(model)
+                    productList.forEach { product ->
+                        if (product.productSaleName.lowercase().contains(newText.lowercase()) ||
+                            product.productCode.contains(newText)) {
+                            filterList.add(product)
                         }
                     }
                 }
-                if(filterList.isEmpty()){
-                    Toast.makeText(globalContext, "No data found", Toast.LENGTH_LONG).show()
-                }else{
-                    productAdapter.getFilter(filterList)
+                if (filterList.isEmpty()) {
+                    Toast.makeText(globalContext, "No se encontraron productos", Toast.LENGTH_SHORT).show()
                 }
+                productAdapter.getFilter(filterList)
                 return true
             }
-
         })
-        btnSaveCheckStock = view.findViewById(R.id.btnSaveCheckStock)
-        btnSaveCheckStock.setOnClickListener{
-            btnSaveCheckStock.isEnabled = false
-            operation.userID = preference.getData("userID").toInt()
-            operation.warehouseID = warehouse.warehouseID
-            operation.details.clear()
-
-            productList.forEach {
-                if(it.stockChecked>0){
-                    val detail: Operation.OperationDetail = Operation.OperationDetail()
-                    detail.productTariffID = it.productTariffID
-                    detail.stockChecked = it.stockChecked
-                    operation.details.add(detail)
-                }
-            }
-            sendInventoryCheck()
-
-        }
-
-        btnSearch = view.findViewById(R.id.btnSearch)
-        btnSearch.setOnClickListener{
-            if(warehouse.otherDate.count() > 0){
-                btnSearch.isEnabled = false
-                loadStockInWarehouse(warehouse)
-            }
-            else
-                Toast.makeText(globalContext, "Elija fecha.", Toast.LENGTH_SHORT).show()
-        }
-        editTextSearchDate = view.findViewById(R.id.editTextSearchDate)
-
-        val sdf2 = SimpleDateFormat("dd/MM/yyyy").format(Date())
-        val sdf3 = SimpleDateFormat("yyyy-MM-dd").format(Date())
-        warehouse.otherDate = sdf3
-        operation.operationDate = sdf3
-        editTextSearchDate.setText(sdf2)
-        editTextSearchDate.setOnClickListener { showDatePickerDialog() }
-
     }
+
+    private fun loadProductStoreInWarehouse(warehouseId: Int) {
+        val warehouseToLoad = Warehouse().apply {
+            warehouseID = warehouseId
+            otherDate = warehouse.otherDate
+        }
+        
+        val apiInterface = UserApiService.create().getStockInWarehouse(warehouseToLoad)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ responseData ->
+                if (responseData != null && responseData.isNotEmpty()) {
+                    productList.clear()
+                    productList.addAll(responseData)
+                    productAdapter.getFilter(productList)
+                } else {
+                    Toast.makeText(globalContext, "No hay productos en este almacén", Toast.LENGTH_SHORT).show()
+                }
+            }, { error ->
+                Log.e("ProductFragment", "Error loading products: ${error.message}")
+                Toast.makeText(globalContext, "Error al cargar productos", Toast.LENGTH_SHORT).show()
+            })
+    }
+
     private fun showDatePickerDialog(){
         val fm: FragmentManager = (activity as AppCompatActivity?)!!.supportFragmentManager
         val datePicker = DatePickerFragment {day, month, year -> onDateSelected(day, month, year) }
@@ -172,53 +189,19 @@ class ProductFragment : Fragment() {
         val sdf3 = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
         warehouse.otherDate = sdf3
         operation.operationDate = sdf3
-        editTextSearchDate.setText(sdf2)
     }
 
-    private fun sendInventoryCheck(){
-        val size = productList.size
-        productList.clear()
-        recyclerViewStock.adapter?.notifyItemRangeRemoved(0, size)
-
-        val apiInterface = UserApiService.create().sendInventoryCheck(operation)
-        apiInterface.enqueue(object : Callback<Operation> {
-            override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
-                operation = response.body()!!
-                Toast.makeText(globalContext, operation.messageStatus, Toast.LENGTH_LONG).show()
-                loadStockInWarehouse(warehouse)
-                btnSaveCheckStock.isEnabled = true
-            }
-
-            override fun onFailure(call: Call<Operation>, t: Throwable) {
-                Log.d("MIKE", "sendInventoryCheck onFailure: " + t.message.toString())
-
-            }
-        })
-    }
-
-    private fun loadStockInWarehouse(w: Warehouse) {
-        val apiInterface = UserApiService.create().getStockInWarehouse(w)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ responseData ->
-                Log.d("Mike", responseData?.size.toString())
-                if(responseData != null && responseData.isNotEmpty()){
-                    productList = responseData
-                    productAdapter.getFilter(productList)
-                    btnSearch.isEnabled = true
-                }
-            }, { error ->
-                Log.d("Mike", error.toString())
-            })
-
-    }
 
     private fun openModal(p: Product){
         val inflater = LayoutInflater.from(globalContext)
         val v = inflater.inflate(R.layout.dialog_show_image, null)
         val btnClose = v.findViewById<Button>(R.id.btnClose)
         val imageViewProduct = v.findViewById<ImageView>(R.id.imageViewProduct)
-        Picasso.get().load(p.productPath).into(imageViewProduct)
+        Picasso.get()
+            .load(p.productPath)
+            .placeholder(R.drawable.ic_baseline_reorder_24)
+            .error(R.drawable.ic_baseline_cancel_24)
+            .into(imageViewProduct)
         val addDialog = AlertDialog.Builder(globalContext)
         addDialog.setView(v)
         addDialog.setTitle(p.productSaleName)

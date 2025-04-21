@@ -107,14 +107,14 @@ class OperationAdapter(val c: Context, val dataSet: ArrayList<Operation>, privat
                 popupMenus.menu.findItem(R.id.showDispatch).isVisible = false
                 popupMenus.menu.findItem(R.id.cancelPresale).isVisible = false
                 popupMenus.menu.findItem(R.id.cancelDispatch).isVisible = false
-                popupMenus.menu.findItem(R.id.generateQuotation).isVisible = true
+                popupMenus.menu.findItem(R.id.generateQuotation).isVisible = false
                 popupMenus.menu.findItem(R.id.generateDispatch).isVisible = false
                 popupMenus.menu.findItem(R.id.showDetail).isVisible = true
             } else {  // sale documentType = [01,02,03]
                 popupMenus.menu.findItem(R.id.printDispatch).isVisible = true  // view preview
                 popupMenus.menu.findItem(R.id.showDispatch).isVisible = false
                 popupMenus.menu.findItem(R.id.cancelPresale).isVisible = false
-                popupMenus.menu.findItem(R.id.cancelDispatch).isVisible = true  // annul sale
+                popupMenus.menu.findItem(R.id.cancelDispatch).isVisible = false  // annul sale
                 popupMenus.menu.findItem(R.id.generateQuotation).isVisible = false
                 popupMenus.menu.findItem(R.id.generateDispatch).isVisible = false
                 popupMenus.menu.findItem(R.id.showDetail).isVisible = false

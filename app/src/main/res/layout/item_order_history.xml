@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/constraintLayoutOrder"
     android:background="@drawable/round_secondary"
     android:padding="4dp">
 
@@ -18,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.65" />
+        app:layout_constraintGuide_percent="0.6" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelinePaymentMethodV80"
@@ -32,10 +34,9 @@
         android:id="@+id/textViewOperationDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="25/10/2023"
         android:fontFamily="@font/abel"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="25/10/2023"
+        android:textSize="13sp"
         app:layout_constraintEnd_toStartOf="@+id/guidelinePaymentMethodV25"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -45,22 +46,104 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="F004-497"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="13sp"
         app:layout_constraintEnd_toStartOf="@+id/guidelinePaymentMethodV50"
         app:layout_constraintStart_toStartOf="@+id/guidelinePaymentMethodV25"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewTotal"
+        android:id="@+id/textViewUserFullName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="200"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="13sp"
         app:layout_constraintEnd_toStartOf="@+id/guidelinePaymentMethodV80"
         app:layout_constraintStart_toStartOf="@+id/guidelinePaymentMethodV50"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewLabelTotalPurchased"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/abel"
+        android:text="CARGO: S/"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewOperationDate" />
+
+    <TextView
+        android:id="@+id/textViewValueTotalPurchased"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/abel"
+        android:text="0.01"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewLabelTotalPurchased"
+        app:layout_constraintTop_toBottomOf="@+id/textViewOperationDate" />
+
+    <TextView
+        android:id="@+id/textViewLabelTotalPaid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/abel"
+        android:text="PAGÓ: S/"
+        android:textSize="11sp"
+        app:layout_constraintStart_toStartOf="@+id/guidelinePaymentMethodV25"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDocumentNumber" />
+
+    <TextView
+        android:id="@+id/textViewValueTotalPaid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/abel"
+        android:text="0.12"
+        android:textSize="11sp"
+        app:layout_constraintStart_toEndOf="@+id/textViewLabelTotalPaid"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDocumentNumber" />
+
+    <TextView
+        android:id="@+id/textViewLabelTotalReturned"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/abel"
+        android:text="DEVOLVIÓ: S/"
+        android:textSize="11sp"
+        app:layout_constraintStart_toStartOf="@+id/guidelinePaymentMethodV25"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLabelTotalPaid" />
+
+    <TextView
+        android:id="@+id/textViewValueTotalReturned"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/abel"
+        android:text="0.02"
+        android:textSize="11sp"
+        app:layout_constraintStart_toEndOf="@+id/textViewLabelTotalReturned"
+        app:layout_constraintTop_toBottomOf="@+id/textViewValueTotalPaid" />
+
+    <TextView
+        android:id="@+id/textViewLabelTotalPending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/abel"
+        android:text="SALDO: S/"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guidelinePaymentMethodV50"
+        app:layout_constraintTop_toBottomOf="@+id/textViewUserFullName" />
+
+    <TextView
+        android:id="@+id/textViewValueTotalPending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/abel"
+        android:text="0.03"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewLabelTotalPending"
+        app:layout_constraintTop_toBottomOf="@+id/textViewUserFullName" />
 
     <Button
         android:id="@+id/buttonShowOrder"

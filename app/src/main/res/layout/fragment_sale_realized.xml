@@ -7,199 +7,225 @@
     android:background="?attr/colorOnBackground"
     tools:context=".fragments.SaleRealizedFragment">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="8dp">
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_stock_V20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline_stock_V20"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.4" />
+        <TextView
+            android:id="@+id/textViewTitleSales"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Ventas realizadas"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutSaleType"
-                style="@style/SpinnerStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center"
-                android:layout_marginEnd="4dp"
-                app:endIconMode="dropdown_menu"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_stock_V20"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewTitleSales">
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutSaleType"
+            style="@style/SpinnerStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:hint="TIPO DE OPERACION"
 
-                <AutoCompleteTextView
-                    android:id="@+id/autoCompleteSaleType"
-                    android:layout_width="match_parent"
-                    android:layout_height="54dp"
-                    android:focusable="false"
+            app:endIconMode="dropdown_menu"
+            app:layout_constraintTop_toBottomOf="@id/textViewTitleSales"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-                    android:fontFamily="@font/nexa_light"
-                    android:padding="0dp"
-                    android:textSize="12sp" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutGang"
-                style="@style/SpinnerStyle"
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteSaleType"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center"
-                android:hint="ELIJA UNA RUTA"
-                app:endIconMode="dropdown_menu"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayoutSaleType">
+                android:layout_height="54dp"
+                android:focusable="false"
+                android:fontFamily="@font/nexa_light"
+                android:textSize="13sp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-                <AutoCompleteTextView
-                    android:id="@+id/autoCompleteGang"
-                    android:layout_width="match_parent"
-                    android:layout_height="54dp"
-                    android:focusable="false"
-                    android:fontFamily="@font/nexa_light" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutUser"
-                style="@style/SpinnerStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center"
-                android:hint="ELIJA UN USUARIO"
-                app:endIconMode="dropdown_menu"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayoutGang">
-
-                <AutoCompleteTextView
-                    android:id="@+id/autoCompleteUser"
-                    android:layout_width="match_parent"
-                    android:layout_height="54dp"
-                    android:focusable="false"
-                    android:fontFamily="@font/nexa_light" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+        <FrameLayout
+            android:id="@+id/frameLayoutStatusWrapper"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/textInputLayoutSaleType"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayoutDailyRouteStatus"
                 style="@style/SpinnerStyle"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center"
-                android:hint="ELIJA UN ESTADO DR"
-                app:endIconMode="dropdown_menu"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
-                app:layout_constraintTop_toBottomOf="@+id/textViewTitleSales">
+                android:hint="ESTADO"
+                android:visibility="gone"
+                app:endIconMode="dropdown_menu">
 
                 <AutoCompleteTextView
                     android:id="@+id/autoCompleteDailyRouteStatus"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
                     android:focusable="false"
-                    android:padding="0dp"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/nexa_light" />
-
+                    android:fontFamily="@font/nexa_light"
+                    android:textSize="13sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayoutOperationStatus"
                 style="@style/SpinnerStyle"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center"
-                android:hint="ELIJA UN ESTADO O"
-                app:endIconMode="dropdown_menu"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline_stock_V20"
-                app:layout_constraintTop_toBottomOf="@+id/textViewTitleSales">
+                android:hint="ESTADO"
+                android:visibility="visible"
+                app:endIconMode="dropdown_menu">
 
                 <AutoCompleteTextView
                     android:id="@+id/autoCompleteOperationStatus"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
                     android:focusable="false"
-                    android:padding="0dp"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/nexa_light" />
-
+                    android:fontFamily="@font/nexa_light"
+                    android:textSize="13sp" />
             </com.google.android.material.textfield.TextInputLayout>
+        </FrameLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutSearchDate"
-                style="@style/CustomTextInputLayoutFilledBoxStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:hint="FECHA"
-                app:endIconMode="clear_text"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayoutUser">
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutGang"
+            style="@style/SpinnerStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="RUTA"
+            android:layout_marginTop="8dp"
+            app:endIconMode="dropdown_menu"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayoutStatusWrapper"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextSearchDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="54dp"
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:inputType="date" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <Button
-                android:id="@+id/btnSearch"
-                android:layout_width="wrap_content"
-                android:layout_height="60dp"
-                android:layout_marginStart="4dp"
-                style="@style/ButtonStyle"
-                android:text="Consultar"
-                app:icon="@drawable/ic_baseline_search_24"
-                app:iconGravity="textStart"
-                app:iconPadding="0dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayoutSearchDate" />
-
-
-            <TextView
-                android:id="@+id/textViewSaleTotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="65dp"
-                android:text=""
-                android:textSize="18dp"
-                android:layout_marginTop="6dp"
-                android:padding="15dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/btnSearch"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayoutSearchDate" />
-
-            <TextView
-                android:id="@+id/textViewTitleSales"
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteGang"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ventas realizadas"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="54dp"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none"
+                android:fontFamily="@font/nexa_light"
+                android:textSize="13sp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewSales"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutUser"
+            style="@style/SpinnerStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="USUARIO"
+            android:layout_marginTop="8dp"
+            app:endIconMode="dropdown_menu"
+            app:layout_constraintTop_toBottomOf="@id/textInputLayoutGang"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteUser"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnSearch" />
+                android:layout_height="54dp"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none"
+                android:fontFamily="@font/nexa_light"
+                android:textSize="13sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutSearchDate"
+            style="@style/CustomTextInputLayoutFilledBoxStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="FECHA"
+            android:layout_marginTop="8dp"
+            app:endIconMode="clear_text"
+            app:layout_constraintTop_toBottomOf="@id/textInputLayoutUser"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextSearchDate"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:inputType="date"
+                android:textSize="13sp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_button_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="8dp" />
+
+        <Button
+            android:id="@+id/btnSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/ButtonStyle"
+            android:text="Consultar"
+            android:layout_marginTop="8dp"
+            app:icon="@drawable/ic_baseline_search_24"
+            app:iconGravity="textStart"
+            app:iconPadding="4dp"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutSearchDate"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewSaleTotal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="18sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toEndOf="@id/btnSearch"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutSearchDate"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewSales"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/btnSearch"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Loader Layout -->
+    <FrameLayout
+        android:id="@+id/loadingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
 
 </FrameLayout>

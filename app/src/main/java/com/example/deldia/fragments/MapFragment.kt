@@ -24,6 +24,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -63,6 +64,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var fabNewStopping: FloatingActionButton
     private lateinit var fabToggleSearching: FloatingActionButton
     private lateinit var cardViewSearch: CardView
+    private lateinit var loadingLayout: FrameLayout
 
     private var globalContext: Context? = null
     private var vehicleID: Int = 0
@@ -232,19 +234,41 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         recyclerViewPerson.setHasFixedSize(true)
         routeAdapter = PersonAdapter(personList, object : PersonAdapter.OnItemClickListener {
             override fun onItemClick(model: Person) {
-
+                operation.clientID = model.personID
                 when(model.routeStatus){
-                    "01"-> {showDialogPerson(model)}
-                    "02"-> {showDialogPerson(model)}
-                    "03"-> {showDialogPerson(model)}
-                    "04"-> {showDialogPerson(model)}
-                    "05"-> {showDialogPerson(model)}
-                    "06"-> {showDialogPerson(model)}
-                    "07"-> {showDialogPerson(model)}
-                    "08"-> {showDialogPerson(model)}
+                    "01"-> {
+                        showDialogPerson(model)
+                        reviewOrderHistoryByClient()
+                    }
+                    "02"-> {
+                        showDialogPerson(model)
+                        reviewOrderHistoryByClient()
+                    }
+                    "03"-> {
+                        showDialogPerson(model)
+                        reviewOrderHistoryByClient()
+                    }
+                    "04"-> {
+                        showDialogPerson(model)
+                        reviewOrderHistoryByClient()
+                    }
+                    "05"-> {
+                        showDialogPerson(model)
+                        reviewOrderHistoryByClient()
+                    }
+                    "06"-> {
+                        showDialogPerson(model)
+                        reviewOrderHistoryByClient()
+                    }
+                    "07"-> {
+                        showDialogPerson(model)
+                        reviewOrderHistoryByClient()
+                    }
+                    "08"-> {
+                        showDialogPerson(model)
+                        reviewOrderHistoryByClient()
+                    }
                 }
-
-
             }
         })
         recyclerViewPerson.adapter = routeAdapter
@@ -256,6 +280,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         route.routeDate = sdf3
         editTextSearchDate.setText(sdf2)
         editTextSearchDate.setOnClickListener { showDatePickerDialog() }
+
+        loadingLayout = rootView.findViewById(R.id.loadingLayout)
 
         btnCleanGang.setOnClickListener{
             val valueVisitDay = autoCompleteVisitDay.text.toString()
@@ -272,9 +298,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
             route.visitDay = selectedVisitDay
 
-//            autoCompleteGang.setText("")
+            // Ocultar cardViewSearch
+            cardViewSearch.visibility = View.GONE
+            // Mostrar loader y enviar ruta
+            showLoading()
             sendRoute()
-            // loadLocationGps()
         }
 
         val listDay = listOf("LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO", "TODOS")
@@ -345,12 +373,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         editTextSearchDate.setText(sdf2)
     }
 
-    private fun sendRoute(){
+    private fun showLoading() {
+        loadingLayout.visibility = View.VISIBLE
+    }
 
+    private fun hideLoading() {
+        loadingLayout.visibility = View.GONE
+    }
+
+    private fun sendRoute(){
         val apiInterface = UserApiService.create().getRoute(route)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ responseData ->
+                hideLoading() // Ocultar loader cuando la respuesta llegue
                 Log.d("Mike", responseData?.size.toString())
                 personList.clear()
                 mMap.clear()
@@ -368,45 +404,61 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         val imageViewIcon = viewMarker.findViewById<ImageView>(R.id.imageViewIcon)
 
                         when(person.routeStatus){
-                            "01", "08"-> {
+                            "01"-> {
                                 if (!person.isEnabled) {
                                     imageViewMarker.setImageResource(R.drawable.ic_marker_gray)
                                     textViewNum.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(globalContext!!,R.color.black)))
                                 }
                                 else{
-                                    if(person.customerType == 0)
+                                    if(person.customerType == 0) {
                                         imageViewMarker.setImageResource(R.drawable.ic_marker_blue)
+
+                                    }
                                     else {
                                         imageViewMarker.setImageResource(R.drawable.ic_marker_orange)
                                         textViewNum.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(globalContext!!,R.color.black)))
                                     }
+
                                 }
                                 imageViewIcon.visibility = View.GONE
                             }
                             "02"-> {
                                 imageViewMarker.setImageResource(R.drawable.ic_marker_green)
-                                imageViewIcon.setImageResource(R.drawable.ic_baseline_lock_24)
+//                                imageViewIcon.setImageResource(R.drawable.ic_baseline_lock_24)
                             }
                             "03"-> {
                                 imageViewMarker.setImageResource(R.drawable.ic_marker_red)
-                                imageViewIcon.setImageResource(R.drawable.ic_baseline_lock_24)
+//                                imageViewIcon.setImageResource(R.drawable.ic_baseline_lock_24)
                             }
                             "04"-> {
                                 imageViewMarker.setImageResource(R.drawable.ic_marker_yellow)
-                                imageViewIcon.setImageResource(R.drawable.ic_baseline_watch_later_24)
+//                                imageViewIcon.setImageResource(R.drawable.ic_baseline_watch_later_24)
                             }
                             "05"-> {
                                 imageViewMarker.setImageResource(R.drawable.ic_marker_sky_blue)
-                                imageViewIcon.setImageResource(R.drawable.ic_baseline_watch_later_24)
+//                                imageViewIcon.setImageResource(R.drawable.ic_baseline_watch_later_24)
+
                             }
                             "06"-> {
                                 imageViewMarker.setImageResource(R.drawable.ic_marker_dark_green)
-                                imageViewIcon.setImageResource(R.drawable.ic_baseline_watch_later_24)
+//                                imageViewIcon.setImageResource(R.drawable.ic_baseline_watch_later_24)
                             }
                             "07"-> {
                                 imageViewMarker.setImageResource(R.drawable.ic_marker_fuchsia)
-                                imageViewIcon.setImageResource(R.drawable.ic_baseline_watch_later_24)
+//                                imageViewIcon.setImageResource(R.drawable.ic_baseline_watch_later_24)
                             }
+                            "08"-> {
+                                imageViewMarker.setImageResource(R.drawable.ic_marker_black)
+//                                imageViewIcon.setImageResource(R.drawable.ic_baseline_watch_later_24)
+                            }
+                        }
+
+                        if (person.totalBalance > 0){
+                            imageViewIcon.setImageResource(R.drawable.sol)
+                            imageViewIcon.visibility = View.VISIBLE
+
+                        }else{
+                            imageViewIcon.visibility = View.GONE
                         }
                         textViewNum.text = person.observation
 
@@ -421,7 +473,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
                 }
             }, { error ->
+                hideLoading() // Ocultar loader en caso de error
                 Log.d("Mike", error.toString())
+                Toast.makeText(globalContext, "Error al cargar la ruta: ${error.message}", Toast.LENGTH_LONG).show()
             })
     }
 
@@ -534,6 +588,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val dialogNewSale = v.findViewById<Button>(R.id.dialog_new_sale)
         val dialogNewDispatch = v.findViewById<Button>(R.id.dialog_new_dispatch)
         val dialogPutInPending = v.findViewById<Button>(R.id.dialog_put_in_pending)
+        val dialogGenerateCreditNote = v.findViewById<Button>(R.id.dialog_generate_credit_note)
+        val dialogDeclined = v.findViewById<Button>(R.id.dialog_declined)
         val editTextObs = v.findViewById<EditText>(R.id.editTextObs)
         val editTextAddress = v.findViewById<EditText>(R.id.editTextAddress)
         val textViewPersonFullName = v.findViewById<TextView>(R.id.textViewPersonFullName)
@@ -548,6 +604,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 //        val autoCompleteDailyObservation = v.findViewById<AutoCompleteTextView>(R.id.autoCompleteDailyObservation)
         val textViewComment = v.findViewById<TextView>(R.id.textViewComment)
         val textViewPurchaseVolume = v.findViewById<TextView>(R.id.textViewPurchaseVolume)
+        val textViewRouteObservation = v.findViewById<TextView>(R.id.textViewRouteObservation)
+        val textViewTotalBalance = v.findViewById<TextView>(R.id.textViewTotalBalance)
         layoutSalesList = v.findViewById(R.id.layoutSalesList)
 
         val operation : Operation = Operation()
@@ -566,30 +624,28 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         textViewPhysicalDistribution.text = p.physicalDistributionDisplaySaved
         textViewComment.text = p.comment
         textViewPurchaseVolume.text = p.purchaseVolume
+        val total_pending_adjusted = String.format("%.2f", p.totalBalance).toDouble()
 
-//        var dailyObsSelected = "N.A."
-//        if (p.routeObservation.isNotEmpty()){
-//            dailyObsSelected = p.routeObservation
-//        }
-//
-//        val listDailyObs = listOf(
-//            "N.A.",
-//            "La tienda tiene stock.",
-//            "La tienda se encuentra cerrada.",
-//            "El dueño no tiene dinero.",
-//            "El dueño no esta presente."
-//        )
-//        val adapterDailyObs = ArrayAdapter(
-//            globalContext!!,
-//            android.R.layout.simple_spinner_dropdown_item,
-//            listDailyObs
-//        )
-//        autoCompleteDailyObservation.keyListener = null
-//        autoCompleteDailyObservation.setAdapter(adapterDailyObs)
-//        autoCompleteDailyObservation.setText(
-//            autoCompleteDailyObservation.adapter.getItem(listDailyObs.indexOf(dailyObsSelected)).toString(),
-//            false
-//        )
+        if(total_pending_adjusted > 0){
+            textViewTotalBalance.text = "S/ ${total_pending_adjusted}"
+//            textViewTotalBalance.text = "S/ ${p.totalBalance}"
+            textViewTotalBalance.setTextColor(ContextCompat.getColor(globalContext!!, R.color.red))
+            dialogNewSale.visibility = View.GONE
+            dialogNewDispatch.visibility = View.GONE
+
+        }else{
+            textViewTotalBalance.text = "S/ 0.00"
+            textViewTotalBalance.setTextColor(ContextCompat.getColor(globalContext!!, R.color.purple_200))
+            dialogNewSale.visibility = View.VISIBLE
+            dialogNewDispatch.visibility = View.VISIBLE
+        }
+
+        if (p.routeObservation.isNotEmpty()){
+            textViewRouteObservation.text = "VISITA DIA ${p.routeDate} — OBS: ${p.routeObservation.uppercase()}"
+            textViewRouteObservation.visibility = View.VISIBLE
+        }else{
+            textViewRouteObservation.visibility = View.GONE
+        }
 
         val googleMap = v.findViewById<MapView>(R.id.googleMap)
         MapsInitializer.initialize(globalContext!!)
@@ -611,16 +667,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 startActivity(i)
             }
         }
+        dialogGenerateCreditNote.setOnClickListener{
+            val bundle = Bundle()
+            bundle.putInt("userID", user.userID)
+            bundle.putInt("operationID", p.routeDispatchID)
+            findNavController().navigate(R.id.action_mapFragment_to_creditNoteFragment, bundle)
+            dialog.dismiss()
+        }
         dialogEditClient.setOnClickListener{
             val bundle = Bundle()
-
             bundle.putInt("userID", user.userID)
             bundle.putInt("vehicleID", vehicleID)
             bundle.putInt("personID", p.personID)
             findNavController().navigate(R.id.action_mapFragment_to_clientEditFragment, bundle)
             dialog.dismiss()
         }
-        if(!p.isEnabled){
+        if (!p.isEnabled) {
             dialogNewSale.visibility = View.GONE
             dialogNewDispatch.visibility = View.GONE
             dialogWithoutDispatch.visibility = View.GONE
@@ -629,6 +691,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             dialogCancelPresale.visibility = View.GONE
             dialogCancelSale.visibility = View.GONE
             dialogPutInPending.visibility = View.GONE
+            dialogGenerateCreditNote.visibility = View.GONE
         }else{
             when(p.routeStatus){
                 "01"-> {
@@ -637,6 +700,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     dialogCancelPresale.visibility = View.GONE
                     dialogCancelSale.visibility = View.GONE
                     dialogPutInPending.visibility = View.GONE
+                    dialogGenerateCreditNote.visibility = View.GONE
+                    dialogDeclined.visibility = View.GONE
                 }
                 "02"-> {
                     dialogWithoutDispatch.visibility = View.GONE
@@ -644,6 +709,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     dialogPresaleNoDelivered.visibility = View.GONE
                     dialogCancelPresale.visibility = View.GONE
                     dialogPutInPending.visibility = View.GONE
+                    dialogGenerateCreditNote.visibility = View.GONE
+                    dialogDeclined.visibility = View.GONE
                 }
                 "03"-> {
                     dialogWithoutDispatch.visibility = View.GONE
@@ -652,6 +719,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     dialogCancelPresale.visibility = View.GONE
                     dialogCancelSale.visibility = View.GONE
                     dialogPutInPending.visibility = View.GONE
+                    dialogGenerateCreditNote.visibility = View.GONE
+                    dialogDeclined.visibility = View.GONE
                 }
                 "04"-> {
                     dialogNewSale.visibility = View.GONE
@@ -661,6 +730,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     dialogPresaleNoDelivered.visibility = View.GONE
                     dialogCancelSale.visibility = View.GONE
                     dialogPutInPending.visibility = View.GONE
+                    dialogGenerateCreditNote.visibility = View.GONE
+                    dialogDeclined.visibility = View.GONE
                 }
                 "05"-> {
                     dialogNewSale.visibility = View.GONE
@@ -677,6 +748,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     dialogCancelPresale.visibility = View.GONE
                     dialogCancelSale.visibility = View.GONE
                     dialogPutInPending.visibility = View.GONE
+                    dialogGenerateCreditNote.visibility = View.GONE
+                    dialogDeclined.visibility = View.GONE
+
                 }
                 "07"-> {
                     dialogNewSale.visibility = View.GONE
@@ -685,6 +759,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     dialogPresaleNoDelivered.visibility = View.GONE
                     dialogCancelPresale.visibility = View.GONE
                     dialogCancelSale.visibility = View.GONE
+                    dialogPutInPending.visibility = View.GONE
                 }
                 "08"-> {
                     dialogWithoutDispatch.visibility = View.GONE
@@ -693,6 +768,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     dialogCancelPresale.visibility = View.GONE
                     dialogCancelSale.visibility = View.GONE
                     dialogPutInPending.visibility = View.GONE
+                    dialogGenerateCreditNote.visibility = View.GONE
+                    dialogDeclined.visibility = View.GONE
                 }
             }
 
@@ -706,7 +783,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             dialog.dismiss()
         }
         dialogNewSale.setOnClickListener{
-
             goToSale(p!!)
             dialog.dismiss()
         }
@@ -720,8 +796,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             sendClientAddress(p)
             dialog.dismiss()
         }
-        dialogWithoutDispatch.setOnClickListener{
-
+        dialogDeclined.setOnClickListener{
             val autoCompleteObservation = AutoCompleteTextView(globalContext)
             autoCompleteObservation.hint = "Ingresa el valor aquí"
             autoCompleteObservation.inputType = InputType.TYPE_NULL
@@ -730,13 +805,77 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 //            autoCompleteObservation.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_navigate_next_24, 0) // Ícono de flecha
 
             autoCompleteObservation.setOnClickListener {
-                autoCompleteObservation.showDropDown() // Muestra el menú desplegable manualmente
+                autoCompleteObservation.showDropDown()
             }
             var dailyObsSelected = "N.A."
             if (p.routeObservation.isNotEmpty()){
                 dailyObsSelected = p.routeObservation
             }
+            val listDailyObs = listOf(
+                "Sin Dinero",
+                "No pidió",
+                "Cerrado por viaje o salud",
+                "No está la dueña"
+            )
+            val adapterDailyObs = ArrayAdapter(
+                globalContext!!,
+                android.R.layout.simple_dropdown_item_1line,
+                listDailyObs
+            )
+//            autoCompleteObservation.keyListener = null
+            autoCompleteObservation.setAdapter(adapterDailyObs)
+            autoCompleteObservation.setText(dailyObsSelected, false)
 
+            val dialogObservation = AlertDialog.Builder(globalContext)
+                .setTitle("Ingresa una observación")
+                .setMessage("Por favor, selecciona un motivo")
+                .setView(autoCompleteObservation)
+                .setPositiveButton("Aceptar") { dialogObs, _ ->
+                    val userInput = autoCompleteObservation.text.toString()
+                    if (userInput.isNotBlank()) {
+                        p.routeObservation = userInput
+                        p.userID = user.userID
+                        sendDeclinedSale(p)
+                    } else {
+                        Toast.makeText(globalContext, "No ingresaste ningún valor", Toast.LENGTH_SHORT).show()
+                    }
+                    dialogObs.dismiss()
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancelar") { dialogObs, _ ->
+                    dialogObs.dismiss()
+                }
+//                .setNeutralButton("S") { _, _ -> }
+                .create()
+
+            dialogObservation.show()
+
+            val positiveButton = dialogObservation.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton.setTextColor(ContextCompat.getColor(globalContext!!, R.color.white))
+            positiveButton.textSize = 12f
+            positiveButton.setBackgroundColor(ContextCompat.getColor(globalContext!!, R.color.black))
+
+            val negativeButton = dialogObservation.getButton(AlertDialog.BUTTON_NEGATIVE)
+            negativeButton.setTextColor(ContextCompat.getColor(globalContext!!, R.color.white))
+            negativeButton.textSize = 12f
+            negativeButton.setBackgroundColor(ContextCompat.getColor(globalContext!!, R.color.primary_dark))
+
+        }
+        dialogWithoutDispatch.setOnClickListener{
+            val autoCompleteObservation = AutoCompleteTextView(globalContext)
+            autoCompleteObservation.hint = "Ingresa el valor aquí"
+            autoCompleteObservation.inputType = InputType.TYPE_NULL
+            autoCompleteObservation.isCursorVisible = false
+            autoCompleteObservation.setBackgroundResource(android.R.drawable.btn_dropdown)
+//            autoCompleteObservation.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_navigate_next_24, 0) // Ícono de flecha
+
+            autoCompleteObservation.setOnClickListener {
+                autoCompleteObservation.showDropDown()
+            }
+            var dailyObsSelected = "N.A."
+            if (p.routeObservation.isNotEmpty()){
+                dailyObsSelected = p.routeObservation
+            }
             val listDailyObs = listOf(
                 "N.A.",
                 "La tienda tiene stock.",
@@ -752,7 +891,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 //            autoCompleteObservation.keyListener = null
             autoCompleteObservation.setAdapter(adapterDailyObs)
             autoCompleteObservation.setText(dailyObsSelected, false)
-
 
             val dialogObservation = AlertDialog.Builder(globalContext)
                 .setTitle("Ingresa una observación")
@@ -791,11 +929,156 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 //            val neutralButton = dialogObservation.getButton(AlertDialog.BUTTON_NEUTRAL)
 //            neutralButton.visibility = View.GONE
         }
+
         dialogPresaleDelivered.setOnClickListener{
-            operation.operationID = p.routeDispatchID
-            sendPresaleDelivered(operation)
-            dialog.dismiss()
+
+            val inflater2 = LayoutInflater.from(globalContext)
+            val v2 = inflater2.inflate(R.layout.dialog_payment_of_delivered, null)
+            val buttonAddPayment = v2.findViewById<Button>(R.id.buttonAddPayment)
+            var paymentMethodList: MutableMap<String, Double> = mutableMapOf()
+            val layoutPaymentList = v2.findViewById<LinearLayout>(R.id.layoutPaymentList)
+            val textViewDialogTotal = v2.findViewById<TextView>(R.id.textViewDialogTotal)
+            val textViewDialogSubtotal = v2.findViewById<TextView>(R.id.textViewDialogSubtotal)
+            val editTextMethodPrice = v2.findViewById<TextInputEditText>(R.id.editTextMethodPrice)
+            val autoCompleteMethodName = v2.findViewById<AutoCompleteTextView>(R.id.autoCompleteMethodName)
+            val dialogButtonClose = v2.findViewById<Button>(R.id.dialog_close)
+            val dialogButtonSave = v2.findViewById<Button>(R.id.dialog_terminate)
+
+            val listMethod = listOf("CONTADO", "YAPE", "CREDITO")
+            val adapter = ArrayAdapter(
+                globalContext!!,
+                android.R.layout.simple_spinner_dropdown_item,
+                listMethod
+            )
+            autoCompleteMethodName.keyListener = null
+            autoCompleteMethodName.setAdapter(adapter)
+            autoCompleteMethodName.setText(
+                autoCompleteMethodName.adapter.getItem(0).toString(),
+                false
+            )
+            val totalCharged:Double = String.format("%.2f", p.routeDispatchTotalSold).toDouble()
+            textViewDialogTotal.text = totalCharged.toString()
+            if (paymentMethodList.isEmpty()){
+
+                editTextMethodPrice.setText(totalCharged.toString())
+            }
+            paymentMethodList.forEach { (key, value) ->
+
+                val inflaterPaymentMethod = LayoutInflater.from(globalContext)
+                val viewPaymentMethod = inflaterPaymentMethod.inflate(R.layout.item_payment_method, null)
+                val textViewPaymentMethodName = viewPaymentMethod.findViewById<TextView>(R.id.textViewPaymentMethodName)
+                val textViewPaymentMethodPrice = viewPaymentMethod.findViewById<TextView>(R.id.textViewPaymentMethodPrice)
+                val btnRemove = viewPaymentMethod.findViewById<Button>(R.id.buttonRemovePaymentMethodItem)
+
+                var way: String = "CONTADO"
+                when(key){
+                    "cash" -> way = "CONTADO"
+                    "yape" -> way = "YAPE"
+                    "credit" -> way = "CREDITO"
+                }
+                textViewPaymentMethodName.text = way
+                textViewPaymentMethodPrice.text = "S/ $value"
+
+                btnRemove.setOnClickListener {
+                    layoutPaymentList.removeView(viewPaymentMethod)
+                    paymentMethodList.remove(key)
+                    var total = 0.0
+                    paymentMethodList.forEach { (_, value) ->
+                        total += value
+                    }
+                    val totalF1:Double = String.format("%.2f", total).toDouble()
+                    textViewDialogSubtotal.text = totalF1.toString()
+                }
+                layoutPaymentList.addView(viewPaymentMethod)
+            }
+
+            buttonAddPayment.setOnClickListener {
+                if (editTextMethodPrice.text.toString().isNotEmpty()){
+                    var selectedItem = "cash"
+                    val value = autoCompleteMethodName.text.toString()
+                    val amount = editTextMethodPrice.text.toString().toDouble()
+
+                    when (value) {
+                        "EFECTIVO" -> {selectedItem = "cash"}
+                        "YAPE" -> {selectedItem = "yape"}
+                        "CREDITO" -> {selectedItem = "credit"}
+                    }
+
+                    val searchPaymentMethod = paymentMethodList.filter { (key, _) -> key == selectedItem }
+                    if (searchPaymentMethod.isEmpty()) {
+                        val inflaterMethod = LayoutInflater.from(globalContext)
+                        val viewMethod = inflaterMethod.inflate(R.layout.item_payment_method, null)
+
+                        val textViewPaymentMethodName = viewMethod.findViewById<TextView>(R.id.textViewPaymentMethodName)
+                        val textViewPaymentMethodPrice = viewMethod.findViewById<TextView>(R.id.textViewPaymentMethodPrice)
+                        val btnRemove = viewMethod.findViewById<Button>(R.id.buttonRemovePaymentMethodItem)
+
+                        textViewPaymentMethodName.text = value
+                        textViewPaymentMethodPrice.text = "S/ $amount"
+
+                        paymentMethodList[selectedItem] = amount
+                        var total = 0.0
+                        paymentMethodList.forEach { (_, value) ->
+                            total += value
+                        }
+                        val totalF1:Double = String.format("%.2f", total).toDouble()
+                        textViewDialogSubtotal.text = totalF1.toString()
+
+                        btnRemove.setOnClickListener {
+                            layoutPaymentList.removeView(viewMethod)
+                            paymentMethodList.remove(selectedItem)
+                            var total = 0.0
+                            paymentMethodList.forEach { (_, value) ->
+                                total += value
+                            }
+                            val totalF1:Double = String.format("%.2f", total).toDouble()
+                            textViewDialogSubtotal.text = totalF1.toString()
+                        }
+
+                        editTextMethodPrice.setText("")
+                        val inputManager = globalContext?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        editTextMethodPrice.closeKeyBoard(inputManager)
+                        editTextMethodPrice.clearFocus()
+                        layoutPaymentList.addView(viewMethod)
+                    }else {
+                        autoCompleteMethodName.showDropDown()
+                        Toast.makeText(globalContext, "Ya existe el metodo de pago", Toast.LENGTH_LONG)
+                            .show()
+                    }
+                }else {
+                    Toast.makeText(globalContext, "Verifique el monto", Toast.LENGTH_LONG).show()
+                }
+            }
+
+
+            val addDialogPayment = AlertDialog.Builder(globalContext)
+            addDialogPayment.setView(v2)
+            addDialogPayment.setTitle("COBRANZA DE ENTREGA")
+
+            val dialogPayment: AlertDialog = addDialogPayment.create()
+            dialogPayment.show()
+            dialogButtonClose.setOnClickListener{
+                dialogPayment.dismiss()
+            }
+            dialogButtonSave.setOnClickListener{
+
+                val payed = textViewDialogSubtotal.text.toString().toDouble()
+                val totalSale = textViewDialogTotal.text.toString().toDouble()
+                if (totalSale >= 0 && totalSale == payed) {
+                    dialogButtonSave.isEnabled = false
+                    operation.operationID = p.routeDispatchID
+                    operation.paymentMethods = paymentMethodList
+                    sendPresaleDelivered(operation)
+                    Toast.makeText(globalContext, "Venta pagada.", Toast.LENGTH_SHORT).show()
+
+                }else {
+                    Toast.makeText(globalContext, "Verificar pago de venta.", Toast.LENGTH_SHORT).show()
+                }
+                dialogPayment.dismiss()
+                dialog.dismiss()
+            }
         }
+
         dialogPresaleNoDelivered.setOnClickListener{
             operation.operationID = p.routeDispatchID
 //            operation.observation = autoCompleteDailyObservation.text.toString()
@@ -878,17 +1161,40 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 response: Response<ArrayList<Operation>>
             ) {
                 if (response.body() != null) {
+                    var totalBalance: Double = 0.0
                     listOperations = response.body()!!
                     listOperations.forEach { o ->
                         val inflaterPaymentMethod = LayoutInflater.from(globalContext)
                         val viewPaymentMethod = inflaterPaymentMethod.inflate(R.layout.item_order_history, null)
+                        val constraintLayoutOrder = viewPaymentMethod.findViewById<ConstraintLayout>(R.id.constraintLayoutOrder)
                         val textViewOperationDate = viewPaymentMethod.findViewById<TextView>(R.id.textViewOperationDate)
                         val textViewDocumentNumber = viewPaymentMethod.findViewById<TextView>(R.id.textViewDocumentNumber)
-                        val textViewTotal = viewPaymentMethod.findViewById<TextView>(R.id.textViewTotal)
+                        val textViewUserFullName = viewPaymentMethod.findViewById<TextView>(R.id.textViewUserFullName)
+                        val textViewValueTotalPurchased = viewPaymentMethod.findViewById<TextView>(R.id.textViewValueTotalPurchased)
+                        val textViewValueTotalPaid = viewPaymentMethod.findViewById<TextView>(R.id.textViewValueTotalPaid)
+                        val textViewValueTotalPending = viewPaymentMethod.findViewById<TextView>(R.id.textViewValueTotalPending)
+                        val textViewValueTotalReturned = viewPaymentMethod.findViewById<TextView>(R.id.textViewValueTotalReturned)
                         val buttonShowOrder = viewPaymentMethod.findViewById<Button>(R.id.buttonShowOrder)
+                        textViewValueTotalPurchased.text = o.totalPurchased.toString()
+                        textViewValueTotalPaid.text = o.totalPaid.toString()
+                        textViewValueTotalPending.text = o.totalPending.toString()
+                        textViewValueTotalReturned.text = o.totalReturned.toString()
+                        if (o.totalPending > 0){
+                            if (o.operationStatus == "02"){
+
+                                constraintLayoutOrder.setBackgroundColor(ContextCompat.getColor(globalContext!!, R.color.purple_200))
+                                totalBalance += o.totalPending
+                            }else{
+                                constraintLayoutOrder.setBackgroundColor(ContextCompat.getColor(globalContext!!, R.color.red_light))
+                            }
+
+                        }else{
+
+                            constraintLayoutOrder.setBackgroundColor(ContextCompat.getColor(globalContext!!, R.color.primary_light))
+                        }
                         textViewOperationDate.text = o.operationDate
                         textViewDocumentNumber.text = o.documentNumber
-                        textViewTotal.text = "S/ ${o.total}"
+                        textViewUserFullName.text = o.userFullName.split(" ").getOrNull(0) ?: "Desconocido"
 
                         buttonShowOrder.setOnClickListener {
                             // Toast.makeText(globalContext, "Go to print", Toast.LENGTH_LONG).show()
@@ -944,6 +1250,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             override fun onFailure(call: Call<ResponseApi>, t: Throwable) {
                 Log.d("MIKE", "sendVisitWithoutDispatch. Algo salio mal..." + t.message.toString())
+            }
+        })
+    }
+
+    private fun sendDeclinedSale(p: Person){
+        val apiInterface = UserApiService.create().saveDeclinedSale(p)
+        apiInterface.enqueue(object : Callback<ResponseApi> {
+            override fun onResponse(
+                call: Call<ResponseApi>,
+                response: Response<ResponseApi>
+            ) {
+                if (response.body() != null) {
+                    Toast.makeText(globalContext, "Se rechazo pedido", Toast.LENGTH_LONG).show()
+                    sendRoute()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseApi>, t: Throwable) {
+                Log.d("MIKE", "sendDeclinedSale. Algo salio mal..." + t.message.toString())
             }
         })
     }
