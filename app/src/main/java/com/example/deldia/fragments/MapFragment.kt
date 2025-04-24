@@ -410,14 +410,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                     textViewNum.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(globalContext!!,R.color.black)))
                                 }
                                 else{
-                                    if(person.customerType == 0) {
-                                        imageViewMarker.setImageResource(R.drawable.ic_marker_blue)
+//                                    if(person.customerType == 0) {
+                                    imageViewMarker.setImageResource(R.drawable.ic_marker_blue)
 
-                                    }
-                                    else {
-                                        imageViewMarker.setImageResource(R.drawable.ic_marker_orange)
-                                        textViewNum.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(globalContext!!,R.color.black)))
-                                    }
+//                                    }
+//                                    else {
+//                                        imageViewMarker.setImageResource(R.drawable.ic_marker_orange)
+//                                        textViewNum.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(globalContext!!,R.color.black)))
+//                                    }
 
                                 }
                                 imageViewIcon.visibility = View.GONE
@@ -943,6 +943,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val autoCompleteMethodName = v2.findViewById<AutoCompleteTextView>(R.id.autoCompleteMethodName)
             val dialogButtonClose = v2.findViewById<Button>(R.id.dialog_close)
             val dialogButtonSave = v2.findViewById<Button>(R.id.dialog_terminate)
+            val loadingLayout = v2.findViewById<FrameLayout>(R.id.loadingLayout)
 
             val listMethod = listOf("CONTADO", "YAPE", "CREDITO")
             val adapter = ArrayAdapter(
@@ -958,38 +959,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             )
             val totalCharged:Double = String.format("%.2f", p.routeDispatchTotalSold).toDouble()
             textViewDialogTotal.text = totalCharged.toString()
+            textViewDialogSubtotal.text = "0.00"
+            
             if (paymentMethodList.isEmpty()){
-
                 editTextMethodPrice.setText(totalCharged.toString())
             }
-            paymentMethodList.forEach { (key, value) ->
 
-                val inflaterPaymentMethod = LayoutInflater.from(globalContext)
-                val viewPaymentMethod = inflaterPaymentMethod.inflate(R.layout.item_payment_method, null)
-                val textViewPaymentMethodName = viewPaymentMethod.findViewById<TextView>(R.id.textViewPaymentMethodName)
-                val textViewPaymentMethodPrice = viewPaymentMethod.findViewById<TextView>(R.id.textViewPaymentMethodPrice)
-                val btnRemove = viewPaymentMethod.findViewById<Button>(R.id.buttonRemovePaymentMethodItem)
-
-                var way: String = "CONTADO"
-                when(key){
-                    "cash" -> way = "CONTADO"
-                    "yape" -> way = "YAPE"
-                    "credit" -> way = "CREDITO"
+            // Función para actualizar el subtotal
+            fun updateSubtotal() {
+                var total = 0.0
+                paymentMethodList.forEach { (_, value) ->
+                    total += value
                 }
-                textViewPaymentMethodName.text = way
-                textViewPaymentMethodPrice.text = "S/ $value"
-
-                btnRemove.setOnClickListener {
-                    layoutPaymentList.removeView(viewPaymentMethod)
-                    paymentMethodList.remove(key)
-                    var total = 0.0
-                    paymentMethodList.forEach { (_, value) ->
-                        total += value
-                    }
-                    val totalF1:Double = String.format("%.2f", total).toDouble()
-                    textViewDialogSubtotal.text = totalF1.toString()
-                }
-                layoutPaymentList.addView(viewPaymentMethod)
+                val totalF1:Double = String.format("%.2f", total).toDouble()
+                textViewDialogSubtotal.text = totalF1.toString()
+                
+                // Actualizar estado del botón guardar
+                dialogButtonSave.isEnabled = totalF1 == totalCharged
             }
 
             buttonAddPayment.setOnClickListener {
@@ -998,8 +984,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val value = autoCompleteMethodName.text.toString()
                     val amount = editTextMethodPrice.text.toString().toDouble()
 
+                    // Validar que el monto no exceda el total
+                    var currentTotal = 0.0
+                    paymentMethodList.forEach { (_, value) -> currentTotal += value }
+                    
+                    if (amount + currentTotal > totalCharged) {
+                        Toast.makeText(globalContext, "El monto total no puede superar S/ $totalCharged", Toast.LENGTH_LONG).show()
+                        return@setOnClickListener
+                    }
+
                     when (value) {
-                        "EFECTIVO" -> {selectedItem = "cash"}
+                        "CONTADO" -> {selectedItem = "cash"}
                         "YAPE" -> {selectedItem = "yape"}
                         "CREDITO" -> {selectedItem = "credit"}
                     }
@@ -1017,22 +1012,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         textViewPaymentMethodPrice.text = "S/ $amount"
 
                         paymentMethodList[selectedItem] = amount
-                        var total = 0.0
-                        paymentMethodList.forEach { (_, value) ->
-                            total += value
-                        }
-                        val totalF1:Double = String.format("%.2f", total).toDouble()
-                        textViewDialogSubtotal.text = totalF1.toString()
+                        updateSubtotal()
 
                         btnRemove.setOnClickListener {
                             layoutPaymentList.removeView(viewMethod)
                             paymentMethodList.remove(selectedItem)
-                            var total = 0.0
-                            paymentMethodList.forEach { (_, value) ->
-                                total += value
-                            }
-                            val totalF1:Double = String.format("%.2f", total).toDouble()
-                            textViewDialogSubtotal.text = totalF1.toString()
+                            updateSubtotal()
                         }
 
                         editTextMethodPrice.setText("")
@@ -1042,40 +1027,46 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         layoutPaymentList.addView(viewMethod)
                     }else {
                         autoCompleteMethodName.showDropDown()
-                        Toast.makeText(globalContext, "Ya existe el metodo de pago", Toast.LENGTH_LONG)
-                            .show()
+                        Toast.makeText(globalContext, "Ya existe el método de pago seleccionado", Toast.LENGTH_LONG).show()
                     }
                 }else {
-                    Toast.makeText(globalContext, "Verifique el monto", Toast.LENGTH_LONG).show()
+                    Toast.makeText(globalContext, "Ingrese un monto válido", Toast.LENGTH_LONG).show()
                 }
             }
-
 
             val addDialogPayment = AlertDialog.Builder(globalContext)
             addDialogPayment.setView(v2)
             addDialogPayment.setTitle("COBRANZA DE ENTREGA")
+            addDialogPayment.setCancelable(false)
 
             val dialogPayment: AlertDialog = addDialogPayment.create()
             dialogPayment.show()
+            
             dialogButtonClose.setOnClickListener{
                 dialogPayment.dismiss()
             }
+            
             dialogButtonSave.setOnClickListener{
-
                 val payed = textViewDialogSubtotal.text.toString().toDouble()
                 val totalSale = textViewDialogTotal.text.toString().toDouble()
+                
                 if (totalSale >= 0 && totalSale == payed) {
                     dialogButtonSave.isEnabled = false
+                    dialogButtonClose.isEnabled = false
+                    loadingLayout.visibility = View.VISIBLE
+                    
                     operation.operationID = p.routeDispatchID
                     operation.paymentMethods = paymentMethodList
                     sendPresaleDelivered(operation)
-                    Toast.makeText(globalContext, "Venta pagada.", Toast.LENGTH_SHORT).show()
-
-                }else {
-                    Toast.makeText(globalContext, "Verificar pago de venta.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(globalContext, "Procesando pago...", Toast.LENGTH_SHORT).show()
+                    
+                    dialogPayment.dismiss()
+                    dialog.dismiss()
+                } else {
+                    val remaining = totalSale - payed
+                    val formattedRemaining = String.format("%.2f", remaining)
+                    Toast.makeText(globalContext, "Falta registrar S/ $formattedRemaining", Toast.LENGTH_LONG).show()
                 }
-                dialogPayment.dismiss()
-                dialog.dismiss()
             }
         }
 
