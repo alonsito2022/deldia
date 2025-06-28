@@ -1,15 +1,21 @@
+# Archivos generados por Android Studio/IntelliJ
+.idea/
+!.idea/gradle.xml  # Opcional: Si necesitas conservar este archivo
+!.idea/codeStyles/ # Opcional: Si usas estilos de código compartidos
+
+# Archivos de configuración de Gradle
+.gradle/
+build/
+app/build/
+app/release/  # Ignora la carpeta release
+
+# Archivos generados por el sistema
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
 local.properties
+.cxx/
+.externalNativeBuild/
+.DS_Store
+/captures/
+
+# Firebase/Google Services (¡cuidado! solo ignora si no es necesario compartirlo)
+# app/google-services.json  # ⚠️ No lo ignores si es necesario para el equipo
