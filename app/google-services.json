@@ -3,22 +3,17 @@
     "project_number": "241829888167",
     "firebase_url": "https://guille-app-442d4-default-rtdb.firebaseio.com",
     "project_id": "guille-app-442d4",
-    "storage_bucket": "guille-app-442d4.appspot.com"
+    "storage_bucket": "guille-app-442d4.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:241829888167:android:b9a76e0f2a41c6ebd01b82",
+        "mobilesdk_app_id": "1:241829888167:android:73d5ec14cd400d88d01b82",
         "android_client_info": {
-          "package_name": "com.example.deldia"
+          "package_name": "com.sys4soft.deldia"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "241829888167-7dmgsv0h9rni7mv7onjbf9gqmmqks26i.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyBHEaBCNf1VprmYEmZSFS0XyxgrJp0sn8k"
@@ -26,12 +21,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "241829888167-7dmgsv0h9rni7mv7onjbf9gqmmqks26i.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
