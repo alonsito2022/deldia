@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:hint="CODIGO"
                 android:id="@+id/textInputEditTextPersonObservation"
-                android:inputType="number" /> <!-- Solo números -->
+                android:inputType="numberDecimal" /> <!-- Solo números -->
 
         </com.google.android.material.textfield.TextInputLayout>
 

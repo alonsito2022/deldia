@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.deldia">
+    package="com.sys4soft.deldia">
 
     <uses-feature
         android:name="android.hardware.telephony"
@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE "/>
+<!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE "/>-->
     <uses-permission android:name="android.permission.CALL_PHONE"/>
 
     <application
@@ -28,19 +28,19 @@
         android:theme="@style/Theme.DelDia"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ControlActivity"
+            android:name="com.sys4soft.deldia.ControlActivity"
             android:exported="false" />
         <activity
-            android:name=".BluetoothActivity"
+            android:name="com.sys4soft.deldia.BluetoothActivity"
             android:exported="false" />
         <activity
-            android:name=".PrintActivity"
+            android:name="com.sys4soft.deldia.PrintActivity"
             android:exported="true" />
         <activity
-            android:name=".ViewActivity"
+            android:name="com.sys4soft.deldia.ViewActivity"
             android:exported="false" />
         <activity
-            android:name=".SplashActivity"
+            android:name="com.sys4soft.deldia.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
@@ -50,10 +50,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name="com.sys4soft.deldia.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.sys4soft.deldia.MainActivity"
             android:exported="false" />
 
         <meta-data
@@ -62,7 +62,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-        <receiver android:name="com.example.deldia.AlarmReceiver" />
+        <receiver android:name="com.sys4soft.deldia.AlarmReceiver" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

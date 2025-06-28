@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/chartFragment"
-        android:name="com.example.deldia.fragments.ChartFragment"
+        android:name="com.sys4soft.deldia.fragments.ChartFragment"
         android:label="Graficos"
         tools:layout="@layout/fragment_chart" >
         <action
@@ -47,7 +47,7 @@
     </fragment>
     <fragment
         android:id="@+id/clientFragment"
-        android:name="com.example.deldia.fragments.ClientFragment"
+        android:name="com.sys4soft.deldia.fragments.ClientFragment"
         android:label="Clientes"
         tools:layout="@layout/fragment_client" >
         <action
@@ -68,7 +68,7 @@
     </fragment>
     <fragment
         android:id="@+id/cashFragment"
-        android:name="com.example.deldia.fragments.CashFragment"
+        android:name="com.sys4soft.deldia.fragments.CashFragment"
         android:label="Caja"
         tools:layout="@layout/fragment_cash" >
         <action
@@ -77,7 +77,7 @@
     </fragment>
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.example.deldia.fragments.MapFragment"
+        android:name="com.sys4soft.deldia.fragments.MapFragment"
         android:label="Mapa"
         tools:layout="@layout/fragment_map" >
         <action
@@ -104,7 +104,7 @@
     </fragment>
     <fragment
         android:id="@+id/saleRealizedFragment"
-        android:name="com.example.deldia.fragments.SaleRealizedFragment"
+        android:name="com.sys4soft.deldia.fragments.SaleRealizedFragment"
         android:label="Pedidos"
         tools:layout="@layout/fragment_sale_realized" >
         <action
@@ -119,7 +119,7 @@
     </fragment>
     <fragment
         android:id="@+id/productFragment"
-        android:name="com.example.deldia.fragments.ProductFragment"
+        android:name="com.sys4soft.deldia.fragments.ProductFragment"
         android:label="Inventario"
         tools:layout="@layout/fragment_product" >
         <action
@@ -128,7 +128,7 @@
     </fragment>
     <fragment
         android:id="@+id/routeFragment"
-        android:name="com.example.deldia.fragments.RouteFragment"
+        android:name="com.sys4soft.deldia.fragments.RouteFragment"
         android:label="Mi ruta"
         tools:layout="@layout/fragment_route" >
         <action
@@ -156,7 +156,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.deldia.fragments.ProfileFragment"
+        android:name="com.sys4soft.deldia.fragments.ProfileFragment"
         android:label="Perfil"
         tools:layout="@layout/fragment_profile" >
         <action
@@ -165,7 +165,7 @@
     </fragment>
     <fragment
         android:id="@+id/transferFragment"
-        android:name="com.example.deldia.fragments.TransferFragment"
+        android:name="com.sys4soft.deldia.fragments.TransferFragment"
         android:label="Transbordos"
         tools:layout="@layout/fragment_transfer" >
         <action
@@ -174,7 +174,7 @@
     </fragment>
     <fragment
         android:id="@+id/exchangeFragment"
-        android:name="com.example.deldia.fragments.ExchangeFragment"
+        android:name="com.sys4soft.deldia.fragments.ExchangeFragment"
         android:label="Cambios al cliente"
         tools:layout="@layout/fragment_exchange" >
         <action
@@ -183,7 +183,7 @@
     </fragment>
     <fragment
         android:id="@+id/quotationFragment"
-        android:name="com.example.deldia.fragments.QuotationFragment"
+        android:name="com.sys4soft.deldia.fragments.QuotationFragment"
         android:label="Cotizacion"
         tools:layout="@layout/fragment_quotation" >
         <action
@@ -195,7 +195,7 @@
     </fragment>
     <fragment
         android:id="@+id/dispatchFragment"
-        android:name="com.example.deldia.fragments.DispatchFragment"
+        android:name="com.sys4soft.deldia.fragments.DispatchFragment"
         android:label="Confirmar Pedido"
         tools:layout="@layout/fragment_dispatch" >
         <action
@@ -207,12 +207,12 @@
     </fragment>
     <activity
         android:id="@+id/printActivity"
-        android:name="com.example.deldia.PrintActivity"
+        android:name="com.sys4soft.deldia.PrintActivity"
         android:label="Vista Previa"
         tools:layout="@layout/activity_print" />
     <fragment
         android:id="@+id/pickingFragment"
-        android:name="com.example.deldia.fragments.PickingFragment"
+        android:name="com.sys4soft.deldia.fragments.PickingFragment"
         android:label="Preparar pedido"
         tools:layout="@layout/fragment_picking" >
         <action
@@ -221,7 +221,7 @@
     </fragment>
     <fragment
         android:id="@+id/clientEditFragment"
-        android:name="com.example.deldia.fragments.ClientEditFragment"
+        android:name="com.sys4soft.deldia.fragments.ClientEditFragment"
         android:label="Editar cliente"
         tools:layout="@layout/fragment_client_edit" >
         <action
@@ -239,7 +239,7 @@
     </fragment>
     <fragment
         android:id="@+id/clientRegisterFragment"
-        android:name="com.example.deldia.fragments.ClientRegisterFragment"
+        android:name="com.sys4soft.deldia.fragments.ClientRegisterFragment"
         android:label="Registro de cliente"
         tools:layout="@layout/fragment_client_register" >
         <action
@@ -257,7 +257,7 @@
     </fragment>
     <fragment
         android:id="@+id/saleFragment"
-        android:name="com.example.deldia.fragments.SaleFragment"
+        android:name="com.sys4soft.deldia.fragments.SaleFragment"
         android:label="Venta directa"
         tools:layout="@layout/fragment_sale" >
         <action
@@ -272,7 +272,7 @@
     </fragment>
     <fragment
         android:id="@+id/clientSaleRealizedFragment"
-        android:name="com.example.deldia.fragments.ClientSaleRealizedFragment"
+        android:name="com.sys4soft.deldia.fragments.ClientSaleRealizedFragment"
         android:label="Ventas realizadas"
         tools:layout="@layout/fragment_client_sale_realized" >
         <action
@@ -284,7 +284,7 @@
     </fragment>
     <fragment
         android:id="@+id/creditNoteFragment"
-        android:name="com.example.deldia.fragments.CreditNoteFragment"
+        android:name="com.sys4soft.deldia.fragments.CreditNoteFragment"
         android:label="Devolución de venta"
         tools:layout="@layout/fragment_credit_note" >
         <action
