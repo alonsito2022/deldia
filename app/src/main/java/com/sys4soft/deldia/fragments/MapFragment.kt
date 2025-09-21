@@ -61,6 +61,7 @@ import com.sys4soft.deldia.R
 class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var fabNewStopping: FloatingActionButton
     private lateinit var fabToggleSearching: FloatingActionButton
+    private lateinit var fabCleanGang: FloatingActionButton
     private lateinit var cardViewSearch: CardView
     private lateinit var loadingLayout: FrameLayout
 
@@ -180,6 +181,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         cardViewSearch = rootView.findViewById(R.id.cardViewSearch)
 
         fabToggleSearching = rootView.findViewById(R.id.fabToggleSearching)
+        fabCleanGang = rootView.findViewById(R.id.fabCleanGang)
         fabToggleSearching.setOnClickListener {
             if(cardViewSearch.visibility == View.GONE){
                 cardViewSearch.visibility = View.VISIBLE
@@ -187,6 +189,28 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 cardViewSearch.visibility = View.GONE
             }
 
+        }
+
+        fabCleanGang.setOnClickListener {
+            val valueVisitDay = autoCompleteVisitDay.text.toString()
+            var selectedVisitDay = 0
+            when (valueVisitDay){
+                "LUNES" -> {selectedVisitDay = 0}
+                "MARTES" -> {selectedVisitDay = 1}
+                "MIERCOLES" -> {selectedVisitDay = 2}
+                "JUEVES" -> {selectedVisitDay = 3}
+                "VIERNES" -> {selectedVisitDay = 4}
+                "SABADO" -> {selectedVisitDay = 5}
+                "DOMINGO" -> {selectedVisitDay = 6}
+                "TODOS" -> {selectedVisitDay = 7}
+            }
+            route.visitDay = selectedVisitDay
+
+            // Ocultar cardViewSearch
+            cardViewSearch.visibility = View.GONE
+            // Mostrar loader y enviar ruta
+            showLoading()
+            sendRoute()
         }
 
         fabNewStopping = rootView.findViewById(R.id.fabNewStopping)
@@ -271,6 +295,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         })
         recyclerViewPerson.adapter = routeAdapter
         autoCompleteGang.setText(preference.getData("gangName"))
+        
+        // Verificar rol del usuario para deshabilitar selector de ruta si es preventista
+        val userRoleName = preference.getData("userRoleName")
+        if (userRoleName.equals("preventista", ignoreCase = true)) {
+            autoCompleteGang.isEnabled = false
+            autoCompleteGang.isClickable = false
+            autoCompleteGang.isFocusable = false
+            autoCompleteGang.alpha = 0.6f // Hacer visual que está deshabilitado
+        }
 
         editTextSearchDate = rootView.findViewById(R.id.editTextSearchDate)
         val sdf2 = SimpleDateFormat("dd/MM/yyyy").format(Date())
@@ -534,10 +567,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         route.gangID = model.gangID
                     }
                 }))
-                // Asegúrate de que el dropdown se vuelve a abrir cuando el AutoCompleteTextView recupera el foco
-                autoCompleteGang.setOnFocusChangeListener { _, hasFocus ->
-                    if (hasFocus) {
-                        autoCompleteGang.showDropDown()
+                
+                // Verificar rol del usuario nuevamente después de configurar el adapter
+                val userRoleName = preference.getData("userRoleName")
+                if (userRoleName.equals("preventista", ignoreCase = true)) {
+                    autoCompleteGang.isEnabled = false
+                    autoCompleteGang.isClickable = false
+                    autoCompleteGang.isFocusable = false
+                    autoCompleteGang.alpha = 0.6f
+                } else {
+                    // Asegúrate de que el dropdown se vuelve a abrir cuando el AutoCompleteTextView recupera el foco
+                    autoCompleteGang.setOnFocusChangeListener { _, hasFocus ->
+                        if (hasFocus) {
+                            autoCompleteGang.showDropDown()
+                        }
                     }
                 }
                 Log.d("MIKE", "loadDistributors ok: " + listDistributors.size)
