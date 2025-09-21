@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         navController = findNavController(R.id.fragmentContainerView)
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.productFragment, R.id.routeFragment, R.id.mapFragment),
+            setOf(R.id.productFragment, R.id.collectionSheetFragment, R.id.mapFragment),
             drawerLayout
         )
         // the title in the action bar will automatically be updated when the destination changes
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setOnItemSelectedListener { item ->
             val destination = when (item.itemId) {
                 R.id.nav_products -> R.id.productFragment
-                R.id.nav_routes -> R.id.routeFragment
+                R.id.nav_collection_sheet -> R.id.collectionSheetFragment
                 R.id.nav_map -> R.id.mapFragment
                 R.id.nav_sales_realized -> R.id.saleRealizedFragment
                 else -> null
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             when(it.itemId){
                 R.id.clientFragment -> navController.navigate(R.id.clientFragment, bundle)
                 R.id.productFragment -> navController.navigate(R.id.productFragment, bundle)
-                R.id.routeFragment -> navController.navigate(R.id.routeFragment, bundle)
+                R.id.collectionSheetFragment -> navController.navigate(R.id.collectionSheetFragment, bundle)
                 R.id.mapFragment -> navController.navigate(R.id.mapFragment, bundle)
                 R.id.saleRealizedFragment -> navController.navigate(R.id.saleRealizedFragment, bundle)
                 R.id.pickingFragment -> navController.navigate(R.id.pickingFragment, bundle)
@@ -118,6 +118,8 @@ class MainActivity : AppCompatActivity() {
 
         val goToRoute = intent.getBooleanExtra("GO_TO_ROUTE", false)
         if (goToRoute) { navController.navigate(R.id.routeFragment, bundle)}
+        val goToCollectionSheet = intent.getBooleanExtra("GO_TO_COLLECTION_SHEET", false)
+        if (goToCollectionSheet) { navController.navigate(R.id.collectionSheetFragment, bundle)}
 
         val goToMap = intent.getBooleanExtra("GO_TO_MAP", false)
         if (goToMap) { navController.navigate(R.id.mapFragment, bundle)}
@@ -160,7 +162,7 @@ class MainActivity : AppCompatActivity() {
     private fun loadUser(id: Int) = if (id > 0){
         val u = User()
         u.userID=id
-        val apiInterface = UserApiService.create().getUser(u)
+        val apiInterface = UserApiService.create(applicationContext).getUser(u)
         apiInterface.enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 response.body()?.let {

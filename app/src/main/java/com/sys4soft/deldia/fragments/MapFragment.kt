@@ -380,7 +380,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun sendRoute(){
-        val apiInterface = UserApiService.create().getRoute(route)
+        val apiInterface = UserApiService.create(requireContext()).getRoute(route)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ responseData ->
@@ -518,7 +518,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         gangAll.gangID = 0
         gangAll.name = "TODOS"
 
-        val apiInterface = UserApiService.create().getGangs()
+        val apiInterface = UserApiService.create(requireContext()).getGangs()
         apiInterface.enqueue(object : Callback<ArrayList<Gang>> {
             override fun onResponse(call: Call<ArrayList<Gang>>, response: Response<ArrayList<Gang>>) {
 
@@ -1121,7 +1121,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun reviewOrderHistoryByClient(){
-        val apiInterface = UserApiService.create().getOrderHistoryByClientID(operation)
+        val apiInterface = UserApiService.create(requireContext()).getOrderHistoryByClientID(operation)
         apiInterface.enqueue(object : Callback<ArrayList<Operation>> {
             override fun onResponse(
                 call: Call<ArrayList<Operation>>,
@@ -1183,7 +1183,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun sendClientAddress(p: Person){
-        val apiInterface = UserApiService.create().sendClientAddressData(p)
+        val apiInterface = UserApiService.create(requireContext()).sendClientAddressData(p)
         apiInterface.enqueue(object : Callback<Person> {
             override fun onResponse(
                 call: Call<Person>,
@@ -1203,7 +1203,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
     private fun sendVisitWithoutDispatch(p: Person){
-        val apiInterface = UserApiService.create().saveVisitWithoutDispatch(p)
+        val apiInterface = UserApiService.create(requireContext()).saveVisitWithoutDispatch(p)
         apiInterface.enqueue(object : Callback<ResponseApi> {
             override fun onResponse(
                 call: Call<ResponseApi>,
@@ -1222,7 +1222,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun sendDeclinedSale(p: Person){
-        val apiInterface = UserApiService.create().saveDeclinedSale(p)
+        val apiInterface = UserApiService.create(requireContext()).saveDeclinedSale(p)
         apiInterface.enqueue(object : Callback<ResponseApi> {
             override fun onResponse(
                 call: Call<ResponseApi>,
@@ -1241,7 +1241,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun sendPresaleDelivered(o: Operation){
-        val apiInterface = UserApiService.create().savePresaleDelivered(o)
+        val apiInterface = UserApiService.create(requireContext()).savePresaleDelivered(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(
                 call: Call<Operation>,
@@ -1259,7 +1259,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun sendPresaleNoDelivered(o: Operation){
-        val apiInterface = UserApiService.create().savePresaleNoDelivered(o)
+        val apiInterface = UserApiService.create(requireContext()).savePresaleNoDelivered(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(
                 call: Call<Operation>,
@@ -1277,7 +1277,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun sendCancelSale(o: Operation){
-        val apiInterface = UserApiService.create().cancelDispatchData(o)
+        val apiInterface = UserApiService.create(requireContext()).cancelDispatchData(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(
                 call: Call<Operation>,
@@ -1295,7 +1295,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun sendCancelPresale(o: Operation){
-        val apiInterface = UserApiService.create().saveCancelPresale(o)
+        val apiInterface = UserApiService.create(requireContext()).saveCancelPresale(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(
                 call: Call<Operation>,
@@ -1313,7 +1313,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun putDispatchInPending(o: Operation){
-        val apiInterface = UserApiService.create().putInPending(o)
+        val apiInterface = UserApiService.create(requireContext()).putInPending(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(
                 call: Call<Operation>,
@@ -1333,7 +1333,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun loadLocationGps() {
 
-        val apiInterface = UserApiService.create().getApiGPS()
+        val apiInterface = UserApiService.create(requireContext()).getApiGPS()
         apiInterface.enqueue(object : Callback<ArrayList<LocationGps>> {
             override fun onResponse(call: Call<ArrayList<LocationGps>>, response: Response<ArrayList<LocationGps>>) {
 

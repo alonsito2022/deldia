@@ -1,4 +1,5 @@
 package com.sys4soft.deldia.retrofit
+import android.content.Context
 import com.sys4soft.deldia.models.*
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
@@ -171,16 +172,22 @@ interface UserApiService {
     @Headers("Accept: application/json", "Content-type:application/json")
     fun getAllSellers() : Call<ArrayList<User>>
 
-    companion object {
-//        var BASE_URL = "http://192.168.1.20:9017/"
-        var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"
-        val client = OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .build()
+    @POST("accounting/api/v1/all_sales_by_seller/")
+    @Headers("Accept: application/json", "Content-type:application/json")
+    fun getAllSalesBySellers(@Body request: SalesBySellerRequest) : Call<ArrayList<SaleBySeller>>
 
-        fun create(): UserApiService {
+    companion object {
+        var BASE_URL = "http://192.168.1.20:9017/"
+//        var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"
+
+        fun create(context: Context): UserApiService {
+            val client = OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .addInterceptor(AuthInterceptor(context))
+                .build()
+
             val retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(client)

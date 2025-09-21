@@ -6,7 +6,8 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/navigation_background"
+    style="@style/DrawerLayoutStyle"
     tools:openDrawer="start"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
@@ -36,7 +37,7 @@
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
-            style="@style/BottomNavigation"
+            style="@style/BottomNavigationStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -51,11 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/primary"
-
+        style="@style/NavigationViewStyle"
         app:headerLayout="@layout/nav_header"
-        app:itemIconTint="@color/icons"
-        app:itemTextColor="@color/white"
-        app:itemTextAppearance="@style/NexaTextViewStyle"
         app:menu="@menu/nav_menu" />
 </androidx.drawerlayout.widget.DrawerLayout>

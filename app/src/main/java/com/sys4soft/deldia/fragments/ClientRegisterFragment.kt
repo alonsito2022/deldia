@@ -423,7 +423,7 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
     private fun fetchedPerson(){
         progressBar.visibility = View.VISIBLE  // 🔴 Mostrar loader
 
-        val apiInterface = UserApiService.create().getDocumentConsultation(person)
+        val apiInterface = UserApiService.create(requireContext()).getDocumentConsultation(person)
         apiInterface.enqueue(object : Callback<Person> {
             override fun onResponse(
                 call: Call<Person>,
@@ -469,7 +469,7 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
         }
     }
     private fun sendClientData(act: String = "N"){
-        val apiInterface = UserApiService.create().sendUpdateClientData(person)
+        val apiInterface = UserApiService.create(requireContext()).sendUpdateClientData(person)
         apiInterface.enqueue(object : Callback<Person> {
             override fun onResponse(
                 call: Call<Person>,
@@ -607,7 +607,7 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
 
     private fun loadDistributors(){
 
-        val apiInterface = UserApiService.create().getGangs()
+        val apiInterface = UserApiService.create(requireContext()).getGangs()
         apiInterface.enqueue(object : Callback<ArrayList<Gang>> {
             override fun onResponse(call: Call<ArrayList<Gang>>, response: Response<ArrayList<Gang>>) {
                 listGangs = response.body()!!

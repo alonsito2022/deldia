@@ -39,15 +39,19 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var editTextUserName = view.findViewById<EditText>(R.id.editTextUserName)
-        var editTextUserEmail = view.findViewById<EditText>(R.id.editTextUserEmail)
-        var editTextGangName = view.findViewById<EditText>(R.id.editTextGangName)
-        var editTextVehicle = view.findViewById<EditText>(R.id.editTextVehicle)
-
-        editTextUserName.setText(preference.getData("userName"))
+        val editTextUserName = view.findViewById<EditText>(R.id.editTextUserName)
+        val editTextUserEmail = view.findViewById<EditText>(R.id.editTextUserEmail)
+        val editTextGangName = view.findViewById<EditText>(R.id.editTextGangName)
+        val editTextVehicle = view.findViewById<EditText>(R.id.editTextVehicle)
+        val editTextUserAddress = view.findViewById<EditText>(R.id.editTextUserAddress)
+        val editTextUserRoleName = view.findViewById<EditText>(R.id.editTextUserRoleName)
+        val fullName = preference.getData("userName") + " " + preference.getData("userLastName")
+        editTextUserName.setText(fullName)
         editTextUserEmail.setText(preference.getData("userEmail"))
         editTextGangName.setText(preference.getData("gangName"))
         editTextVehicle.setText(preference.getData("vehicleLicensePlate"))
+        editTextUserAddress.setText(preference.getData("userAddress"))
+        editTextUserRoleName.setText(preference.getData("userRoleName"))
 
         btnSettingBluetooth = view.findViewById(R.id.btnSettingBluetooth)
         btnSettingBluetooth.setOnClickListener {

@@ -154,7 +154,7 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun fetchPersonData() {
-        UserApiService.create().getDocumentConsultation(person).enqueue(object : Callback<Person> {
+        UserApiService.create(requireContext()).getDocumentConsultation(person).enqueue(object : Callback<Person> {
             override fun onResponse(call: Call<Person>, response: Response<Person>) {
                 response.body()?.let { personTemp ->
                     updatePersonUI(personTemp)
@@ -214,7 +214,7 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
      * Carga los distribuidores desde la API y actualiza la lista de gangs.
      */
     private fun loadDistributors() {
-        UserApiService.create().getGangs().enqueue(object : Callback<java.util.ArrayList<Gang>> {
+        UserApiService.create(requireContext()).getGangs().enqueue(object : Callback<java.util.ArrayList<Gang>> {
             override fun onResponse(call: Call<java.util.ArrayList<Gang>>, response: Response<java.util.ArrayList<Gang>>) {
                 listGangs = response.body()!!
                 val gangNames = listGangs.map { it.name }
@@ -235,7 +235,7 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
     }
 
 //    private fun fetchedPerson(){
-//        val apiInterface = UserApiService.create().getDocumentConsultation(person)
+//        val apiInterface = UserApiService.create(applicationContext).getDocumentConsultation(person)
 //        apiInterface.enqueue(object : Callback<Person> {
 //            override fun onResponse(
 //                call: Call<Person>,
@@ -267,7 +267,7 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
 //    }
 
     private fun loadClient(p: Person) {
-        val apiInterface = UserApiService.create().getPersonByID(p)
+        val apiInterface = UserApiService.create(requireContext()).getPersonByID(p)
         apiInterface.enqueue(object : Callback<Person> {
             override fun onResponse(call: Call<Person>, response: Response<Person>) {
                 if (response.body() != null) {
@@ -647,7 +647,7 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
         }
     }
     private fun sendClientData(act: String = "N"){
-        val apiInterface = UserApiService.create().sendUpdateClientData(person)
+        val apiInterface = UserApiService.create(requireContext()).sendUpdateClientData(person)
         apiInterface.enqueue(object : Callback<Person> {
             override fun onResponse(
                 call: Call<Person>,

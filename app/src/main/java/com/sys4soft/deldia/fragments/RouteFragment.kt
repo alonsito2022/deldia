@@ -136,7 +136,7 @@ class RouteFragment : Fragment() {
     }
 
     private fun loadRoadList(u: User) {
-        val apiInterface = UserApiService.create().getDailyRoute(u)
+        val apiInterface = UserApiService.create(requireContext()).getDailyRoute(u)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ responseData ->
@@ -178,7 +178,7 @@ class RouteFragment : Fragment() {
 
     private fun loadOperation(o: Operation) {
 
-        val apiInterface = UserApiService.create().getSaleByID(o)
+        val apiInterface = UserApiService.create(requireContext()).getSaleByID(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
 
@@ -493,7 +493,7 @@ class RouteFragment : Fragment() {
     }
 
     private fun reviewOrderHistoryByClient(){
-        val apiInterface = UserApiService.create().getOrderHistoryByClientID(operation)
+        val apiInterface = UserApiService.create(requireContext()).getOrderHistoryByClientID(operation)
         apiInterface.enqueue(object : Callback<java.util.ArrayList<Operation>> {
             override fun onResponse(
                 call: Call<java.util.ArrayList<Operation>>,
@@ -532,7 +532,7 @@ class RouteFragment : Fragment() {
     }
 
     private fun sendClientAddress(p: Person){
-        val apiInterface = UserApiService.create().sendClientAddressData(p)
+        val apiInterface = UserApiService.create(requireContext()).sendClientAddressData(p)
         apiInterface.enqueue(object : Callback<Person> {
             override fun onResponse(
                 call: Call<Person>,
@@ -551,7 +551,7 @@ class RouteFragment : Fragment() {
     }
 
     private fun sendVisitWithoutDispatch(p: Person){
-        val apiInterface = UserApiService.create().saveVisitWithoutDispatch(p)
+        val apiInterface = UserApiService.create(requireContext()).saveVisitWithoutDispatch(p)
         apiInterface.enqueue(object : Callback<ResponseApi> {
             override fun onResponse(
                 call: Call<ResponseApi>,
@@ -571,7 +571,7 @@ class RouteFragment : Fragment() {
     }
 
     private fun sendPresaleDelivered(o: Operation){
-        val apiInterface = UserApiService.create().savePresaleDelivered(o)
+        val apiInterface = UserApiService.create(requireContext()).savePresaleDelivered(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(
                 call: Call<Operation>,
@@ -589,7 +589,7 @@ class RouteFragment : Fragment() {
     }
 
     private fun sendPresaleNoDelivered(o: Operation){
-        val apiInterface = UserApiService.create().savePresaleNoDelivered(o)
+        val apiInterface = UserApiService.create(requireContext()).savePresaleNoDelivered(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(
                 call: Call<Operation>,
@@ -607,7 +607,7 @@ class RouteFragment : Fragment() {
     }
 
     private fun sendCancelSale(o: Operation){
-        val apiInterface = UserApiService.create().cancelDispatchData(o)
+        val apiInterface = UserApiService.create(requireContext()).cancelDispatchData(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(
                 call: Call<Operation>,
@@ -625,7 +625,7 @@ class RouteFragment : Fragment() {
     }
 
     private fun sendCancelPresale(o: Operation){
-        val apiInterface = UserApiService.create().saveCancelPresale(o)
+        val apiInterface = UserApiService.create(requireContext()).saveCancelPresale(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(
                 call: Call<Operation>,
@@ -642,7 +642,7 @@ class RouteFragment : Fragment() {
         })
     }
     private fun putDispatchInPending(o: Operation){
-        val apiInterface = UserApiService.create().putInPending(o)
+        val apiInterface = UserApiService.create(requireContext()).putInPending(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(
                 call: Call<Operation>,

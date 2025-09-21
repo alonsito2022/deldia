@@ -189,7 +189,7 @@ class ChartFragment : Fragment() {
 
     private fun loadDistributors(){
 
-        val apiInterface = UserApiService.create().getGangs()
+        val apiInterface = UserApiService.create(requireContext()).getGangs()
         apiInterface.enqueue(object : Callback<java.util.ArrayList<Gang>> {
             override fun onResponse(call: Call<java.util.ArrayList<Gang>>, response: Response<java.util.ArrayList<Gang>>) {
                 listGangs = response.body()!!
@@ -221,7 +221,7 @@ class ChartFragment : Fragment() {
     }
     private fun loadUsers(g: Gang){
 
-        val apiInterface = UserApiService.create().getUsersByGang(g)
+        val apiInterface = UserApiService.create(requireContext()).getUsersByGang(g)
         apiInterface.enqueue(object : Callback<ArrayList<User>> {
             override fun onResponse(call: Call<ArrayList<User>>, response: Response<ArrayList<User>>) {
                 listUsers = response.body()!!
@@ -550,7 +550,7 @@ class ChartFragment : Fragment() {
 
     private fun loadSales(u: User){
 
-        val apiInterface = UserApiService.create().getActualSalesForCharPie(u)
+        val apiInterface = UserApiService.create(requireContext()).getActualSalesForCharPie(u)
         apiInterface.enqueue(object : Callback<SaleChartPie> {
             override fun onResponse(call: Call<SaleChartPie>, response: Response<SaleChartPie>) {
                 if (response.body() != null){
@@ -570,7 +570,7 @@ class ChartFragment : Fragment() {
 
     private fun loadSalesOfWeek(u: User){
 
-        val apiInterface = UserApiService.create().getActualSalesOfWeekForBarChar(u)
+        val apiInterface = UserApiService.create(requireContext()).getActualSalesOfWeekForBarChar(u)
         apiInterface.enqueue(object : Callback<SaleOfWeekBarChart> {
             override fun onResponse(call: Call<SaleOfWeekBarChart>, response: Response<SaleOfWeekBarChart>) {
                 if (response.body() != null){
@@ -588,7 +588,7 @@ class ChartFragment : Fragment() {
     private fun loadSoldProducts(u: User){
         soldProducts.clear()
 
-        val apiInterface = UserApiService.create().getActualSoldProductForBarChar(u)
+        val apiInterface = UserApiService.create(requireContext()).getActualSoldProductForBarChar(u)
         apiInterface.enqueue(object : Callback<ArrayList<SoldProduct>> {
             override fun onResponse(call: Call<ArrayList<SoldProduct>>, response: Response<ArrayList<SoldProduct>>) {
                 if (response.body() != null){

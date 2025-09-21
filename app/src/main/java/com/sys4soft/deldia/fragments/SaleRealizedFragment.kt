@@ -250,7 +250,7 @@ class SaleRealizedFragment : Fragment() {
     }
 
     private fun loadGangs(){
-        val apiInterface = UserApiService.create().getGangs()
+        val apiInterface = UserApiService.create(requireContext()).getGangs()
         apiInterface.enqueue(object : Callback<ArrayList<Gang>> {
             override fun onResponse(call: Call<ArrayList<Gang>>, response: Response<ArrayList<Gang>>) {
                 listGangs = response.body()!!
@@ -281,7 +281,7 @@ class SaleRealizedFragment : Fragment() {
     }
 
     private fun loadAllUsers(){
-        val apiInterface = UserApiService.create().getAllSellers()
+        val apiInterface = UserApiService.create(requireContext()).getAllSellers()
         apiInterface.enqueue(object : Callback<ArrayList<User>> {
             override fun onResponse(call: Call<ArrayList<User>>, response: Response<ArrayList<User>>) {
                 listUsers = response.body()!!
@@ -347,7 +347,7 @@ class SaleRealizedFragment : Fragment() {
     private fun loadDispatches() {
         showLoading()
         Log.d("MIKE", "loadDispatches userID... ${operation.userID}")
-        val apiInterface = UserApiService.create().getSalesInWarehouse(operation)
+        val apiInterface = UserApiService.create(requireContext()).getSalesInWarehouse(operation)
         apiInterface.enqueue(object : Callback<ArrayList<Operation>> {
 
             override fun onResponse(
@@ -426,7 +426,7 @@ class SaleRealizedFragment : Fragment() {
 
     private fun cancelApiDispatch(o: Operation){
 
-        val apiInterface = UserApiService.create().cancelDispatchData(o)
+        val apiInterface = UserApiService.create(requireContext()).cancelDispatchData(o)
         apiInterface.enqueue(object : Callback<Operation>{
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
                 Toast.makeText(globalContext, "Se anulo el pedido.", Toast.LENGTH_SHORT).show()
@@ -437,7 +437,7 @@ class SaleRealizedFragment : Fragment() {
         })
     }
     private fun sendCancelPresale(o: Operation){
-        val apiInterface = UserApiService.create().saveCancelPresale(o)
+        val apiInterface = UserApiService.create(requireContext()).saveCancelPresale(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
                 if (response.body() != null) {

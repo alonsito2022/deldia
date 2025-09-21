@@ -46,6 +46,7 @@ class CashFragment : Fragment() {
     private lateinit var btnCleanCash: Button
     private lateinit var btnSearchCashFlow: Button
     private lateinit var btnNewCashFlow: Button
+    private var applicationContext: Context? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +55,7 @@ class CashFragment : Fragment() {
         vehicleID = bundle!!.getInt("vehicleID")
         userID = bundle.getInt("userID")
         user.userID = userID
+        applicationContext = globalContext
         loadCashes()
     }
 
@@ -216,7 +218,7 @@ class CashFragment : Fragment() {
 
     private fun loadCashes(){
 
-        val apiInterface = UserApiService.create(requireContext()).getCashes(user)
+        val apiInterface = UserApiService.create(applicationContext).getCashes(user)
         apiInterface.enqueue(object : Callback<ArrayList<Cash>> {
             override fun onResponse(call: Call<ArrayList<Cash>>, response: Response<ArrayList<Cash>>) {
                 listCashes = response.body()!!
@@ -258,7 +260,7 @@ class CashFragment : Fragment() {
     }
 
     private fun loadCashFlows() {
-        val apiInterface = UserApiService.create(requireContext()).getCashFlow(cashFlow)
+        val apiInterface = UserApiService.create(applicationContext).getCashFlow(cashFlow)
         apiInterface.enqueue(object : Callback<ArrayList<CashFlow>> {
             override fun onResponse(
                 call: Call<ArrayList<CashFlow>>,
@@ -278,7 +280,7 @@ class CashFragment : Fragment() {
     }
 
     private fun saveCashFlow() {
-        val apiInterface = UserApiService.create(requireContext()).saveCashFlow(cashFlow)
+        val apiInterface = UserApiService.create(applicationContext).saveCashFlow(cashFlow)
         apiInterface.enqueue(object : Callback<ArrayList<CashFlow>> {
             override fun onResponse(
                 call: Call<ArrayList<CashFlow>>,

@@ -309,7 +309,7 @@ class SaleFragment : Fragment() {
     }
 
     private fun loadProductStoreInWarehouse() {
-        val apiInterface = UserApiService.create().getStockInWarehouse(warehouse)
+        val apiInterface = UserApiService.create(requireContext()).getStockInWarehouse(warehouse)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ responseData ->
@@ -455,7 +455,7 @@ class SaleFragment : Fragment() {
     }
 
     private fun sendApiDispatch(id: Int) {
-        val apiInterface = UserApiService.create().sendDispatchData(operation)
+        val apiInterface = UserApiService.create(requireContext()).sendDispatchData(operation)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
                 hideLoading()

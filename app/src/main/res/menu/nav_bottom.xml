@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/nav_routes"
-        android:icon="@drawable/ic_baseline_room_24"
-        android:title="Mi ruta"/>
+        android:id="@+id/nav_collection_sheet"
+        android:icon="@drawable/ic_baseline_point_of_sale_24"
+        android:title="Hoja de cobranza"/>
     <item
         android:id="@+id/nav_map"
         android:icon="@drawable/ic_baseline_map_24"

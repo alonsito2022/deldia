@@ -131,7 +131,7 @@ class ClientSaleRealizedFragment : Fragment() {
 
     private fun loadDistributors(){
 
-        val apiInterface = UserApiService.create(requireContext()).getGangs()
+        val apiInterface = UserApiService.create(applicationContext).getGangs()
         apiInterface.enqueue(object : Callback<ArrayList<Gang>> {
             override fun onResponse(call: Call<ArrayList<Gang>>, response: Response<ArrayList<Gang>>) {
                 listGangs = response.body()!!
@@ -186,7 +186,7 @@ class ClientSaleRealizedFragment : Fragment() {
     }
 
     private fun loadDispatches() {
-        val apiInterface = UserApiService.create(requireContext()).getSalesByClientID(operation)
+        val apiInterface = UserApiService.create(applicationContext).getSalesByClientID(operation)
         apiInterface.enqueue(object : Callback<ArrayList<Operation>> {
 
             override fun onResponse(

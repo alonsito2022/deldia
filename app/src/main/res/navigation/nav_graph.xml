@@ -44,6 +44,9 @@
         <action
             android:id="@+id/action_chartFragment_to_pickingFragment"
             app:destination="@id/pickingFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_collectionSheetFragment"
+            app:destination="@id/collectionSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/clientFragment"
@@ -290,5 +293,14 @@
         <action
             android:id="@+id/action_creditNoteFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/collectionSheetFragment"
+        android:name="com.sys4soft.deldia.fragments.CollectionSheetFragment"
+        android:label="fragment_collection_sheet"
+        tools:layout="@layout/fragment_collection_sheet" >
+        <action
+            android:id="@+id/action_collectionSheetFragment_to_chartFragment"
+            app:destination="@id/chartFragment" />
     </fragment>
 </navigation>

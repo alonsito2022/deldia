@@ -19,7 +19,7 @@
             android:id="@+id/collectionSheetFragment"
             android:icon="@drawable/ic_baseline_point_of_sale_24"
             android:checkable="true"
-            android:title="Hoja de cobranza"/>
+            android:title="Hoja de cobrnza"/>
         <item
             android:id="@+id/mapFragment"
             android:icon="@drawable/ic_baseline_map_24"

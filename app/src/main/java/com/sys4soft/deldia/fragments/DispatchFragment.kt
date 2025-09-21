@@ -25,6 +25,7 @@ import com.sys4soft.deldia.models.Warehouse
 import com.sys4soft.deldia.retrofit.UserApiService
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -216,7 +217,7 @@ class DispatchFragment : Fragment() {
     }
     private fun loadOperation(o: Operation) {
 //        o.operationID=31
-        val apiInterface = UserApiService.create().getSaleByID(o)
+        val apiInterface = UserApiService.create(requireContext()).getSaleByID(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
 
@@ -259,7 +260,7 @@ class DispatchFragment : Fragment() {
     }
 
     private fun loadProductStoreInWarehouse(w: Warehouse) {
-        val apiInterface = UserApiService.create().getStockInWarehouse(w)
+        val apiInterface = UserApiService.create(requireContext()).getStockInWarehouse(w)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ responseData ->
@@ -580,7 +581,7 @@ class DispatchFragment : Fragment() {
         // 4. Validación del total y monto pagado
         val totalVenta = textViewTotal.text.toString().toDoubleOrNull() ?: 0.0
         val totalPagado = textViewSubtotal.text.toString().toDoubleOrNull() ?: 0.0
-        if (totalVenta <= 0) {
+        if (totalVenta < 0) {
             hideLoading()
             isProcessing = false
             Toast.makeText(globalContext, "El total de la venta debe ser mayor a 0", Toast.LENGTH_LONG).show()
@@ -614,7 +615,7 @@ class DispatchFragment : Fragment() {
         var hayProductos = false
         list.forEach {
             if(it.quantity > 0){
-                if (it.priceSale <= 0) {
+                if (it.priceSale < 0) {
                     hideLoading()
                     isProcessing = false
                     Toast.makeText(globalContext, "Hay productos con precio inválido", Toast.LENGTH_LONG).show()
@@ -648,10 +649,11 @@ class DispatchFragment : Fragment() {
     }
 
     private fun sendApiTerminateQuotation(){
-        val apiInterface = UserApiService.create().sendTerminateQuotationData(operation)
+        val apiInterface = UserApiService.create(requireContext()).sendTerminateQuotationData(operation)
         apiInterface.enqueue(object : Callback<Operation>{
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
-                if (response.body() != null) {
+                if (response.isSuccessful && response.body() != null) {
+                    // ✅ Respuesta exitosa
                     operation = response.body()!!
                     val bundle = arguments
                     bundle!!.putString("operationID", operation.operationID.toString())
@@ -659,20 +661,43 @@ class DispatchFragment : Fragment() {
                     val documentType = autoCompleteDocumentType.text.toString()
                     currentDialog.dismiss()
 
-                    if (documentType=="TICKET"){
+                    if (documentType == "TICKET") {
                         findNavController().navigate(R.id.action_dispatchFragment_to_printActivity, bundle)
-                    }else{
-                        if (operation.pseSent){
+                    } else {
+                        if (operation.pseSent) {
                             findNavController().navigate(R.id.action_dispatchFragment_to_printActivity, bundle)
-                        }else{
+                        } else {
                             Toast.makeText(globalContext, operation.messageStatus, Toast.LENGTH_LONG).show()
                             findNavController().navigate(R.id.action_dispatchFragment_to_saleRealizedFragment, bundle)
                         }
                     }
                 } else {
+                    // ❌ Manejar errores HTTP (403, 401, etc.)
                     hideLoading()
                     isProcessing = false
-                    Toast.makeText(globalContext, "Error al procesar el pedido", Toast.LENGTH_LONG).show()
+
+                    var errorMessage = "Error al procesar el pedido"
+
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        Log.d("MIKE", "Error body: $errorBody")
+
+                        if (!errorBody.isNullOrEmpty()) {
+                            // Si backend devuelve JSON con {"detail": "..."}
+                            if (errorBody.trim().startsWith("{")) {
+                                val gson = Gson()
+                                val errorResponse = gson.fromJson(errorBody, Map::class.java)
+                                errorMessage = errorResponse["detail"] as? String ?: errorMessage
+                            } else {
+                                // Si backend devuelve texto plano (string)
+                                errorMessage = errorBody
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.d("MIKE", "Error parsing error response: ${e.message}")
+                    }
+
+                    Toast.makeText(globalContext, errorMessage, Toast.LENGTH_LONG).show()
                 }
             }
 
@@ -714,7 +739,7 @@ class DispatchFragment : Fragment() {
 
     private fun sendApiUpdateQuotation(){
 
-        val apiInterface = UserApiService.create().sendUpdateQuotationData(operation)
+        val apiInterface = UserApiService.create(requireContext()).sendUpdateQuotationData(operation)
         apiInterface.enqueue(object : Callback<Operation>{
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
                 val bundle = arguments

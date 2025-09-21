@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Colores base para modo dark -->
     <color name="purple_200">#81D4FA</color>
     <color name="purple_500">#03A9F4</color>
     <color name="purple_700">#0288D1</color>
@@ -8,6 +9,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <!-- Colores de estado -->
     <color name="danger">#EF5350</color>
     <color name="success">#66BB6A</color>
     <color name="warning">#FFA726</color>
@@ -15,17 +17,20 @@
     <color name="indigo">#039BE5</color>
     <color name="blue_dark">#0277BD</color>
 
-    <color name="primary">#03A9F4</color>
-    <color name="primary_dark">#0288D1</color>
-    <color name="primary_light">#B3E5FC</color>
+    <!-- Colores primarios para modo dark -->
+    <color name="primary">#81D4FA</color>
+    <color name="primary_dark">#1E1E1E</color>
+    <color name="primary_light">#424242</color>
     <color name="accent">#FF9800</color>
     <color name="olive">#FFB74D</color>
 
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#757575</color>
+    <!-- Colores de texto para modo dark -->
+    <color name="primary_text">#FFFFFF</color>
+    <color name="secondary_text">#B0B0B0</color>
     <color name="icons">#FFFFFF</color>
-    <color name="divider">#BDBDBD</color>
+    <color name="divider">#424242</color>
 
+    <!-- Colores adicionales -->
     <color name="yellow">#FFB300</color>
     <color name="fuchsia">#EC407A</color>
     <color name="green">#26A69A</color>
@@ -41,28 +46,28 @@
     <color name="blue_light">#4FC3F7</color>
     <color name="orange_light">#FFB74D</color>
     <color name="teal_light">#80DEEA</color>
-    <color  name="mtrl_textinput_default_box_stroke_color">@color/divider</color>
+    <color name="mtrl_textinput_default_box_stroke_color">@color/divider</color>
 
-    <!-- Colores específicos para login en modo light -->
-    <color name="login_background">#FFFFFF</color>
-    <color name="login_card_background">#FFFFFF</color>
-    <color name="login_text_primary">#212121</color>
-    <color name="login_text_secondary">#757575</color>
-    <color name="login_hint_text">#9E9E9E</color>
-    <color name="login_input_background">#FFFFFF</color>
-    <color name="login_input_stroke">#BDBDBD</color>
-    <color name="login_button_background">#0277BD</color>
+    <!-- Colores específicos para login en modo dark -->
+    <color name="login_background">#121212</color>
+    <color name="login_card_background">#1E1E1E</color>
+    <color name="login_text_primary">#FFFFFF</color>
+    <color name="login_text_secondary">#B0B0B0</color>
+    <color name="login_hint_text">#757575</color>
+    <color name="login_input_background">#2D2D2D</color>
+    <color name="login_input_stroke">#424242</color>
+    <color name="login_button_background">#03A9F4</color>
     <color name="login_button_text">#FFFFFF</color>
 
-    <!-- Colores específicos para navegación en modo light -->
-    <color name="navigation_background">#FFFFFF</color>
-    <color name="navigation_drawer_background">#03A9F4</color>
-    <color name="navigation_drawer_header_background">#0288D1</color>
+    <!-- Colores específicos para navegación en modo dark -->
+    <color name="navigation_background">#121212</color>
+    <color name="navigation_drawer_background">#1E1E1E</color>
+    <color name="navigation_drawer_header_background">#2D2D2D</color>
     <color name="navigation_drawer_text">#FFFFFF</color>
-    <color name="navigation_drawer_text_secondary">#B3E5FC</color>
-    <color name="navigation_drawer_divider">#0288D1</color>
-    <color name="bottom_navigation_background">#03A9F4</color>
+    <color name="navigation_drawer_text_secondary">#B0B0B0</color>
+    <color name="navigation_drawer_divider">#424242</color>
+    <color name="bottom_navigation_background">#1E1E1E</color>
     <color name="bottom_navigation_text">#FFFFFF</color>
-    <color name="toolbar_background">#03A9F4</color>
+    <color name="toolbar_background">#1E1E1E</color>
     <color name="toolbar_text">#FFFFFF</color>
 </resources>

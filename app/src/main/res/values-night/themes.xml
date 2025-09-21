@@ -79,4 +79,46 @@
         <item name="trackTint">@color/blue_dark</item>
     </style>
 
+    <!-- Estilos específicos para login en modo dark -->
+    <style name="LoginTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeColor">@color/login_input_stroke</item>
+        <item name="android:textColorHint">@color/login_hint_text</item>
+        <item name="hintTextColor">@color/login_hint_text</item>
+        <item name="boxBackgroundColor">@color/login_input_background</item>
+        <item name="startIconTint">@color/login_hint_text</item>
+        <item name="endIconTint">@color/login_hint_text</item>
+    </style>
+
+    <style name="LoginButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/login_button_background</item>
+        <item name="android:textColor">@color/login_button_text</item>
+        <item name="cornerRadius">50dp</item>
+        <item name="iconTint">@color/login_button_text</item>
+    </style>
+
+    <!-- Estilos específicos para navegación en modo dark -->
+    <style name="DrawerLayoutStyle">
+        <item name="android:background">@color/navigation_background</item>
+    </style>
+
+    <style name="NavigationViewStyle" parent="Widget.MaterialComponents.NavigationView">
+        <item name="android:background">@color/navigation_drawer_background</item>
+        <item name="itemIconTint">@color/navigation_drawer_text</item>
+        <item name="itemTextColor">@color/navigation_drawer_text</item>
+        <item name="itemTextAppearance">@style/NexaTextViewStyle</item>
+    </style>
+
+    <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/bottom_navigation_background</item>
+        <item name="itemIconTint">@color/bottom_navigation_text</item>
+        <item name="itemTextColor">@color/bottom_navigation_text</item>
+    </style>
+
+    <style name="ToolbarStyle" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="android:background">@color/toolbar_background</item>
+        <item name="android:titleTextColor">@color/toolbar_text</item>
+        <item name="android:textColorPrimary">@color/toolbar_text</item>
+    </style>
+
 </resources>

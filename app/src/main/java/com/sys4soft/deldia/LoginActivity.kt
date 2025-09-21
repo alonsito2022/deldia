@@ -27,6 +27,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         const val PREF_TOKEN = "TOKEN"
         const val PREF_USER_ID = "userID"
         const val PREF_USER_NAME = "userName"
+        const val PREF_USER_LAST_NAME = "userLastName"
         const val PREF_USER_DOCUMENT = "userDocument"
         const val PREF_USER_EMAIL = "userEmail"
         const val PREF_SUBSIDIARY_ID = "subsidiaryID"
@@ -37,6 +38,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         const val PREF_GANG_NAME = "gangName"
         const val PREF_TOKEN_DATE = "token"
         const val PREF_IS_STAFF = "isStaff"
+        const val PREF_USER_ADDRESS = "userAddress"
+        const val PREF_USER_ROLE_NAME = "userRoleName"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,14 +78,42 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private  fun restAuth(u: User){
-        val apiInterface=UserApiService.create().getAuth(u)
+        val apiInterface=UserApiService.create(applicationContext).getAuth(u)
         apiInterface.enqueue(object : Callback<ResponseApi> {
             override fun onResponse(call: Call<ResponseApi>, response: Response<ResponseApi>) {
-                response.body()?.let { r ->
-                    preference.saveData("TOKEN", r.access)
-                    getUser(r.access)
-                } ?: run {
-                    showToast("Acceso no autorizado o credenciales incorrectas.")
+                if (response.isSuccessful) {
+                    response.body()?.let { r ->
+                        // Verificar si hay un mensaje de error en la respuesta
+                        if (r.detail.isNotEmpty()) {
+                            showToast(r.detail)
+                        } else if (r.access.isNotEmpty()) {
+                            preference.saveData("TOKEN", r.access)
+                            getUser(r.access)
+                        } else {
+                            showToast("Acceso no autorizado o credenciales incorrectas.")
+                        }
+                    } ?: run {
+                        showToast("Acceso no autorizado o credenciales incorrectas.")
+                    }
+                } else {
+                    // Manejar errores HTTP (400, 401, 403, etc.)
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        if (errorBody != null) {
+                            // Intentar parsear el JSON de error
+                            val gson = com.google.gson.Gson()
+                            val errorResponse = gson.fromJson(errorBody, ResponseApi::class.java)
+                            if (errorResponse.detail.isNotEmpty()) {
+                                showToast(errorResponse.detail)
+                            } else {
+                                showToast("Error de autenticación: ${response.code()}")
+                            }
+                        } else {
+                            showToast("Error de autenticación: ${response.code()}")
+                        }
+                    } catch (e: Exception) {
+                        showToast("Error de autenticación: ${response.code()}")
+                    }
                 }
             }
 
@@ -92,15 +123,18 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         })
     }
     private fun getUser(t:String){
-        var apiInterface= UserApiService.create().getLogin(token="Bearer $t")
+        var apiInterface= UserApiService.create(applicationContext).getLogin(token="Bearer $t")
         apiInterface.enqueue(object : Callback<ResponseLogin> {
             override fun onResponse(call: Call<ResponseLogin>, response: Response<ResponseLogin>) {
                 response.body()?.let { r ->
                     preference.apply {
                         saveData(PREF_USER_ID, r.user_id.toString())
                         saveData(PREF_USER_NAME, r.first_name)
+                        saveData(PREF_USER_LAST_NAME, r.last_name)
                         saveData(PREF_USER_DOCUMENT, r.document)
                         saveData(PREF_USER_EMAIL, r.email)
+                        saveData(PREF_USER_ADDRESS, r.address)
+                        saveData(PREF_USER_ROLE_NAME, r.roleName)
                         saveData(PREF_SUBSIDIARY_ID, r.subsidiary.subsidiary_id.toString())
                         saveData(PREF_SUBSIDIARY_NAME, r.subsidiary.name)
                         saveData(PREF_VEHICLE_ID, r.vehicle.vehicleID.toString())

@@ -140,7 +140,7 @@ class CreditNoteFragment : Fragment() {
     }
 
     private fun loadOperation(o: Operation) {
-        val apiInterface = UserApiService.create().getSaleByID(o)
+        val apiInterface = UserApiService.create(requireContext()).getSaleByID(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
 
@@ -159,7 +159,7 @@ class CreditNoteFragment : Fragment() {
     }
 
     private fun loadProductStoreInWarehouse(o: Operation) {
-        val apiInterface = UserApiService.create().getStockBySaleAndWarehouse(o)
+        val apiInterface = UserApiService.create(requireContext()).getStockBySaleAndWarehouse(o)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ responseData ->
@@ -267,7 +267,7 @@ class CreditNoteFragment : Fragment() {
     }
 
     private fun sendApiDevolutionDeliveryData(){
-        val apiInterface = UserApiService.create().sendDevolutionDeliveryData(operation)
+        val apiInterface = UserApiService.create(requireContext()).sendDevolutionDeliveryData(operation)
         apiInterface.enqueue(object : Callback<Operation>{
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
                 if (response.body() != null) {

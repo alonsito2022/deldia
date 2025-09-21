@@ -23,6 +23,7 @@ import com.sys4soft.deldia.models.Warehouse
 import com.sys4soft.deldia.models.Person
 import com.sys4soft.deldia.retrofit.UserApiService
 import com.google.android.material.button.MaterialButton
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -316,7 +317,7 @@ class QuotationFragment : Fragment() {
     }
 
     private fun loadProductStoreInWarehouse() {
-        UserApiService.create().getStockInWarehouse(warehouse)
+        UserApiService.create(requireContext()).getStockInWarehouse(warehouse)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ responseData ->
@@ -452,7 +453,7 @@ class QuotationFragment : Fragment() {
             if (isProcessing) return@setOnClickListener
 
             val totalSale = textViewTotal.text.toString().toDouble()
-            if (totalSale > 0) {
+            if (totalSale >= 0) {
                 isProcessing = true
                 showLoading()
                 registerRestQuotation()
@@ -470,7 +471,7 @@ class QuotationFragment : Fragment() {
         }
 
         // Validar que todos los productos tengan precio válido
-        val invalidPrices = list.filter { it.quantity > 0 && it.priceSale <= 0 }
+        val invalidPrices = list.filter { it.quantity > 0 && it.priceSale < 0 }
         if (invalidPrices.isNotEmpty()) {
             Toast.makeText(globalContext, "Hay productos con precios inválidos", Toast.LENGTH_SHORT).show()
             return false
@@ -537,10 +538,11 @@ class QuotationFragment : Fragment() {
     }
 
     private fun sendApiQuotation(){
-        val apiInterface = UserApiService.create().sendQuotationData(operation)
+        val apiInterface = UserApiService.create(requireContext()).sendQuotationData(operation)
         apiInterface.enqueue(object : Callback<Operation>{
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
-                if (response.body() != null) {
+                if (response.isSuccessful && response.body() != null) {
+                    // Respuesta exitosa
                     operation = response.body()!!
                     val bundle = arguments
 
@@ -549,16 +551,34 @@ class QuotationFragment : Fragment() {
                     currentDialog.dismiss()
                     findNavController().navigate(R.id.action_quotationFragment_to_saleRealizedFragment, bundle)
                 } else {
+                    // Manejar errores HTTP (403, 400, etc.)
                     hideLoading()
                     isProcessing = false
-                    Toast.makeText(globalContext, "Error al procesar la preventa", Toast.LENGTH_LONG).show()
+
+                    try {
+                        var errorMessage = "Error al procesar la preventa"
+                        val errorBody = response.errorBody()?.string()
+                        if (!errorBody.isNullOrEmpty()) {
+                            val gson = Gson()
+                            if (errorBody.trim().startsWith("{")) {
+                                // Caso JSON válido
+                                val errorResponse = gson.fromJson(errorBody, Map::class.java)
+                                errorMessage = errorResponse["detail"] as? String ?: errorMessage
+                            } else {
+                                // Caso string plano
+                                errorMessage = errorBody.replace("\"", "")
+                            }
+                            Toast.makeText(globalContext, errorMessage, Toast.LENGTH_LONG).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(globalContext, "Error al procesar la preventa", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
 
             override fun onFailure(call: Call<Operation>, t: Throwable) {
                 hideLoading()
                 isProcessing = false
-                Log.d("MIKE", "sendApiQuotation onFailure: " + t.message.toString())
                 Toast.makeText(globalContext, "Error de conexión: ${t.message}", Toast.LENGTH_LONG).show()
             }
         })

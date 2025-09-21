@@ -252,7 +252,7 @@ class ClientFragment : Fragment() {
     }
 
     private fun fetchedPerson(){
-        val apiInterface = UserApiService.create().getDocumentConsultation(person)
+        val apiInterface = UserApiService.create(requireContext()).getDocumentConsultation(person)
         apiInterface.enqueue(object : Callback<Person> {
             override fun onResponse(
                 call: Call<Person>,
@@ -275,7 +275,7 @@ class ClientFragment : Fragment() {
     }
 
     private fun sendClient(){
-        val apiInterface = UserApiService.create().sendClientData(person)
+        val apiInterface = UserApiService.create(requireContext()).sendClientData(person)
         apiInterface.enqueue(object : Callback<Person> {
             override fun onResponse(
                 call: Call<Person>,
@@ -295,7 +295,7 @@ class ClientFragment : Fragment() {
     }
 
     private fun sendClientAddress(){
-        val apiInterface = UserApiService.create().sendClientAddressData(person)
+        val apiInterface = UserApiService.create(requireContext()).sendClientAddressData(person)
         apiInterface.enqueue(object : Callback<Person> {
             override fun onResponse(
                 call: Call<Person>,
@@ -338,7 +338,7 @@ class ClientFragment : Fragment() {
         }
 
     private fun loadClients(w: RequestFilterPerson) {
-        val apiInterface = UserApiService.create().getFilterClient(w)
+        val apiInterface = UserApiService.create(requireContext()).getFilterClient(w)
         apiInterface.enqueue(object : Callback<ResponseFilterPerson> { // Changed callback type
             override fun onResponse(
                 call: Call<ResponseFilterPerson>, // Changed response type
@@ -408,7 +408,7 @@ class ClientFragment : Fragment() {
 
     private fun loadDistributors(){
 
-        val apiInterface = UserApiService.create().getGangs()
+        val apiInterface = UserApiService.create(requireContext()).getGangs()
         apiInterface.enqueue(object : Callback<java.util.ArrayList<Gang>>{
             override fun onResponse(call: Call<java.util.ArrayList<Gang>>, response: Response<java.util.ArrayList<Gang>>) {
                 listGangs = response.body()!!

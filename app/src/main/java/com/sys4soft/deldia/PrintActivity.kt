@@ -435,7 +435,7 @@ class PrintActivity : AppCompatActivity() {
 
         val o = Operation()
         o.operationID=id
-        val apiInterface = UserApiService.create().getSaleByID(o)
+        val apiInterface = UserApiService.create(applicationContext).getSaleByID(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
 

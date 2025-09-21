@@ -50,7 +50,7 @@ class ShowQuotationFragment : Fragment() {
 
     private fun loadOperation(o: Operation) {
 
-        val apiInterface = UserApiService.create().getSaleByID(o)
+        val apiInterface = UserApiService.create(requireContext()).getSaleByID(o)
         apiInterface.enqueue(object : Callback<Operation> {
             override fun onResponse(call: Call<Operation>, response: Response<Operation>) {
 

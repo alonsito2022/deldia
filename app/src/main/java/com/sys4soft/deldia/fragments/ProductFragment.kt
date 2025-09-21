@@ -150,7 +150,7 @@ class ProductFragment : Fragment() {
             otherDate = warehouse.otherDate
         }
         
-        val apiInterface = UserApiService.create().getStockInWarehouse(warehouseToLoad)
+        val apiInterface = UserApiService.create(requireContext()).getStockInWarehouse(warehouseToLoad)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ responseData ->

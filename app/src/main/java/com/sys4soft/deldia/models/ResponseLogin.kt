@@ -5,7 +5,10 @@ class ResponseLogin {
     var timezone: String=""
     var user_id: Int=0
     var first_name: String=""
+    var last_name: String=""
     var email: String=""
+    var address: String=""
+    var roleName: String=""
     var document: String=""
     var is_superuser: Boolean=false
     var is_staff: Boolean=false
