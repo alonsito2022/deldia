@@ -84,7 +84,15 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_products -> R.id.productFragment
                 R.id.nav_collection_sheet -> R.id.collectionSheetFragment
                 R.id.nav_map -> R.id.mapFragment
-                R.id.nav_sales_realized -> R.id.saleRealizedFragment
+                R.id.nav_sales_realized -> {
+                    // Verificar si el usuario tiene permisos para acceder a Pedidos
+                    val userRoleName = preference.getData("userRoleName")
+                    if (userRoleName.equals("REPARTIDOR", ignoreCase = true)) {
+                        null // No permitir acceso para REPARTIDOR
+                    } else {
+                        R.id.saleRealizedFragment
+                    }
+                }
                 else -> null
             }
             destination?.let { navController.navigate(it, bundle) }
@@ -101,7 +109,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.productFragment -> navController.navigate(R.id.productFragment, bundle)
                 R.id.collectionSheetFragment -> navController.navigate(R.id.collectionSheetFragment, bundle)
                 R.id.mapFragment -> navController.navigate(R.id.mapFragment, bundle)
-                R.id.saleRealizedFragment -> navController.navigate(R.id.saleRealizedFragment, bundle)
+                R.id.saleRealizedFragment -> {
+                    // Verificar si el usuario tiene permisos para acceder a Pedidos
+                    val userRoleName = preference.getData("userRoleName")
+                    if (!userRoleName.equals("REPARTIDOR", ignoreCase = true)) {
+                        navController.navigate(R.id.saleRealizedFragment, bundle)
+                    }
+                }
                 R.id.pickingFragment -> navController.navigate(R.id.pickingFragment, bundle)
                 R.id.transferFragment -> navController.navigate(R.id.transferFragment, bundle)
                 R.id.exchangeFragment -> navController.navigate(R.id.exchangeFragment, bundle)
@@ -128,9 +142,35 @@ class MainActivity : AppCompatActivity() {
         if (goToOrders) { navController.navigate(R.id.saleRealizedFragment, bundle)}
 
         loadUser(preference.getData("userID").toInt())
+        
+        // Configurar navegación según el rol del usuario
+        configureNavigationByRole()
 
 
     }
+    
+    private fun configureNavigationByRole() {
+        val userRoleName = preference.getData("userRoleName")
+        
+        if (userRoleName.equals("REPARTIDOR", ignoreCase = true)) {
+            // Ocultar la opción "Pedidos" para usuarios REPARTIDOR
+            hideBottomNavigationItem(R.id.nav_sales_realized)
+            hideDrawerNavigationItem(R.id.saleRealizedFragment)
+        }
+    }
+    
+    private fun hideBottomNavigationItem(itemId: Int) {
+        val menu = bottomNavigationView.menu
+        val item = menu.findItem(itemId)
+        item?.isVisible = false
+    }
+    
+    private fun hideDrawerNavigationItem(itemId: Int) {
+        val menu = navView.menu
+        val item = menu.findItem(itemId)
+        item?.isVisible = false
+    }
+    
     private fun validateSession(user: User) {
         val gangSaved = preference.getData("gangID").toInt()
         val gangToday = user.gang.gangID
