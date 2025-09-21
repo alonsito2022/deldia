@@ -48,6 +48,10 @@ class SaleRealizedFragment : Fragment() {
     private lateinit var autoCompleteSaleType: AutoCompleteTextView
     private lateinit var autoCompleteDailyRouteStatus: AutoCompleteTextView
     private lateinit var autoCompleteOperationStatus: AutoCompleteTextView
+    
+    // Campos de solo lectura para preventistas
+    private lateinit var editTextGangReadOnly: TextInputEditText
+    private lateinit var editTextUserReadOnly: TextInputEditText
     private lateinit var textInputLayoutDailyRouteStatus: TextInputLayout
     private lateinit var textInputLayoutOperationStatus: TextInputLayout
     private lateinit var gangAdapter: GangAdapter
@@ -92,6 +96,10 @@ class SaleRealizedFragment : Fragment() {
         autoCompleteSaleType = view.findViewById(R.id.autoCompleteSaleType)
         autoCompleteDailyRouteStatus = view.findViewById(R.id.autoCompleteDailyRouteStatus)
         autoCompleteOperationStatus = view.findViewById(R.id.autoCompleteOperationStatus)
+        
+        // Campos de solo lectura para preventistas
+        editTextGangReadOnly = view.findViewById(R.id.editTextGangReadOnly)
+        editTextUserReadOnly = view.findViewById(R.id.editTextUserReadOnly)
 
         textViewSaleTotal = view.findViewById(R.id.textViewSaleTotal)
         editTextSearchDate = view.findViewById(R.id.editTextSearchDate)
@@ -319,6 +327,52 @@ class SaleRealizedFragment : Fragment() {
                 Log.d("MIKE", "loadAllUsers onFailure: " + t.message.toString())
             }
         })
+        
+        // Verificar rol del usuario para mostrar campos apropiados
+        checkUserRoleAndConfigureFields()
+    }
+    
+    private fun checkUserRoleAndConfigureFields() {
+        val userRoleName = preference.getData("userRoleName")
+        
+        if (userRoleName.equals("preventista", ignoreCase = true)) {
+            // Para preventistas: mostrar campos de solo lectura con datos del usuario logueado
+            showReadOnlyFields()
+        } else {
+            // Para otros roles: mantener funcionalidad normal
+            showEditableFields()
+        }
+    }
+    
+    private fun showReadOnlyFields() {
+        // Ocultar campos editables
+        view?.findViewById<View>(R.id.textInputLayoutGang)?.visibility = View.GONE
+        view?.findViewById<View>(R.id.textInputLayoutUser)?.visibility = View.GONE
+        
+        // Mostrar campos de solo lectura
+        view?.findViewById<View>(R.id.textInputLayoutGangReadOnly)?.visibility = View.VISIBLE
+        view?.findViewById<View>(R.id.textInputLayoutUserReadOnly)?.visibility = View.VISIBLE
+        
+        // Establecer valores desde las preferencias
+        val gangName = preference.getData("gangName")
+        val userName = preference.getData("userName")
+        
+        editTextGangReadOnly.setText(gangName)
+        editTextUserReadOnly.setText(userName)
+        
+        // Establecer valores en la operación
+        operation.gangID = preference.getData("gangID").toInt()
+        operation.userID = preference.getData("userID").toInt()
+    }
+    
+    private fun showEditableFields() {
+        // Mostrar campos editables
+        view?.findViewById<View>(R.id.textInputLayoutGang)?.visibility = View.VISIBLE
+        view?.findViewById<View>(R.id.textInputLayoutUser)?.visibility = View.VISIBLE
+        
+        // Ocultar campos de solo lectura
+        view?.findViewById<View>(R.id.textInputLayoutGangReadOnly)?.visibility = View.GONE
+        view?.findViewById<View>(R.id.textInputLayoutUserReadOnly)?.visibility = View.GONE
     }
 
     private fun View.closeKeyBoard(inputMethodManager: InputMethodManager) {
