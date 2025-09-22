@@ -32,6 +32,7 @@ class ProductFragment : Fragment() {
     private lateinit var searchViewProduct: SearchView
     private lateinit var productAdapter: ProductAdapter
     private lateinit var autoCompleteWarehouse: AutoCompleteTextView
+    private lateinit var btnRefreshStock: com.google.android.material.button.MaterialButton
 
     private var productList = arrayListOf<Product>()
     private var warehouseList = arrayListOf<Warehouse>()
@@ -84,6 +85,7 @@ class ProductFragment : Fragment() {
 
     private fun setupWarehouseSelector(view: View) {
         autoCompleteWarehouse = view.findViewById(R.id.autoCompleteWarehouse)
+        btnRefreshStock = view.findViewById(R.id.btnRefreshStock)
         
         val adapter = ArrayAdapter(
             requireContext(),
@@ -98,7 +100,14 @@ class ProductFragment : Fragment() {
         
         autoCompleteWarehouse.setOnItemClickListener { _, _, position, _ ->
             val selectedWarehouse = warehouseList[position]
+            warehouse = selectedWarehouse // Actualizar el almacén seleccionado
             loadProductStoreInWarehouse(selectedWarehouse.warehouseID)
+        }
+        
+        // Configurar botón de actualizar
+        btnRefreshStock.setOnClickListener {
+            // Recargar productos del almacén actualmente seleccionado
+            loadProductStoreInWarehouse(warehouse.warehouseID)
         }
     }
 
