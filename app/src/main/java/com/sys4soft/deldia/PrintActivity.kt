@@ -471,8 +471,8 @@ class PrintActivity : AppCompatActivity() {
         textTicketPart2 += "CELULAR: " + operation.clientCellphone + " \n"
         textTicketPart2 += "FECHA: " + operation.operationDate + " \n"
         textTicketPart2 += "HORA: " + operation.operationTime + " \n"
-        textTicketPart2 += "VENDEDOR: " + operation.userFullName + " \n"
-        textTicketPart2 += "CUADRILLA: ${operation.gangName} ${operation.clientVisitDayDisplay.subSequence(0,2)}-${operation.clientObservation} \n"
+        textTicketPart2 += "VENDEDOR: " + operation.userFullName.take(15) + " \n"
+        textTicketPart2 += "CUADRILLA: ${operation.gangName} ${operation.clientVisitDayDisplay.take(2)}-${operation.clientObservation} \n"
         textTicketPart2 += "TIPO ENTREGA: ${operation.physicalDistributionDisplay} \n"
 
         val textTicketPart3 = "------------------------------\n"
@@ -634,8 +634,8 @@ class PrintActivity : AppCompatActivity() {
             outputStream!!.write("CELULAR: ${operation.clientCellphone} \n".toByteArray())
             outputStream!!.write("FECHA: ${operation.operationDate} \n".toByteArray())
             outputStream!!.write("HORA: ${operation.operationTime} \n".toByteArray())
-            outputStream!!.write("VENDEDOR: ${operation.userFullName} \n".toByteArray())
-            outputStream!!.write("CUADRILLA: ${operation.gangName} ${operation.clientVisitDayDisplay.subSequence(0,2)}-${operation.clientObservation} \n".toByteArray())
+            outputStream!!.write("VENDEDOR: ${operation.userFullName.take(15)} \n".toByteArray())
+            outputStream!!.write("CUADRILLA: ${operation.gangName} ${operation.clientVisitDayDisplay.take(2)}-${operation.clientObservation} \n".toByteArray())
             outputStream!!.write("TIPO ENTREGA: ${operation.physicalDistributionDisplay} \n".toByteArray())
             outputStream!!.write(PrinterCommands.ESC_ALIGN_CENTER)
             outputStream!!.write("------------------------------\n".toByteArray())
