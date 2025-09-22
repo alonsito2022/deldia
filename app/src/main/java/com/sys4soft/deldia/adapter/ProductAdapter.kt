@@ -46,6 +46,8 @@ class ProductAdapter(
         val cardPriceSale: TextView = itemView.findViewById(R.id.cardPriceSale)
         val cardProductBrandName: TextView = itemView.findViewById(R.id.cardProductBrandName)
         val cardStock: TextView = itemView.findViewById(R.id.cardStock)
+        val cardStockDesgranadoCaja: TextView = itemView.findViewById(R.id.cardStockDesgranadoCaja)
+        val cardStockDesgranadoUnidad: TextView = itemView.findViewById(R.id.cardStockDesgranadoUnidad)
         val view: View = itemView
     }
 
@@ -82,6 +84,13 @@ class ProductAdapter(
         holder.cardProductBrandName.text = "Marca: ${item.productBrandName}"
         holder.cardPriceSale.text = "S/ ${item.priceSale}"
         holder.cardStock.text = "Stock: ${item.stock.toInt()}"
+        
+        // Calcular stock desgranado
+        val stockDesgranadoCaja = kotlin.math.floor(item.stock / item.quantityMaximum).toInt()
+        val stockDesgranadoUnidad = (item.stock % item.quantityMaximum).toInt()
+        
+        holder.cardStockDesgranadoCaja.text = "DESG. CJ: $stockDesgranadoCaja"
+        holder.cardStockDesgranadoUnidad.text = "DESG. UND: $stockDesgranadoUnidad"
 
         // Configurar click listener
         holder.view.setOnClickListener {

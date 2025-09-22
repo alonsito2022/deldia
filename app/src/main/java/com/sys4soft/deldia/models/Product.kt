@@ -34,6 +34,8 @@ class Product() {
     var remainingQuantityInTariffs: ArrayList<ProductTariff> = arrayListOf()
 
     var showImage: Boolean = true
+    var quantityMaximum: Int = 0
+    var quantityMinimum: Int = 0
 
     class ProductTariff(){
         var productTariffID: Int? = null
