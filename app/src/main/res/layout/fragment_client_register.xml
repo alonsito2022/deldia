@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
+    android:fillViewport="true"
+    android:scrollbars="vertical"
     tools:context=".fragments.ClientRegisterFragment">
 
     <LinearLayout
@@ -274,13 +276,19 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 
-        <!-- Mapa -->
-        <fragment
-            android:id="@+id/frg"
-            class="com.google.android.gms.maps.SupportMapFragment"
+        <!-- Botón para seleccionar ubicación -->
+        <Button
+            android:id="@+id/btnSelectLocation"
+            style="@style/ButtonStyle"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            app:cameraZoom="10" />
+            android:layout_height="56dp"
+            android:text="SELECCIONAR UBICACIÓN EN MAPA"
+            android:backgroundTint="@color/primary"
+            app:icon="@drawable/ic_baseline_location_on_24"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconSize="24dp"
+            android:layout_marginTop="8dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutLatitude"

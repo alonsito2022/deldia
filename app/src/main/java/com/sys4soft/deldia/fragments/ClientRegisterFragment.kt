@@ -19,19 +19,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.sys4soft.deldia.R
+import com.sys4soft.deldia.dialogs.MapLocationDialog
 import com.sys4soft.deldia.localdatabase.Preference
 import com.sys4soft.deldia.models.Gang
 import com.sys4soft.deldia.models.Person
 import com.sys4soft.deldia.retrofit.UserApiService
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import retrofit2.Call
@@ -40,7 +32,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
+class ClientRegisterFragment : Fragment() {
 
     private lateinit var textInputEditTextPersonName: TextInputEditText
     private lateinit var textInputEditTextPersonFirstSurname: TextInputEditText
@@ -58,6 +50,7 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
     private lateinit var btnSaveAndQuote: Button
     private lateinit var btnSaveAndSell: Button
     private lateinit var btnSaveAndGoToMap: Button
+    private lateinit var btnSelectLocation: Button
 
     private lateinit var textInputEditTextAddressName: TextInputEditText
     private lateinit var autoCompleteDistrict: AutoCompleteTextView
@@ -69,9 +62,7 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
     private lateinit var textInputEditTextPersonObservation: TextInputEditText
     private lateinit var textInputEditTextPersonCellPhone: TextInputEditText
 
-    private lateinit var mMap: GoogleMap
-    var mapView: View? = null
-    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    // Variables del mapa removidas - ahora se usa el diálogo
 
     private var person: Person = Person()
     private var searchPerson: Person = Person()
@@ -94,7 +85,6 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
         gangID = preference.getData("gangID").toInt()
         gangName = preference.getData("gangName")
         loadDistributors()
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(globalContext!!)
     }
 
     override fun onCreateView(
@@ -137,6 +127,8 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
         textInputEditTextLongitude = view.findViewById(R.id.textInputEditTextLongitude)
         textInputEditTextLatitude.isFocusable = false
         textInputEditTextLongitude.isFocusable = false
+        
+        btnSelectLocation = view.findViewById(R.id.btnSelectLocation)
 
         textInputLayoutDocumentNumber.setEndIconOnClickListener {
             val itemSelected = autoCompleteDocumentType.text.toString()
@@ -307,11 +299,32 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
         btnSaveAndSell.setOnClickListener { handleSaveAndSend("S") }
         btnSaveAndQuote.setOnClickListener { handleSaveAndSend("Q") }
         btnSaveAndGoToMap.setOnClickListener { handleSaveAndSend("N") }
-
-        val mapFragment = childFragmentManager.findFragmentById(R.id.frg) as SupportMapFragment?
-        mapView = mapFragment!!.view
-        mapFragment.getMapAsync(this)
+        
+        btnSelectLocation.setOnClickListener {
+            openMapLocationDialog()
+        }
     }
+    private fun openMapLocationDialog() {
+        val dialog = MapLocationDialog.newInstance(
+            listener = object : MapLocationDialog.OnLocationSelectedListener {
+                override fun onLocationSelected(latitude: Double, longitude: Double) {
+                    // Actualizar los campos de coordenadas
+                    textInputEditTextLatitude.setText(latitude.toString())
+                    textInputEditTextLongitude.setText(longitude.toString())
+                    
+                    // Actualizar el objeto person
+                    person.latitude = latitude
+                    person.longitude = longitude
+                    
+                    Toast.makeText(requireContext(), "Ubicación seleccionada correctamente", Toast.LENGTH_SHORT).show()
+                }
+            }
+            // No se pasan coordenadas iniciales para nuevo cliente
+        )
+        
+        dialog.show(parentFragmentManager, "MapLocationDialog")
+    }
+    
     private fun hideKeyboard(view: View) {
         val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
@@ -545,64 +558,6 @@ class ClientRegisterFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-        mMap.uiSettings.isZoomControlsEnabled = true
-
-        mMap.setOnMapClickListener { latLng ->
-            mMap.clear()
-            mMap.addMarker(
-                MarkerOptions()
-                    .position(latLng)
-                    .title(person.address).draggable(true)
-            )
-            textInputEditTextLatitude.setText(latLng.latitude.toString())
-            textInputEditTextLongitude.setText(latLng.longitude.toString())
-        }
-        mMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener{
-            override fun onMarkerDrag(marker: Marker) {}
-
-            override fun onMarkerDragEnd(marker: Marker) {
-                var lat = marker.position.latitude
-                var lon = marker.position.longitude
-                textInputEditTextLatitude.setText(lat.toString())
-                textInputEditTextLongitude.setText(lon.toString())
-                Toast.makeText(globalContext, "ON "+"Marker " + marker.getId() + " Draggable" + marker.getPosition(), Toast.LENGTH_SHORT).show()
-            }
-            override fun onMarkerDragStart(marker: Marker) {}
-        })
-
-        fetchLocation()
-
-    }
-
-    private fun fetchLocation() {
-        val task= fusedLocationProviderClient.lastLocation
-        if(ActivityCompat.checkSelfPermission(globalContext!!, android.Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(globalContext!!, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ){
-            ActivityCompat.requestPermissions(globalContext as Activity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
-            return
-        }
-        task.addOnSuccessListener {
-            if (it!=null){
-                // Toast.makeText(globalContext, "lat ${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
-                person.latitude = it.latitude
-                person.longitude = it.longitude
-                mMap.isMyLocationEnabled = true
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(person.latitude, person.longitude), 15.0f))
-                val markerMap =  MarkerOptions().position(LatLng(person.latitude, person.longitude))
-                    .title("Nuevo cliente").draggable(true)
-                mMap.addMarker(markerMap)
-
-                textInputEditTextLatitude.setText(it.latitude.toString())
-                textInputEditTextLongitude.setText(it.longitude.toString())
-
-            }
-        }
-    }
 
 
     private fun loadDistributors(){

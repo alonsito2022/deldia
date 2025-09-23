@@ -141,4 +141,13 @@
         <item name="android:textColorPrimary">@color/toolbar_text</item>
     </style>
 
+    <!-- Estilo para diálogo de pantalla completa -->
+    <style name="FullScreenDialogStyle" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
 </resources>

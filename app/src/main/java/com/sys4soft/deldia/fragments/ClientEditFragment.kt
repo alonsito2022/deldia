@@ -13,16 +13,11 @@ import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
+import com.sys4soft.deldia.dialogs.MapLocationDialog
 import com.sys4soft.deldia.localdatabase.Preference
 import com.sys4soft.deldia.models.Gang
 import com.sys4soft.deldia.models.Person
 import com.sys4soft.deldia.retrofit.UserApiService
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import retrofit2.Call
@@ -30,7 +25,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import com.sys4soft.deldia.R
 
-class ClientEditFragment : Fragment(), OnMapReadyCallback {
+class ClientEditFragment : Fragment() {
 
     // UI Components
     private lateinit var textInputEditTextPersonName: TextInputEditText
@@ -47,6 +42,7 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
     private lateinit var progressBar: ProgressBar
     private lateinit var switchStatus: Switch
     private lateinit var btnSaveAndGoToMap: Button
+    private lateinit var btnSelectLocation: Button
     private lateinit var textInputEditTextAddressName: TextInputEditText
     private lateinit var autoCompleteDistrict: AutoCompleteTextView
     private lateinit var autoCompleteCustomerType: AutoCompleteTextView
@@ -58,9 +54,7 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
     private lateinit var textInputEditTextPersonCellPhone: TextInputEditText
 
     // Map Related
-    private lateinit var mMap: GoogleMap
-    var mapView: View? = null
-    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    // Variables del mapa removidas - ahora se usa el diálogo
 
     // Data Models
     private var person: Person = Person()
@@ -77,7 +71,6 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
         preference = Preference(globalContext)
         arguments?.let { searchPerson.personID = it.getInt("personID") }
         loadDistributors()
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(globalContext!!)
     }
 
 
@@ -104,6 +97,7 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
         textInputEditTextComment = view.findViewById(R.id.textInputEditTextComment)
         switchStatus = view.findViewById(R.id.switchStatus)
         btnSaveAndGoToMap = view.findViewById(R.id.btnSaveAndGoToMap)
+        btnSelectLocation = view.findViewById(R.id.btnSelectLocation)
         textInputEditTextPersonObservation = view.findViewById(R.id.textInputEditTextPersonObservation)
         textInputEditTextPersonCellPhone = view.findViewById(R.id.textInputEditTextPersonCellPhone)
         textInputEditTextAddressName = view.findViewById(R.id.textInputEditTextAddressName)
@@ -195,19 +189,52 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
         }
 
         btnSaveAndGoToMap.setOnClickListener { handleSaveAndSend("N") }
+        
+        btnSelectLocation.setOnClickListener {
+            openMapLocationDialog()
+        }
     }
 
-    private fun setupMap() {
-        val mapFragment = childFragmentManager.findFragmentById(R.id.frg) as SupportMapFragment?
-        mapView = mapFragment!!.view
-        mapFragment.getMapAsync(this)
+    private fun openMapLocationDialog() {
+        // Obtener las coordenadas actuales del cliente (guardadas)
+        val currentLatitude = if (textInputEditTextLatitude.text.toString().isNotEmpty()) {
+            textInputEditTextLatitude.text.toString().toDoubleOrNull() ?: person.latitude
+        } else {
+            person.latitude
+        }
+        
+        val currentLongitude = if (textInputEditTextLongitude.text.toString().isNotEmpty()) {
+            textInputEditTextLongitude.text.toString().toDoubleOrNull() ?: person.longitude
+        } else {
+            person.longitude
+        }
+        
+        val dialog = MapLocationDialog.newInstance(
+            listener = object : MapLocationDialog.OnLocationSelectedListener {
+                override fun onLocationSelected(latitude: Double, longitude: Double) {
+                    // Actualizar los campos de coordenadas
+                    textInputEditTextLatitude.setText(latitude.toString())
+                    textInputEditTextLongitude.setText(longitude.toString())
+                    
+                    // Actualizar el objeto person
+                    person.latitude = latitude
+                    person.longitude = longitude
+                    
+                    Toast.makeText(requireContext(), "Ubicación actualizada correctamente", Toast.LENGTH_SHORT).show()
+                }
+            },
+            initialLatitude = currentLatitude,
+            initialLongitude = currentLongitude
+        )
+        
+        dialog.show(parentFragmentManager, "MapLocationDialog")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews(view)
         setupListeners()
-        setupMap()
+        // setupMap() removido - ahora se usa el diálogo del mapa
     }
 
     /**
@@ -394,34 +421,6 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
                     }
 
                     btnSaveAndGoToMap.setOnClickListener { handleSaveAndSend("N") }
-
-                    val markerMap =  MarkerOptions().position(LatLng(person.latitude, person.longitude))
-                        .title(person.fullName).draggable(true)
-                    mMap.addMarker(markerMap)
-                    mMap.setOnMapClickListener { latLng ->
-                        mMap.clear()
-                        mMap.addMarker(
-                            MarkerOptions()
-                                .position(latLng)
-                                .title(person.address).draggable(true)
-                        )
-                        textInputEditTextLatitude.setText(latLng.latitude.toString())
-                        textInputEditTextLongitude.setText(latLng.longitude.toString())
-                    }
-                    mMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener{
-                        override fun onMarkerDrag(marker: Marker) {}
-
-                        override fun onMarkerDragEnd(marker: Marker) {
-                            var lat = marker.position.latitude
-                            var lon = marker.position.longitude
-                            textInputEditTextLatitude.setText(lat.toString())
-                            textInputEditTextLongitude.setText(lon.toString())
-                            Toast.makeText(globalContext, "ON "+"Marker " + marker.getId() + " Draggable" + marker.getPosition(), Toast.LENGTH_SHORT).show()
-                        }
-                        override fun onMarkerDragStart(marker: Marker) {}
-                    })
-
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(person.latitude, person.longitude), 15.0f))
                 }
             }
 
@@ -679,28 +678,6 @@ class ClientEditFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    private fun fetchLocation() {
-        val task = fusedLocationProviderClient.lastLocation
-        if (ActivityCompat.checkSelfPermission(globalContext!!, android.Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(globalContext!!, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(globalContext as Activity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
-            return
-        }
-        task.addOnSuccessListener {
-            if (it != null) {
-                mMap.isMyLocationEnabled = true
-            }
-        }
-    }
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-        mMap.uiSettings.isZoomControlsEnabled = true
-        fetchLocation()
-    }
 
 
 }
