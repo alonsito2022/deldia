@@ -74,9 +74,24 @@ class QuotationFragment : Fragment() {
         globalContext = this.activity
         preference = Preference(globalContext)
 
-        initializeData(arguments)
-        loadProductStoreInWarehouse()
+        // Restaurar estado guardado si existe
+        savedInstanceState?.let { savedState ->
+            restoreQuotationState(savedState)
+        } ?: run {
+            // Inicializar datos básicos primero
+            initializeData(arguments)
+            
+            // Intentar restaurar desde backup en SharedPreferences
+            if (!restoreFromBackup()) {
+                // Solo cargar productos si no se pudo restaurar desde backup
+                loadProductStoreInWarehouse()
+            }
+        }
+    }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        saveQuotationState(outState)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -199,6 +214,11 @@ class QuotationFragment : Fragment() {
         recyclerViewProductStore.setHasFixedSize(true)
 
         productQuotationAdapter = ProductQuotationAdapter(list)
+        
+        // Si hay estado guardado, restaurar la UI
+        savedInstanceState?.let { savedState ->
+            restoreUIState()
+        }
         productQuotationAdapter.setOnQuantityChangeListener(object : ProductQuotationAdapter.OnQuantityChangeListener{
             override fun onQuantityChanged(id: Int, quantity: String) {
                 val pos = list.indexOfFirst { it.productID == id }
@@ -216,6 +236,9 @@ class QuotationFragment : Fragment() {
                     product.quantity = newQuantity
                     product.subtotal = newSubtotal
                     updateTotal()
+                    
+                    // Guardar estado automáticamente cuando cambia la cantidad
+                    saveStateToBundle()
                 }
             }
             override fun onItemClick(id: Int) {
@@ -260,6 +283,143 @@ class QuotationFragment : Fragment() {
         buttonSummary.setOnClickListener {
             addInfo()
             updateTotal()
+        }
+    }
+
+    private fun saveQuotationState(outState: Bundle) {
+        try {
+            // Guardar datos del cliente
+            outState.putInt("userID", operation.userID)
+            outState.putInt("personID", person.personID)
+            outState.putString("personFullName", person.fullName)
+            outState.putString("personAddress", person.address)
+            outState.putString("personDocumentNumber", person.documentNumber)
+            outState.putString("personDocumentType", person.documentType)
+            outState.putString("physicalDistribution", person.physicalDistribution)
+            outState.putString("physicalDistributionDisplay", person.physicalDistributionDisplay)
+            outState.putString("routeDate", operation.routeDate)
+            
+            // Guardar datos del almacén
+            outState.putInt("warehouseID", warehouse.warehouseID)
+            outState.putString("warehouseName", warehouse.warehouseName)
+            
+            // Guardar lista de productos del pedido
+            val gson = Gson()
+            val productsJson = gson.toJson(list)
+            outState.putString("quotationProducts", productsJson)
+            
+            Log.d("QuotationFragment", "Estado del pedido guardado: ${list.size} productos")
+        } catch (e: Exception) {
+            Log.e("QuotationFragment", "Error al guardar estado: ${e.message}")
+        }
+    }
+
+    private fun restoreQuotationState(savedState: Bundle) {
+        try {
+            // Restaurar datos del cliente
+            operation.userID = savedState.getInt("userID")
+            person.apply {
+                personID = savedState.getInt("personID")
+                fullName = savedState.getString("personFullName", "")
+                address = savedState.getString("personAddress", "")
+                documentNumber = savedState.getString("personDocumentNumber", "")
+                documentType = savedState.getString("personDocumentType", "")
+                physicalDistribution = savedState.getString("physicalDistribution", "")
+                physicalDistributionDisplay = savedState.getString("physicalDistributionDisplay", "")
+            }
+            operation.routeDate = savedState.getString("routeDate", "")
+            
+            // Restaurar datos del almacén
+            warehouse.apply {
+                warehouseID = savedState.getInt("warehouseID")
+                warehouseName = savedState.getString("warehouseName", "")
+            }
+            
+            // Restaurar lista de productos del pedido
+            val productsJson = savedState.getString("quotationProducts", "")
+            if (productsJson.isNotEmpty()) {
+                val gson = Gson()
+                val restoredProducts = gson.fromJson(productsJson, Array<Product>::class.java).toList()
+                list.clear()
+                list.addAll(restoredProducts)
+                
+                Log.d("QuotationFragment", "Estado del pedido restaurado: ${list.size} productos")
+            } else {
+                // Si no hay productos guardados, cargar desde la API
+                loadProductStoreInWarehouse()
+            }
+        } catch (e: Exception) {
+            Log.e("QuotationFragment", "Error al restaurar estado: ${e.message}")
+            // En caso de error, inicializar normalmente
+            initializeData(arguments)
+            loadProductStoreInWarehouse()
+        }
+    }
+
+    private fun restoreUIState() {
+        try {
+            // Actualizar la UI con los datos restaurados
+            textViewClientNames.text = person.fullName
+            textViewClientAddress.text = person.address
+            
+            // Configurar el adapter con la lista restaurada
+            recyclerViewProductStore.adapter = productQuotationAdapter
+            
+            // Actualizar totales
+            updateTotal()
+            
+            Log.d("QuotationFragment", "UI restaurada con ${list.size} productos")
+        } catch (e: Exception) {
+            Log.e("QuotationFragment", "Error al restaurar UI: ${e.message}")
+        }
+    }
+
+    private fun saveStateToBundle() {
+        try {
+            // Guardar estado en SharedPreferences como respaldo adicional
+            val gson = Gson()
+            val productsJson = gson.toJson(list)
+            preference.saveData("quotation_backup", productsJson)
+            preference.saveData("quotation_client", person.fullName)
+            
+            Log.d("QuotationFragment", "Estado guardado en backup: ${list.size} productos")
+        } catch (e: Exception) {
+            Log.e("QuotationFragment", "Error al guardar backup: ${e.message}")
+        }
+    }
+
+    private fun restoreFromBackup(): Boolean {
+        try {
+            val backupJson = preference.getData("quotation_backup")
+            val backupClient = preference.getData("quotation_client")
+            
+            // Verificar si hay backup y si coincide con el cliente actual
+            if (backupJson.isNotEmpty() && backupClient.isNotEmpty() && backupClient == person.fullName) {
+                val gson = Gson()
+                val restoredProducts = gson.fromJson(backupJson, Array<Product>::class.java).toList()
+                
+                // Restaurar productos
+                list.clear()
+                list.addAll(restoredProducts)
+                
+                Log.d("QuotationFragment", "Estado restaurado desde backup: ${list.size} productos para $backupClient")
+                return true
+            } else {
+                Log.d("QuotationFragment", "No hay backup válido o cliente diferente. Backup client: '$backupClient', Current client: '${person.fullName}'")
+            }
+        } catch (e: Exception) {
+            Log.e("QuotationFragment", "Error al restaurar desde backup: ${e.message}")
+        }
+        return false
+    }
+
+    private fun clearBackup() {
+        try {
+            preference.saveData("quotation_backup", "")
+            preference.saveData("quotation_client", "")
+            Log.d("QuotationFragment", "Backup limpiado después de envío exitoso")
+        } catch (e: Exception) {
+            Log.e("QuotationFragment", "Error al limpiar backup: ${e.message}")
         }
     }
 
@@ -548,6 +708,10 @@ class QuotationFragment : Fragment() {
 
                     bundle!!.putInt("userID", operation.userID)
                     bundle.putInt("vehicleID", warehouse.warehouseID)
+                    
+                    // Limpiar backup después de envío exitoso
+                    clearBackup()
+                    
                     currentDialog.dismiss()
                     findNavController().navigate(R.id.action_quotationFragment_to_saleRealizedFragment, bundle)
                 } else {
