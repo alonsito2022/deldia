@@ -7,13 +7,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.google.android.material.textfield.TextInputEditText
 import com.sys4soft.deldia.R
+import com.sys4soft.deldia.adapter.UserAdapter
 import com.sys4soft.deldia.localdatabase.Preference
 import com.sys4soft.deldia.models.*
 import com.sys4soft.deldia.retrofit.UserApiService
@@ -22,6 +21,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class CollectionSheetFragment : Fragment() {
 
@@ -34,6 +34,8 @@ class CollectionSheetFragment : Fragment() {
 
     private lateinit var editTextSearchDate: TextInputEditText
     private lateinit var editTextUserFullName: TextInputEditText
+    private lateinit var autoCompleteUser: AutoCompleteTextView
+    private lateinit var userAdapter: UserAdapter
     private lateinit var textViewTotalPurchased: TextView
     private lateinit var textViewTotalCredit: TextView
     private lateinit var textViewTotalYape: TextView
@@ -42,6 +44,7 @@ class CollectionSheetFragment : Fragment() {
     private lateinit var textViewTotalCash: TextView
     private lateinit var textViewTotalPending: TextView
     private lateinit var cardViewTotals: CardView
+    private var listUsers = arrayListOf<User>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +67,7 @@ class CollectionSheetFragment : Fragment() {
 
         editTextSearchDate = view.findViewById(R.id.editTextSearchDate)
         editTextUserFullName = view.findViewById(R.id.editTextUserFullName)
+        autoCompleteUser = view.findViewById(R.id.autoCompleteUser)
         textViewTotalPurchased = view.findViewById(R.id.textViewTotalPurchased)
         textViewTotalCredit = view.findViewById(R.id.textViewTotalCredit)
         textViewTotalYape = view.findViewById(R.id.textViewTotalYape)
@@ -74,7 +78,7 @@ class CollectionSheetFragment : Fragment() {
         cardViewTotals = view.findViewById(R.id.cardViewTotals)
 
         setupDatePicker()
-        loadUser()
+        checkUserRoleAndConfigureFields()
         setupSearchButton()
         
         // Set default date to today
@@ -110,7 +114,62 @@ class CollectionSheetFragment : Fragment() {
         editTextSearchDate.setText(dateFormatter.format(selectedDate))
     }
 
-    private fun loadUser() {
+    private fun checkUserRoleAndConfigureFields() {
+        val userRoleName = preference.getData("userRoleName")
+        
+        when (userRoleName.lowercase()) {
+            "preventista" -> {
+                // Para preventistas: mostrar campos de solo lectura con datos del usuario logueado
+                showReadOnlyFields()
+            }
+            "repartidor" -> {
+                // Para repartidores: mostrar campos de solo lectura con datos del usuario logueado
+                showReadOnlyFields()
+            }
+            "administrador" -> {
+                // Para administradores: permitir selección de usuario
+                showEditableFieldsForAdmin()
+            }
+            else -> {
+                // Para otros roles: mantener funcionalidad normal
+                showReadOnlyFields()
+            }
+        }
+    }
+    
+    private fun showReadOnlyFields() {
+        // Ocultar campo editable
+        view?.findViewById<View>(R.id.textInputLayoutUser)?.visibility = View.GONE
+        
+        // Mostrar campo de solo lectura
+        view?.findViewById<View>(R.id.textInputLayoutUserReadOnly)?.visibility = View.VISIBLE
+        
+        // Cargar datos del usuario logueado
+        loadCurrentUser()
+    }
+    
+    private fun showEditableFieldsForAdmin() {
+        // Mostrar campo editable
+        view?.findViewById<View>(R.id.textInputLayoutUser)?.visibility = View.VISIBLE
+        
+        // Ocultar campo de solo lectura
+        view?.findViewById<View>(R.id.textInputLayoutUserReadOnly)?.visibility = View.GONE
+        
+        // Configurar listener para el AutoCompleteTextView como Spinner
+        autoCompleteUser.setOnClickListener {
+            autoCompleteUser.showDropDown()
+        }
+        
+        // Deshabilitar la escritura manual para que se comporte como Spinner
+        autoCompleteUser.keyListener = null
+        autoCompleteUser.isFocusable = false
+        autoCompleteUser.isClickable = true
+        
+        // Cargar lista de usuarios para administradores
+        loadAllUsersForAdmin()
+    }
+    
+    private fun loadCurrentUser() {
         user.lastName = preference.getData("userLastName")
         user.firstName = preference.getData("userName")
         user.userID = preference.getData("userID").toInt()
@@ -119,6 +178,55 @@ class CollectionSheetFragment : Fragment() {
         editTextUserFullName.setText("${user.firstName} ${user.lastName}")
         selectedUser = user
     }
+    
+    private fun loadAllUsersForAdmin(){
+        val apiInterface = UserApiService.create(requireContext()).getAllSellers()
+        apiInterface.enqueue(object : Callback<ArrayList<User>> {
+            override fun onResponse(call: Call<ArrayList<User>>, response: Response<ArrayList<User>>) {
+                listUsers = response.body()!!
+                
+                // Para administradores: NO agregar opción "TODOS"
+                // Solo mostrar usuarios reales para selección específica
+                
+                userAdapter = UserAdapter(globalContext!!, R.layout.item_user_view, listUsers, object : UserAdapter.OnItemClickListener{
+                    override fun onItemClick(model: User) {
+                        autoCompleteUser.setText(model.fullName, false)
+                        autoCompleteUser.dismissDropDown()
+                        selectedUser = model
+                        Log.d("CollectionSheetFragment", "Admin seleccionó usuario: ${model.fullName} (ID: ${model.userID})")
+                    }
+                })
+                autoCompleteUser.setAdapter(userAdapter)
+                
+                // Configurar el dropdown para que se comporte como Spinner
+                autoCompleteUser.threshold = 1
+                autoCompleteUser.setOnItemClickListener { parent, view, position, id ->
+                    val selectedUserItem = userAdapter.getItem(position)
+                    selectedUserItem?.let {
+                        autoCompleteUser.setText(it.fullName, false)
+                        selectedUser = it
+                        Log.d("CollectionSheetFragment", "Admin seleccionó usuario: ${it.fullName} (ID: ${it.userID})")
+                    }
+                }
+
+                // Para administradores: preseleccionar el usuario logueado por defecto
+                val currentUserID = preference.getData("userID").toIntOrNull() ?: 0
+                
+                // Buscar y preseleccionar el usuario actual
+                val currentUser = listUsers.find { it.userID == currentUserID }
+                if (currentUser != null) {
+                    autoCompleteUser.setText(currentUser.fullName, false)
+                    selectedUser = currentUser
+                    Log.d("CollectionSheetFragment", "Admin preseleccionado: ${currentUser.fullName}")
+                }
+            }
+
+            override fun onFailure(call: Call<ArrayList<User>>, t: Throwable) {
+                Log.e("CollectionSheetFragment", "Error al cargar usuarios para admin: ${t.message}")
+                Toast.makeText(requireContext(), "Error al cargar usuarios", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
 
 
     private fun setupSearchButton() {
@@ -126,6 +234,16 @@ class CollectionSheetFragment : Fragment() {
             if (selectedUser == null) {
                 Toast.makeText(requireContext(), "Usuario no encontrado", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
+            }
+            
+            // Validación adicional para administradores
+            val userRoleName = preference.getData("userRoleName")
+            if (userRoleName.lowercase() == "administrador") {
+                if (autoCompleteUser.text.toString().isEmpty()) {
+                    Toast.makeText(requireContext(), "Por favor seleccione un usuario", Toast.LENGTH_SHORT).show()
+                    autoCompleteUser.showDropDown()
+                    return@setOnClickListener
+                }
             }
             
             searchSales()

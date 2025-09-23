@@ -60,6 +60,7 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
+                <!-- Campo editable para administradores -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutUser"
                     android:layout_width="match_parent"
@@ -67,6 +68,24 @@
                     android:hint="Vendedor"
                     style="@style/LoginTextInputLayoutStyle"
                     android:layout_marginBottom="16dp">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/autoCompleteUser"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:inputType="textPersonName"
+                        style="@style/AutoCompleteSpinnerStyle"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Campo de solo lectura para preventistas/repartidores -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayoutUserReadOnly"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Vendedor"
+                    style="@style/LoginTextInputLayoutStyle"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextUserFullName"

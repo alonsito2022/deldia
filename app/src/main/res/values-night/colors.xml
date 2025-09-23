@@ -70,4 +70,12 @@
     <color name="bottom_navigation_text">#FFFFFF</color>
     <color name="toolbar_background">#1E1E1E</color>
     <color name="toolbar_text">#FFFFFF</color>
+
+    <!-- Colores específicos para AutoCompleteTextView en modo dark -->
+    <color name="autocomplete_background">#2D2D2D</color>
+    <color name="autocomplete_text">#FFFFFF</color>
+    <color name="autocomplete_hint">#757575</color>
+    <color name="autocomplete_stroke">#424242</color>
+    <color name="autocomplete_dropdown_background">#2D2D2D</color>
+    <color name="autocomplete_dropdown_text">#FFFFFF</color>
 </resources>
