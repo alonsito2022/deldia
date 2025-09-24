@@ -73,4 +73,19 @@
     <color name="autocomplete_stroke">#BDBDBD</color>
     <color name="autocomplete_dropdown_background">#FFFFFF</color>
     <color name="autocomplete_dropdown_text">#212121</color>
+
+    <!-- Colores específicos para CollectionSheet en modo light -->
+    <color name="collection_background">#FFFFFF</color>
+    <color name="collection_card_background">#FFFFFF</color>
+    <color name="collection_text_primary">#212121</color>
+    <color name="collection_text_secondary">#757575</color>
+    <color name="collection_text_hint">#9E9E9E</color>
+    <color name="collection_input_background">#FFFFFF</color>
+    <color name="collection_input_stroke">#BDBDBD</color>
+    <color name="collection_button_background">#0277BD</color>
+    <color name="collection_button_text">#FFFFFF</color>
+    <color name="collection_totals_card_background">#FFFFFF</color>
+    <color name="collection_totals_text">#212121</color>
+    <color name="collection_totals_label">#757575</color>
+    <color name="collection_divider">#E0E0E0</color>
 </resources>

@@ -297,7 +297,7 @@
     <fragment
         android:id="@+id/collectionSheetFragment"
         android:name="com.sys4soft.deldia.fragments.CollectionSheetFragment"
-        android:label="fragment_collection_sheet"
+        android:label="Hoja de cobranza"
         tools:layout="@layout/fragment_collection_sheet" >
         <action
             android:id="@+id/action_collectionSheetFragment_to_chartFragment"

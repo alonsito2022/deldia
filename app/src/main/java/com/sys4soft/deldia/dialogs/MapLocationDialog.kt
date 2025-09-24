@@ -2,6 +2,7 @@ package com.sys4soft.deldia.dialogs
 
 import android.app.Dialog
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.fragment.app.DialogFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -34,6 +38,7 @@ class MapLocationDialog : DialogFragment(), OnMapReadyCallback {
     private lateinit var btnConfirmLocation: Button
     private lateinit var btnCancelLocation: Button
     private lateinit var btnCloseDialog: ImageButton
+    private lateinit var fabCurrentLocation: FloatingActionButton
     
     private var currentLatitude: Double = 0.0
     private var currentLongitude: Double = 0.0
@@ -87,6 +92,7 @@ class MapLocationDialog : DialogFragment(), OnMapReadyCallback {
         btnConfirmLocation = view.findViewById(R.id.btnConfirmLocation)
         btnCancelLocation = view.findViewById(R.id.btnCancelLocation)
         btnCloseDialog = view.findViewById(R.id.btnCloseDialog)
+        fabCurrentLocation = view.findViewById(R.id.fabCurrentLocation)
     }
 
     private fun setupClickListeners() {
@@ -101,6 +107,10 @@ class MapLocationDialog : DialogFragment(), OnMapReadyCallback {
         btnConfirmLocation.setOnClickListener {
             listener?.onLocationSelected(currentLatitude, currentLongitude)
             dismiss()
+        }
+        
+        fabCurrentLocation.setOnClickListener {
+            goToCurrentLocation()
         }
     }
 
@@ -173,6 +183,47 @@ class MapLocationDialog : DialogFragment(), OnMapReadyCallback {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 15.0f))
                 updateCoordinatesFromMapCenter()
             }
+        }
+    }
+
+    private fun goToCurrentLocation() {
+        // Verificar permisos de ubicación
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && 
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Toast.makeText(requireContext(), "Permisos de ubicación no disponibles", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        // Obtener ubicación actual
+        val task = fusedLocationProviderClient.lastLocation
+        task.addOnSuccessListener { location ->
+            if (location != null) {
+                val currentLocation = LatLng(location.latitude, location.longitude)
+                
+                // Habilitar el indicador de mi ubicación
+                mMap.isMyLocationEnabled = true
+                
+                // Mover la cámara a la ubicación actual
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16.0f))
+                
+                // Actualizar las coordenadas mostradas
+                updateCoordinatesFromMapCenter()
+                
+                Toast.makeText(requireContext(), "Ubicación actual obtenida", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "No se pudo obtener la ubicación actual", Toast.LENGTH_SHORT).show()
+            }
+        }
+        
+        task.addOnFailureListener {
+            Toast.makeText(requireContext(), "Error al obtener ubicación: ${it.message}", Toast.LENGTH_SHORT).show()
         }
     }
 

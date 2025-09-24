@@ -166,4 +166,69 @@
         <item name="android:completionThreshold">1</item>
     </style>
 
+    <!-- Estilos específicos para CollectionSheet en modo light -->
+    <style name="CollectionSheetTitleStyle">
+        <item name="android:textColor">@color/collection_text_primary</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/nexa_bold</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="CollectionSheetSubtitleStyle">
+        <item name="android:textColor">@color/collection_text_secondary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/nexa_light</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="CollectionSheetCardStyle">
+        <item name="android:background">@color/collection_card_background</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">4dp</item>
+    </style>
+
+    <style name="CollectionSheetInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">@color/collection_text_hint</item>
+        <item name="android:background">@color/collection_input_background</item>
+        <item name="boxStrokeColor">@color/collection_input_stroke</item>
+        <item name="hintTextColor">@color/collection_text_hint</item>
+    </style>
+
+    <style name="CollectionSheetButtonStyle">
+        <item name="android:backgroundTint">@color/collection_button_background</item>
+        <item name="android:textColor">@color/collection_button_text</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/nobile</item>
+    </style>
+
+    <style name="CollectionSheetTotalsCardStyle">
+        <item name="android:background">@color/collection_totals_card_background</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">8dp</item>
+    </style>
+
+    <style name="CollectionSheetTotalsTitleStyle">
+        <item name="android:textColor">@color/collection_totals_text</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/nexa_bold</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="CollectionSheetTotalsLabelStyle">
+        <item name="android:textColor">@color/collection_totals_label</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/nexa_bold</item>
+    </style>
+
+    <style name="CollectionSheetTotalsValueStyle">
+        <item name="android:textColor">@color/collection_totals_text</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/nexa_bold</item>
+    </style>
+
 </resources>

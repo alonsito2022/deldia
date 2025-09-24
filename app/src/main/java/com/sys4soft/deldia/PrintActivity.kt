@@ -459,7 +459,7 @@ class PrintActivity : AppCompatActivity() {
         textTicketPart1 += "CAL.GENERAL FERNANDINI NRO. 415 URB. SALAVERRY \n"
         textTicketPart1 += "AREQUIPA - AREQUIPA - SOCABAYA \n"
         textTicketPart1 += "RUC 20611894067 \n"
-        textTicketPart1 += "TELEFONO 958245315 \n"
+        textTicketPart1 += "TELEFONO 958245315 - 900013520 \n"
         textTicketPart1 += "------------------------------\n"
 
         textTicketPart1 += operation.documentTypeDisplay + " \n"
@@ -616,7 +616,7 @@ class PrintActivity : AppCompatActivity() {
             outputStream!!.write("CAL.GENERAL FERNANDINI NRO. 415 URB. SALAVERRY \n".toByteArray(Charsets.UTF_8))
             outputStream!!.write("AREQUIPA - AREQUIPA - SOCABAYA \n".toByteArray())
             outputStream!!.write("RUC 20611894067 \n".toByteArray())
-            outputStream!!.write("TELEFONO 958245315 \n".toByteArray())
+            outputStream!!.write("TELEFONO 958245315 - 900013520 \n".toByteArray())
             outputStream!!.write("------------------------------\n".toByteArray())
 
             outputStream!!.write(String("${operation.documentTypeDisplay} \n".toByteArray(Charsets.UTF_8), StandardCharsets.UTF_8).toByteArray())
