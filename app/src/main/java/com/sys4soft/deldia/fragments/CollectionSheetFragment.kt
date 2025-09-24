@@ -91,11 +91,20 @@ class CollectionSheetFragment : Fragment() {
         recyclerViewGangMultiSelect = view.findViewById(R.id.recyclerViewGangMultiSelect)
 
         setupDatePicker()
+        setupGangMultiSelector()
         checkUserRoleAndConfigureFields()
         setupSearchButton()
         
         // Set default date to today
         updateDateDisplay()
+    }
+
+    private fun setupGangMultiSelector() {
+        // Configurar RecyclerView
+        recyclerViewGangMultiSelect.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
+        
+        // Cargar rutas según el rol del usuario
+        loadGangsByUserRole()
     }
 
     private fun setupDatePicker() {
@@ -136,9 +145,8 @@ class CollectionSheetFragment : Fragment() {
                 showReadOnlyFields()
             }
             "repartidor" -> {
-                // Para repartidores: mostrar campos de solo lectura + multiselector de rutas
-                showReadOnlyFields()
-                showGangMultiSelector()
+                // Para repartidores: permitir selección de usuario
+                showEditableFieldsForRepartidor()
             }
             "administrador" -> {
                 // Para administradores: permitir selección de usuario
@@ -181,6 +189,27 @@ class CollectionSheetFragment : Fragment() {
         
         // Cargar lista de usuarios para administradores
         loadAllUsersForAdmin()
+    }
+
+    private fun showEditableFieldsForRepartidor() {
+        // Mostrar campo editable
+        view?.findViewById<View>(R.id.textInputLayoutUser)?.visibility = View.VISIBLE
+        
+        // Ocultar campo de solo lectura
+        view?.findViewById<View>(R.id.textInputLayoutUserReadOnly)?.visibility = View.GONE
+        
+        // Configurar listener para el AutoCompleteTextView como Spinner
+        autoCompleteUser.setOnClickListener {
+            autoCompleteUser.showDropDown()
+        }
+        
+        // Deshabilitar la escritura manual para que se comporte como Spinner
+        autoCompleteUser.keyListener = null
+        autoCompleteUser.isFocusable = false
+        autoCompleteUser.isClickable = true
+        
+        // Cargar usuarios para repartidor (similar a admin pero con lógica específica)
+        loadUsersForRepartidor()
     }
     
     private fun loadCurrentUser() {
@@ -239,6 +268,50 @@ class CollectionSheetFragment : Fragment() {
         })
     }
 
+    private fun loadUsersForRepartidor(){
+        val apiInterface = UserApiService.create(requireContext()).getAllSellers()
+        apiInterface.enqueue(object : Callback<ArrayList<User>> {
+            override fun onResponse(call: Call<ArrayList<User>>, response: Response<ArrayList<User>>) {
+                listUsers = response.body()!!
+                
+                // Para repartidores: mostrar todos los usuarios disponibles
+                
+                userAdapter = UserAdapter(globalContext!!, R.layout.item_user_view, listUsers, object : UserAdapter.OnItemClickListener{
+                    override fun onItemClick(model: User) {
+                        autoCompleteUser.setText(model.fullName, false)
+                        autoCompleteUser.dismissDropDown()
+                        selectedUser = model
+                    }
+                })
+                autoCompleteUser.setAdapter(userAdapter)
+                
+                // Configurar el dropdown para que se comporte como Spinner
+                autoCompleteUser.threshold = 1
+                autoCompleteUser.setOnItemClickListener { parent, view, position, id ->
+                    val selectedUserItem = userAdapter.getItem(position)
+                    selectedUserItem?.let {
+                        autoCompleteUser.setText(it.fullName, false)
+                        selectedUser = it
+                    }
+                }
+
+                // Para repartidores: preseleccionar el usuario logueado por defecto
+                val currentUserID = preference.getData("userID").toIntOrNull() ?: 0
+                
+                // Buscar y preseleccionar el usuario actual
+                val currentUser = listUsers.find { it.userID == currentUserID }
+                if (currentUser != null) {
+                    autoCompleteUser.setText(currentUser.fullName, false)
+                    selectedUser = currentUser
+                }
+            }
+
+            override fun onFailure(call: Call<ArrayList<User>>, t: Throwable) {
+                Log.e("CollectionSheetFragment", "Error al cargar usuarios para repartidor: ${t.message}")
+                Toast.makeText(requireContext(), "Error al cargar usuarios", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
 
     private fun setupSearchButton() {
         btnSearch.setOnClickListener {
@@ -247,9 +320,9 @@ class CollectionSheetFragment : Fragment() {
                 return@setOnClickListener
             }
             
-            // Validación adicional para administradores
+            // Validación adicional para administradores y repartidores
             val userRoleName = preference.getData("userRoleName")
-            if (userRoleName.lowercase() == "administrador") {
+            if (userRoleName.lowercase() == "administrador" || userRoleName.lowercase() == "repartidor") {
                 if (autoCompleteUser.text.toString().isEmpty()) {
                     Toast.makeText(requireContext(), "Por favor seleccione un usuario", Toast.LENGTH_SHORT).show()
                     autoCompleteUser.showDropDown()
@@ -257,12 +330,10 @@ class CollectionSheetFragment : Fragment() {
                 }
             }
             
-            // Validación para REPARTIDOR: debe seleccionar al menos una ruta
-            if (userRoleName.lowercase() == "repartidor") {
-                if (selectedGangs.isEmpty()) {
-                    Toast.makeText(requireContext(), "Por favor seleccione al menos una ruta", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }
+            // Validación para todos los usuarios: debe seleccionar al menos una ruta
+            if (selectedGangs.isEmpty()) {
+                Toast.makeText(requireContext(), "Por favor seleccione al menos una ruta", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
             
             searchSales()
@@ -270,19 +341,13 @@ class CollectionSheetFragment : Fragment() {
     }
 
     private fun searchSales() {
-        val userRoleName = preference.getData("userRoleName")
-        
         val request = SalesBySellerRequest().apply {
             userID = selectedUser!!.userID.toString()
             gangID = "0"
             searchDate = dateFormatter.format(selectedDate)
             
-            // Para REPARTIDOR, incluir las rutas seleccionadas
-            if (userRoleName.lowercase() == "repartidor") {
-                selectedGangs = this@CollectionSheetFragment.selectedGangs.map { it.toString() } as ArrayList<String>
-            } else {
-                selectedGangs = arrayListOf()
-            }
+            // Incluir las rutas seleccionadas para todos los usuarios
+            selectedGangs = this@CollectionSheetFragment.selectedGangs.map { it.toString() } as ArrayList<String>
         }
         val apiInterface = UserApiService.create(requireContext()).getAllSalesBySellers(request)
         apiInterface.enqueue(object : Callback<ArrayList<SaleBySeller>> {
@@ -345,18 +410,54 @@ class CollectionSheetFragment : Fragment() {
         cardViewTotals.visibility = View.VISIBLE
     }
 
-    private fun showGangMultiSelector() {
-        // Mostrar el multiselector de rutas
-        cardViewGangMultiSelect.visibility = View.VISIBLE
+    private fun loadGangsByUserRole() {
+        val userRoleName = preference.getData("userRoleName")
         
-        // Configurar RecyclerView
-        recyclerViewGangMultiSelect.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
-        
-        // Cargar rutas asignadas al usuario
-        loadAssignedGangs()
+        when (userRoleName.lowercase()) {
+            "preventista" -> {
+                // Para preventista: solo la ruta principal
+                loadMainGang()
+            }
+            "repartidor" -> {
+                // Para repartidor: ruta principal + rutas adicionales
+                loadRepartidorGangs()
+            }
+            "administrador" -> {
+                // Para administrador: todas las rutas
+                loadAllGangs()
+            }
+            else -> {
+                // Para otros roles: solo la ruta principal
+                loadMainGang()
+            }
+        }
     }
 
-    private fun loadAssignedGangs() {
+    private fun loadMainGang() {
+        val gangID = preference.getData("gangID")?.toIntOrNull()
+        val gangName = preference.getData("gangName") ?: ""
+        
+        if (gangID != null) {
+            val mainGang = AssignedGang().apply {
+                this.gangID = gangID
+                this.name = gangName
+                this.serial = ""
+                this.warehouse = Warehouse().apply {
+                    warehouseID = 0
+                    warehouseName = ""
+                }
+            }
+            
+            listAssignedGangs = arrayListOf(mainGang)
+            setupGangAdapter()
+            
+            // Preseleccionar la ruta principal
+            selectedGangs = arrayListOf(gangID)
+            gangMultiSelectAdapter.setSelectedGangs(selectedGangs)
+        }
+    }
+
+    private fun loadRepartidorGangs() {
         val userID = preference.getData("userID")?.toIntOrNull()
         if (userID == null) {
             Toast.makeText(requireContext(), "Error: ID de usuario no encontrado", Toast.LENGTH_SHORT).show()
@@ -374,21 +475,30 @@ class CollectionSheetFragment : Fragment() {
                 if (response.isSuccessful && response.body() != null) {
                     listAssignedGangs = response.body()!!
                     
-                    // Configurar adapter
-                    gangMultiSelectAdapter = GangMultiSelectAdapter(
-                        listAssignedGangs,
-                        onGangSelectionChanged = { selectedGangIds ->
-                            selectedGangs = selectedGangIds
+                    // Agregar la ruta principal si no está en la lista
+                    val gangID = preference.getData("gangID")?.toIntOrNull()
+                    val gangName = preference.getData("gangName") ?: ""
+                    
+                    if (gangID != null && !listAssignedGangs.any { it.gangID == gangID }) {
+                        val mainGang = AssignedGang().apply {
+                            this.gangID = gangID
+                            this.name = gangName
+                            this.serial = ""
+                            this.warehouse = Warehouse().apply {
+                                warehouseID = 0
+                                warehouseName = ""
+                            }
                         }
-                    )
+                        listAssignedGangs.add(0, mainGang) // Agregar al inicio
+                    }
                     
-                    recyclerViewGangMultiSelect.adapter = gangMultiSelectAdapter
+                    setupGangAdapter()
                     
-                    // Seleccionar todas las rutas por defecto
+                    // Preseleccionar todas las rutas
                     val allGangIds = listAssignedGangs.map { it.gangID }
-                    gangMultiSelectAdapter.setSelectedGangs(ArrayList(allGangIds))
                     selectedGangs = ArrayList(allGangIds)
-
+                    gangMultiSelectAdapter.setSelectedGangs(selectedGangs)
+                    
                 } else {
                     Toast.makeText(requireContext(), "Error al cargar rutas asignadas", Toast.LENGTH_SHORT).show()
                 }
@@ -399,4 +509,55 @@ class CollectionSheetFragment : Fragment() {
             }
         })
     }
+
+    private fun loadAllGangs() {
+        val userApiService = UserApiService.create(requireContext())
+        val call = userApiService.getGangs()
+
+        call.enqueue(object : Callback<ArrayList<Gang>> {
+            override fun onResponse(call: Call<ArrayList<Gang>>, response: Response<ArrayList<Gang>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val allGangs = response.body()!!
+                    
+                    // Convertir Gang a AssignedGang
+                    listAssignedGangs = allGangs.map { gang ->
+                        AssignedGang().apply {
+                            gangID = gang.gangID
+                            name = gang.name
+                            serial = gang.serial
+                            warehouse = Warehouse().apply {
+                                warehouseID = 0
+                                warehouseName = ""
+                            }
+                        }
+                    } as ArrayList<AssignedGang>
+                    
+                    setupGangAdapter()
+                    
+                    // No preseleccionar nada para administradores
+                    selectedGangs = arrayListOf()
+                    gangMultiSelectAdapter.clearSelection()
+                    
+                } else {
+                    Toast.makeText(requireContext(), "Error al cargar todas las rutas", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ArrayList<Gang>>, t: Throwable) {
+                Toast.makeText(requireContext(), "Error de conexión al cargar rutas", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun setupGangAdapter() {
+        gangMultiSelectAdapter = GangMultiSelectAdapter(
+            listAssignedGangs,
+            onGangSelectionChanged = { selectedGangIds ->
+                selectedGangs = selectedGangIds
+            }
+        )
+        
+        recyclerViewGangMultiSelect.adapter = gangMultiSelectAdapter
+    }
+
 }

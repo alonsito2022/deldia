@@ -181,8 +181,8 @@ interface UserApiService {
     fun getAllSalesBySellers(@Body request: SalesBySellerRequest) : Call<ArrayList<SaleBySeller>>
 
     companion object {
-        var BASE_URL = "http://192.168.1.20:9017/"
-//        var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"
+//        var BASE_URL = "http://192.168.1.20:9017/"
+        var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"
 
         fun create(context: Context): UserApiService {
             val client = OkHttpClient.Builder()
