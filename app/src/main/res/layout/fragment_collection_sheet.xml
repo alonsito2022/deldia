@@ -88,6 +88,49 @@
                         android:fontFamily="@font/nexa_light"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Multiselector de rutas para REPARTIDOR -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardViewGangMultiSelect"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"
+                    style="@style/CollectionSheetCardStyle">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Seleccionar Rutas"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/collection_text_primary"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Selecciona las rutas para consultar su cobranza"
+                            android:textSize="14sp"
+                            android:textColor="@color/collection_text_secondary"
+                            android:layout_marginBottom="12dp" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerViewGangMultiSelect"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:maxHeight="200dp"
+                            android:scrollbars="vertical" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutSearchDate"
                     android:layout_width="match_parent"

@@ -20,6 +20,10 @@ interface UserApiService {
     @Headers("Accept: application/json", "Content-type:application/json")
     fun getLogin(@Header("Authorization") token : String) : Call<ResponseLogin>
 
+    @POST("dispatches/api/v1/get_assigned_gangs_by_user/")
+    @Headers("Accept: application/json", "Content-type:application/json")
+    fun getAssignedGangsByUser(@Body params: User) : Call<ArrayList<AssignedGang>>
+
     @POST("dispatches/api/v1/get_user_by_id/")
     @Headers("Accept: application/json", "Content-type:application/json")
     fun getUser(@Body params: User) : Call<User>
@@ -177,8 +181,8 @@ interface UserApiService {
     fun getAllSalesBySellers(@Body request: SalesBySellerRequest) : Call<ArrayList<SaleBySeller>>
 
     companion object {
-//        var BASE_URL = "http://192.168.1.20:9017/"
-        var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"
+        var BASE_URL = "http://192.168.1.20:9017/"
+//        var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"
 
         fun create(context: Context): UserApiService {
             val client = OkHttpClient.Builder()

@@ -10,9 +10,11 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.sys4soft.deldia.R
 import com.sys4soft.deldia.adapter.UserAdapter
+import com.sys4soft.deldia.adapter.GangMultiSelectAdapter
 import com.sys4soft.deldia.localdatabase.Preference
 import com.sys4soft.deldia.models.*
 import com.sys4soft.deldia.retrofit.UserApiService
@@ -45,6 +47,13 @@ class CollectionSheetFragment : Fragment() {
     private lateinit var textViewTotalPending: TextView
     private lateinit var cardViewTotals: CardView
     private var listUsers = arrayListOf<User>()
+    
+    // Variables para multiselector de rutas
+    private lateinit var cardViewGangMultiSelect: CardView
+    private lateinit var recyclerViewGangMultiSelect: RecyclerView
+    private lateinit var gangMultiSelectAdapter: GangMultiSelectAdapter
+    private var listAssignedGangs = arrayListOf<AssignedGang>()
+    private var selectedGangs = arrayListOf<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +85,10 @@ class CollectionSheetFragment : Fragment() {
         textViewTotalCash = view.findViewById(R.id.textViewTotalCash)
         textViewTotalPending = view.findViewById(R.id.textViewTotalPending)
         cardViewTotals = view.findViewById(R.id.cardViewTotals)
+        
+        // Inicializar variables del multiselector de rutas
+        cardViewGangMultiSelect = view.findViewById(R.id.cardViewGangMultiSelect)
+        recyclerViewGangMultiSelect = view.findViewById(R.id.recyclerViewGangMultiSelect)
 
         setupDatePicker()
         checkUserRoleAndConfigureFields()
@@ -123,8 +136,9 @@ class CollectionSheetFragment : Fragment() {
                 showReadOnlyFields()
             }
             "repartidor" -> {
-                // Para repartidores: mostrar campos de solo lectura con datos del usuario logueado
+                // Para repartidores: mostrar campos de solo lectura + multiselector de rutas
                 showReadOnlyFields()
+                showGangMultiSelector()
             }
             "administrador" -> {
                 // Para administradores: permitir selección de usuario
@@ -193,7 +207,6 @@ class CollectionSheetFragment : Fragment() {
                         autoCompleteUser.setText(model.fullName, false)
                         autoCompleteUser.dismissDropDown()
                         selectedUser = model
-                        Log.d("CollectionSheetFragment", "Admin seleccionó usuario: ${model.fullName} (ID: ${model.userID})")
                     }
                 })
                 autoCompleteUser.setAdapter(userAdapter)
@@ -205,7 +218,6 @@ class CollectionSheetFragment : Fragment() {
                     selectedUserItem?.let {
                         autoCompleteUser.setText(it.fullName, false)
                         selectedUser = it
-                        Log.d("CollectionSheetFragment", "Admin seleccionó usuario: ${it.fullName} (ID: ${it.userID})")
                     }
                 }
 
@@ -217,7 +229,6 @@ class CollectionSheetFragment : Fragment() {
                 if (currentUser != null) {
                     autoCompleteUser.setText(currentUser.fullName, false)
                     selectedUser = currentUser
-                    Log.d("CollectionSheetFragment", "Admin preseleccionado: ${currentUser.fullName}")
                 }
             }
 
@@ -246,18 +257,33 @@ class CollectionSheetFragment : Fragment() {
                 }
             }
             
+            // Validación para REPARTIDOR: debe seleccionar al menos una ruta
+            if (userRoleName.lowercase() == "repartidor") {
+                if (selectedGangs.isEmpty()) {
+                    Toast.makeText(requireContext(), "Por favor seleccione al menos una ruta", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+            }
+            
             searchSales()
         }
     }
 
     private fun searchSales() {
+        val userRoleName = preference.getData("userRoleName")
+        
         val request = SalesBySellerRequest().apply {
             userID = selectedUser!!.userID.toString()
             gangID = "0"
             searchDate = dateFormatter.format(selectedDate)
-            selectedGangs = arrayListOf()
+            
+            // Para REPARTIDOR, incluir las rutas seleccionadas
+            if (userRoleName.lowercase() == "repartidor") {
+                selectedGangs = this@CollectionSheetFragment.selectedGangs.map { it.toString() } as ArrayList<String>
+            } else {
+                selectedGangs = arrayListOf()
+            }
         }
-
         val apiInterface = UserApiService.create(requireContext()).getAllSalesBySellers(request)
         apiInterface.enqueue(object : Callback<ArrayList<SaleBySeller>> {
             override fun onResponse(call: Call<ArrayList<SaleBySeller>>, response: Response<ArrayList<SaleBySeller>>) {
@@ -271,7 +297,6 @@ class CollectionSheetFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<ArrayList<SaleBySeller>>, t: Throwable) {
-                Log.d("CollectionSheet", "Error al consultar ventas: ${t.message}")
                 Toast.makeText(requireContext(), "Error de conexión", Toast.LENGTH_SHORT).show()
             }
         })
@@ -318,5 +343,60 @@ class CollectionSheetFragment : Fragment() {
 
         // Show the card
         cardViewTotals.visibility = View.VISIBLE
+    }
+
+    private fun showGangMultiSelector() {
+        // Mostrar el multiselector de rutas
+        cardViewGangMultiSelect.visibility = View.VISIBLE
+        
+        // Configurar RecyclerView
+        recyclerViewGangMultiSelect.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
+        
+        // Cargar rutas asignadas al usuario
+        loadAssignedGangs()
+    }
+
+    private fun loadAssignedGangs() {
+        val userID = preference.getData("userID")?.toIntOrNull()
+        if (userID == null) {
+            Toast.makeText(requireContext(), "Error: ID de usuario no encontrado", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val userRequest = User()
+        userRequest.userID = userID
+
+        val userApiService = UserApiService.create(requireContext())
+        val call = userApiService.getAssignedGangsByUser(userRequest)
+
+        call.enqueue(object : Callback<ArrayList<AssignedGang>> {
+            override fun onResponse(call: Call<ArrayList<AssignedGang>>, response: Response<ArrayList<AssignedGang>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    listAssignedGangs = response.body()!!
+                    
+                    // Configurar adapter
+                    gangMultiSelectAdapter = GangMultiSelectAdapter(
+                        listAssignedGangs,
+                        onGangSelectionChanged = { selectedGangIds ->
+                            selectedGangs = selectedGangIds
+                        }
+                    )
+                    
+                    recyclerViewGangMultiSelect.adapter = gangMultiSelectAdapter
+                    
+                    // Seleccionar todas las rutas por defecto
+                    val allGangIds = listAssignedGangs.map { it.gangID }
+                    gangMultiSelectAdapter.setSelectedGangs(ArrayList(allGangIds))
+                    selectedGangs = ArrayList(allGangIds)
+
+                } else {
+                    Toast.makeText(requireContext(), "Error al cargar rutas asignadas", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ArrayList<AssignedGang>>, t: Throwable) {
+                Toast.makeText(requireContext(), "Error de conexión al cargar rutas", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }
