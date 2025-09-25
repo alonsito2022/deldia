@@ -158,14 +158,6 @@
                 android:visibility="gone" />
 
             <Button
-                android:id="@+id/btnGoRoute"
-                style="@style/ButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/secondary_text"
-                android:text="Ir a mi ruta" />
-
-            <Button
                 android:id="@+id/btnGoMap"
                 style="@style/ButtonStyle"
                 android:layout_width="match_parent"

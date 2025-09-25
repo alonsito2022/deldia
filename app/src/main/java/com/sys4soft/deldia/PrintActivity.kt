@@ -54,7 +54,6 @@ class PrintActivity : AppCompatActivity() {
     private lateinit var btnDownload: Button
     private lateinit var btnStartDiscovery: Button
     private lateinit var btnCancelDiscovery: Button
-    private lateinit var btnGoRoute: Button
     private lateinit var btnGoMap: Button
     private lateinit var btnGoOrders: Button
     private lateinit var btnClose: Button
@@ -117,14 +116,6 @@ class PrintActivity : AppCompatActivity() {
             }else{
                 requestPermissions()
             }
-        }
-
-        btnGoRoute = findViewById(R.id.btnGoRoute)
-        btnGoRoute.setOnClickListener {
-            disconnectBluetooth()
-            val i = Intent(this@PrintActivity, MainActivity::class.java)
-            i.putExtra("GO_TO_ROUTE", true)
-            startActivity(i)
         }
 
         btnGoMap = findViewById(R.id.btnGoMap)

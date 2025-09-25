@@ -133,6 +133,11 @@ class SaleFragment : Fragment() {
             else->
                 autoCompleteDocumentType.setText(autoCompleteDocumentType.adapter.getItem(0).toString(),false)
         }
+        
+        // Configurar click listener para abrir dropdown
+        autoCompleteDocumentType.setOnClickListener {
+            autoCompleteDocumentType.showDropDown()
+        }
 
     }
     private fun loadPhysicalDistribution(){
@@ -148,6 +153,12 @@ class SaleFragment : Fragment() {
             adapter.getItem(listPhysicalDistribution.indexOf(person.physicalDistributionDisplay)).toString(),
             false
         )
+        
+        // Configurar click listener para abrir dropdown
+        autoCompletePhysicalDistribution.setOnClickListener {
+            autoCompletePhysicalDistribution.showDropDown()
+        }
+        
         autoCompletePhysicalDistribution.isEnabled = false
 
     }
@@ -524,6 +535,11 @@ class SaleFragment : Fragment() {
             autoCompleteMethodName.adapter.getItem(0).toString(),
             false
         )
+        
+        // Configurar click listener para abrir dropdown
+        autoCompleteMethodName.setOnClickListener {
+            autoCompleteMethodName.showDropDown()
+        }
         if (paymentMethodList.isEmpty()){
             val total: String = textViewTotal.text.toString()
             editTextMethodPrice.setText(total)

@@ -457,7 +457,14 @@ class QuotationFragment : Fragment() {
             adapter.getItem(listPhysicalDistribution.indexOf(person.physicalDistributionDisplay)).toString(),
             false
         )
-        autoCompletePhysicalDistribution.isEnabled = false
+        
+        // Configurar click listener para abrir dropdown
+        autoCompletePhysicalDistribution.setOnClickListener {
+            autoCompletePhysicalDistribution.showDropDown()
+        }
+        
+        // Permitir selección (habilitar el campo)
+        autoCompletePhysicalDistribution.isEnabled = true
     }
     private fun updateTotal() {
         var counter = 0

@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="@color/dialog_background">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -26,10 +26,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="DETALLE DE PRODUCTOS"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@color/primary_dark"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp"
+                style="@style/DialogTitleStyle"/>
 
             <LinearLayout
                 android:id="@+id/layoutList"
@@ -50,10 +48,8 @@
                 android:layout_height="wrap_content"
                 android:text="MÉTODOS DE PAGO"
                 android:textAlignment="textStart"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@color/primary_dark"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp"
+                style="@style/DialogTitleStyle"/>
 
 
                 <LinearLayout
@@ -64,7 +60,7 @@
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/TextInputLayoutMethodName"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        style="@style/DialogInputLayoutStyle"
                         android:layout_width="match_parent"
                         android:layout_weight="2"
                         android:layout_height="wrap_content"
@@ -73,13 +69,20 @@
                         <AutoCompleteTextView
                             android:id="@+id/autoCompleteMethodName"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="14sp"/>
+                            android:layout_height="48dp"
+                            android:textSize="14sp"
+                            android:minHeight="48dp"
+                            android:gravity="center_vertical"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:background="@android:color/transparent"
+                            android:focusable="false"
+                            android:clickable="true"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/textInputLayout2"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        style="@style/DialogInputLayoutStyle"
                         android:layout_width="match_parent"
                         android:layout_weight="2"
                         android:layout_height="wrap_content"
@@ -97,14 +100,13 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/buttonAddPayment"
-                        style="@style/Widget.MaterialComponents.Button"
+                        style="@style/DialogButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Agregar"
-                        android:textColor="@color/white"
                         android:textSize="12sp"
                         app:icon="@drawable/ic_baseline_add_24"
-                        app:iconTint="@color/white"/>
+                        app:iconTint="@color/dialog_button_text"/>
                 </LinearLayout>
 
             <LinearLayout
@@ -128,7 +130,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutPhysicalDistribution"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    style="@style/DialogInputLayoutStyle"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
@@ -138,13 +140,20 @@
                     <AutoCompleteTextView
                         android:id="@+id/autoCompletePhysicalDistribution"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="14sp"/>
+                        android:layout_height="48dp"
+                        android:textSize="14sp"
+                        android:minHeight="48dp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:background="@android:color/transparent"
+                        android:focusable="false"
+                        android:clickable="true"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutDocument"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    style="@style/DialogInputLayoutStyle"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
@@ -153,8 +162,15 @@
                     <AutoCompleteTextView
                         android:id="@+id/autoCompleteDocumentType"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="14sp"/>
+                        android:layout_height="48dp"
+                        android:textSize="14sp"
+                        android:minHeight="48dp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:background="@android:color/transparent"
+                        android:focusable="false"
+                        android:clickable="true"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
@@ -163,8 +179,7 @@
                 android:id="@+id/cardViewSummary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
+                style="@style/DialogCardStyle"
                 android:layout_marginBottom="16dp">
 
                 <LinearLayout
@@ -186,8 +201,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Items"
-                            android:textSize="14sp"
-                            android:textStyle="bold"/>
+                            style="@style/DialogSubtitleStyle"/>
 
                         <TextView
                             android:id="@+id/textViewDialogItems"
@@ -196,7 +210,7 @@
                             android:text="0"
                             android:textSize="20sp"
                             android:textStyle="bold"
-                            android:textColor="@color/primary_dark"/>
+                            android:textColor="@color/dialog_text_primary"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -211,8 +225,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Pagado"
-                            android:textSize="14sp"
-                            android:textStyle="bold"/>
+                            style="@style/DialogSubtitleStyle"/>
 
                         <TextView
                             android:id="@+id/textViewDialogSubtotal"
@@ -221,7 +234,7 @@
                             android:text="S/ 0.00"
                             android:textSize="20sp"
                             android:textStyle="bold"
-                            android:textColor="@color/primary_dark"/>
+                            android:textColor="@color/dialog_text_primary"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -236,8 +249,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Total"
-                            android:textSize="14sp"
-                            android:textStyle="bold"/>
+                            style="@style/DialogSubtitleStyle"/>
 
                         <TextView
                             android:id="@+id/textViewDialogTotal"
@@ -246,7 +258,7 @@
                             android:text="S/ 0.00"
                             android:textSize="20sp"
                             android:textStyle="bold"
-                            android:textColor="@color/primary_dark"/>
+                            android:textColor="@color/dialog_text_primary"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -259,12 +271,11 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/dialog_close"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/DialogButtonOutlinedStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="CERRAR"
-                    android:textColor="@color/white"
                     android:textSize="12sp"/>
                 <View
                     android:layout_width="0dp"
@@ -283,12 +294,11 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/dialog_terminate"
-                    style="@style/Widget.MaterialComponents.Button"
+                    style="@style/DialogButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="FINALIZAR"
-                    android:textColor="@color/white"
                     android:textSize="12sp"/>
             </LinearLayout>
         </LinearLayout>
@@ -299,7 +309,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
-        android:background="#99000000"
+        android:background="@color/dialog_loading_overlay"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintTop_toTopOf="parent"
@@ -309,9 +319,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
-            android:background="@color/white">
+            style="@style/DialogLoadingCardStyle">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -325,24 +333,21 @@
                     android:layout_height="56dp"
                     android:indeterminate="true"
                     android:indeterminateTintMode="src_atop"
-                    android:indeterminateTint="@color/primary_dark"/>
+                    android:indeterminateTint="@color/dialog_loading_text"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Procesando pedido..."
-                    android:textColor="@color/primary_dark"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
+                    style="@style/DialogLoadingTextStyle"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="Por favor espere un momento"
-                    android:textColor="#757575"
-                    android:textSize="14sp"/>
+                    style="@style/DialogLoadingSubtextStyle"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </FrameLayout>

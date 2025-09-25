@@ -88,4 +88,22 @@
     <color name="collection_totals_text">#212121</color>
     <color name="collection_totals_label">#757575</color>
     <color name="collection_divider">#E0E0E0</color>
+
+    <!-- Colores específicos para diálogos en modo light -->
+    <color name="dialog_background">#FFFFFF</color>
+    <color name="dialog_card_background">#FFFFFF</color>
+    <color name="dialog_text_primary">#212121</color>
+    <color name="dialog_text_secondary">#757575</color>
+    <color name="dialog_text_hint">#9E9E9E</color>
+    <color name="dialog_input_background">#FFFFFF</color>
+    <color name="dialog_input_stroke">#BDBDBD</color>
+    <color name="dialog_button_background">#0277BD</color>
+    <color name="dialog_button_text">#FFFFFF</color>
+    <color name="dialog_button_outline">#0277BD</color>
+    <color name="dialog_loading_overlay">#99000000</color>
+    <color name="dialog_loading_card">#FFFFFF</color>
+    <color name="dialog_loading_text">#212121</color>
+    <color name="dialog_loading_subtext">#757575</color>
+    <color name="dialog_success_button">#66BB6A</color>
+    <color name="dialog_divider">#E0E0E0</color>
 </resources>

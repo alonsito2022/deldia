@@ -93,4 +93,22 @@
     <color name="collection_totals_text">#FFFFFF</color>
     <color name="collection_totals_label">#B0B0B0</color>
     <color name="collection_divider">#424242</color>
+
+    <!-- Colores específicos para diálogos en modo dark -->
+    <color name="dialog_background">#121212</color>
+    <color name="dialog_card_background">#1E1E1E</color>
+    <color name="dialog_text_primary">#FFFFFF</color>
+    <color name="dialog_text_secondary">#B0B0B0</color>
+    <color name="dialog_text_hint">#757575</color>
+    <color name="dialog_input_background">#2D2D2D</color>
+    <color name="dialog_input_stroke">#424242</color>
+    <color name="dialog_button_background">#03A9F4</color>
+    <color name="dialog_button_text">#FFFFFF</color>
+    <color name="dialog_button_outline">#03A9F4</color>
+    <color name="dialog_loading_overlay">#99000000</color>
+    <color name="dialog_loading_card">#1E1E1E</color>
+    <color name="dialog_loading_text">#FFFFFF</color>
+    <color name="dialog_loading_subtext">#B0B0B0</color>
+    <color name="dialog_success_button">#66BB6A</color>
+    <color name="dialog_divider">#424242</color>
 </resources>

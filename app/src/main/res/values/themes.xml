@@ -231,4 +231,74 @@
         <item name="android:fontFamily">@font/nexa_bold</item>
     </style>
 
+    <!-- Estilos para diálogos -->
+    <style name="DialogTitleStyle">
+        <item name="android:textColor">@color/dialog_text_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/nexa_bold</item>
+    </style>
+
+    <style name="DialogSubtitleStyle">
+        <item name="android:textColor">@color/dialog_text_secondary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/nexa_light</item>
+    </style>
+
+    <style name="DialogCardStyle">
+        <item name="android:background">@color/dialog_card_background</item>
+        <item name="cardCornerRadius">8dp</item>
+        <item name="cardElevation">2dp</item>
+    </style>
+
+    <style name="DialogInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">@color/dialog_text_hint</item>
+        <item name="android:background">@color/dialog_input_background</item>
+        <item name="boxStrokeColor">@color/dialog_input_stroke</item>
+        <item name="hintTextColor">@color/dialog_text_hint</item>
+    </style>
+
+    <style name="DialogButtonStyle">
+        <item name="android:backgroundTint">@color/dialog_button_background</item>
+        <item name="android:textColor">@color/dialog_button_text</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/nobile</item>
+    </style>
+
+    <style name="DialogButtonOutlinedStyle">
+        <item name="android:textColor">@color/dialog_button_outline</item>
+        <item name="strokeColor">@color/dialog_button_outline</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/nobile</item>
+    </style>
+
+    <style name="DialogSuccessButtonStyle">
+        <item name="android:backgroundTint">@color/dialog_success_button</item>
+        <item name="android:textColor">@color/dialog_button_text</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/nobile</item>
+    </style>
+
+    <style name="DialogLoadingCardStyle">
+        <item name="android:background">@color/dialog_loading_card</item>
+        <item name="cardCornerRadius">8dp</item>
+        <item name="cardElevation">4dp</item>
+    </style>
+
+    <style name="DialogLoadingTextStyle">
+        <item name="android:textColor">@color/dialog_loading_text</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/nexa_bold</item>
+    </style>
+
+    <style name="DialogLoadingSubtextStyle">
+        <item name="android:textColor">@color/dialog_loading_subtext</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/nexa_light</item>
+    </style>
+
 </resources>

@@ -212,6 +212,12 @@ class DispatchFragment : Fragment() {
             else->
                 autoCompletePhysicalDistribution.setText(autoCompletePhysicalDistribution.adapter.getItem(0).toString(),false)
         }
+        
+        // Configurar click listener para abrir dropdown
+        autoCompletePhysicalDistribution.setOnClickListener {
+            autoCompletePhysicalDistribution.showDropDown()
+        }
+        
         autoCompletePhysicalDistribution.isEnabled = false
 
     }
@@ -343,6 +349,12 @@ class DispatchFragment : Fragment() {
             autoCompleteMethodName.adapter.getItem(0).toString(),
             false
         )
+        
+        // Configurar click listener para abrir dropdown
+        autoCompleteMethodName.setOnClickListener {
+            autoCompleteMethodName.showDropDown()
+        }
+        
         autoCompleteMethodName.setOnItemClickListener { adapterView, view, i, l ->
             val balance: Double = textViewDialogTotal.text.toString().toDouble() - textViewDialogSubtotal.text.toString().toDouble()
             editTextMethodPrice.setText(balance.toString())
@@ -774,6 +786,11 @@ class DispatchFragment : Fragment() {
                 autoCompleteDocumentType.setText(autoCompleteDocumentType.adapter.getItem(listMethod.indexOf("FACTURA")).toString(),false)
             else->
                 autoCompleteDocumentType.setText(autoCompleteDocumentType.adapter.getItem(0).toString(),false)
+        }
+        
+        // Configurar click listener para abrir dropdown
+        autoCompleteDocumentType.setOnClickListener {
+            autoCompleteDocumentType.showDropDown()
         }
 
     }
