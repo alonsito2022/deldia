@@ -80,11 +80,92 @@ class ClientRegisterFragment : Fragment() {
         globalContext = this.activity
         preference = Preference(globalContext)
         val bundle = arguments
-        vehicleID = preference.getData("vehicleID").toInt()
-        userID = preference.getData("userID").toInt()
-        gangID = preference.getData("gangID").toInt()
-        gangName = preference.getData("gangName")
-        loadDistributors()
+        
+        // Restaurar estado guardado si existe
+        savedInstanceState?.let { savedState ->
+            restoreClientRegisterState(savedState)
+        } ?: run {
+            // Inicializar datos básicos si no hay estado guardado
+            vehicleID = preference.getData("vehicleID").toInt()
+            userID = preference.getData("userID").toInt()
+            gangID = preference.getData("gangID").toInt()
+            gangName = preference.getData("gangName")
+            loadDistributors()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        saveClientRegisterState(outState)
+    }
+
+    private fun saveClientRegisterState(outState: Bundle) {
+        try {
+            // Guardar datos básicos
+            outState.putInt("vehicleID", vehicleID)
+            outState.putInt("userID", userID)
+            outState.putInt("gangID", gangID)
+            outState.putString("gangName", gangName)
+            
+            // Guardar datos de la persona
+            val gson = com.google.gson.Gson()
+            val personJson = gson.toJson(person)
+            outState.putString("person", personJson)
+            
+            // Guardar datos de búsqueda de persona
+            val searchPersonJson = gson.toJson(searchPerson)
+            outState.putString("searchPerson", searchPersonJson)
+            
+            // Guardar lista de gangs
+            val gangsJson = gson.toJson(listGangs)
+            outState.putString("listGangs", gangsJson)
+            
+            Log.d("ClientRegisterFragment", "Estado de registro de cliente guardado")
+        } catch (e: Exception) {
+            Log.e("ClientRegisterFragment", "Error al guardar estado: ${e.message}")
+        }
+    }
+
+    private fun restoreClientRegisterState(savedState: Bundle) {
+        try {
+            // Restaurar datos básicos
+            vehicleID = savedState.getInt("vehicleID")
+            userID = savedState.getInt("userID")
+            gangID = savedState.getInt("gangID")
+            gangName = savedState.getString("gangName", "")
+            
+            // Restaurar datos de la persona
+            val personJson = savedState.getString("person", "")
+            if (personJson.isNotEmpty()) {
+                val gson = com.google.gson.Gson()
+                person = gson.fromJson(personJson, Person::class.java)
+            }
+            
+            // Restaurar datos de búsqueda de persona
+            val searchPersonJson = savedState.getString("searchPerson", "")
+            if (searchPersonJson.isNotEmpty()) {
+                val gson = com.google.gson.Gson()
+                searchPerson = gson.fromJson(searchPersonJson, Person::class.java)
+            }
+            
+            // Restaurar lista de gangs
+            val gangsJson = savedState.getString("listGangs", "")
+            if (gangsJson.isNotEmpty()) {
+                val gson = com.google.gson.Gson()
+                val restoredGangs = gson.fromJson(gangsJson, Array<Gang>::class.java).toList()
+                listGangs.clear()
+                listGangs.addAll(restoredGangs)
+            } else {
+                // Si no hay datos guardados, cargar normalmente
+                loadDistributors()
+            }
+            
+            Log.d("ClientRegisterFragment", "Estado de registro de cliente restaurado")
+        } catch (e: Exception) {
+            Log.e("ClientRegisterFragment", "Error al restaurar estado: ${e.message}")
+            // En caso de error, cargar normalmente
+            loadDistributors()
+        }
     }
 
     override fun onCreateView(

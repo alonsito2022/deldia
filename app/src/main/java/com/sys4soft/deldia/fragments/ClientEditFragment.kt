@@ -69,10 +69,78 @@ class ClientEditFragment : Fragment() {
         super.onCreate(savedInstanceState)
         globalContext = this.activity
         preference = Preference(globalContext)
-        arguments?.let { searchPerson.personID = it.getInt("personID") }
-        loadDistributors()
+        
+        // Restaurar estado guardado si existe
+        savedInstanceState?.let { savedState ->
+            restoreClientEditState(savedState)
+        } ?: run {
+            // Inicializar datos básicos si no hay estado guardado
+            arguments?.let { searchPerson.personID = it.getInt("personID") }
+            loadDistributors()
+        }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        saveClientEditState(outState)
+    }
+
+    private fun saveClientEditState(outState: Bundle) {
+        try {
+            // Guardar datos de la persona
+            val gson = com.google.gson.Gson()
+            val personJson = gson.toJson(person)
+            outState.putString("person", personJson)
+            
+            // Guardar datos de búsqueda de persona
+            val searchPersonJson = gson.toJson(searchPerson)
+            outState.putString("searchPerson", searchPersonJson)
+            
+            // Guardar lista de gangs
+            val gangsJson = gson.toJson(listGangs)
+            outState.putString("listGangs", gangsJson)
+            
+            Log.d("ClientEditFragment", "Estado de edición de cliente guardado")
+        } catch (e: Exception) {
+            Log.e("ClientEditFragment", "Error al guardar estado: ${e.message}")
+        }
+    }
+
+    private fun restoreClientEditState(savedState: Bundle) {
+        try {
+            // Restaurar datos de la persona
+            val personJson = savedState.getString("person", "")
+            if (personJson.isNotEmpty()) {
+                val gson = com.google.gson.Gson()
+                person = gson.fromJson(personJson, Person::class.java)
+            }
+            
+            // Restaurar datos de búsqueda de persona
+            val searchPersonJson = savedState.getString("searchPerson", "")
+            if (searchPersonJson.isNotEmpty()) {
+                val gson = com.google.gson.Gson()
+                searchPerson = gson.fromJson(searchPersonJson, Person::class.java)
+            }
+            
+            // Restaurar lista de gangs
+            val gangsJson = savedState.getString("listGangs", "")
+            if (gangsJson.isNotEmpty()) {
+                val gson = com.google.gson.Gson()
+                val restoredGangs = gson.fromJson(gangsJson, Array<Gang>::class.java).toList()
+                listGangs.clear()
+                listGangs.addAll(restoredGangs)
+            } else {
+                // Si no hay datos guardados, cargar normalmente
+                loadDistributors()
+            }
+            
+            Log.d("ClientEditFragment", "Estado de edición de cliente restaurado")
+        } catch (e: Exception) {
+            Log.e("ClientEditFragment", "Error al restaurar estado: ${e.message}")
+            // En caso de error, cargar normalmente
+            loadDistributors()
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_client_edit, container, false)

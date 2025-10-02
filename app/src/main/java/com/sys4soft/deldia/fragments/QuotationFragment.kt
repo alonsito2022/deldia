@@ -487,7 +487,9 @@ class QuotationFragment : Fragment() {
         val totalFreeF3:Double = Math.round(totalFree * 1000.0) / 1000.0
         val totalFreeF1:Double = Math.round(totalFreeF3 * 100.0) / 100.0
         textViewTotal.text = totalF1.toString()
-        textViewTotalFree.text = totalFreeF1.toString()
+        if(this::textViewTotalFree.isInitialized){
+            textViewTotalFree.text = totalFreeF1.toString()
+        }
         textViewItems.text = counter.toString()
         if(this::textViewDialogTotal.isInitialized){
             textViewDialogTotalFree.text = totalFreeF1.toString()

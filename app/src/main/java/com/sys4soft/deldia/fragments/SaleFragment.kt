@@ -26,6 +26,7 @@ import com.sys4soft.deldia.retrofit.UserApiService
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.squareup.picasso.Picasso
+import com.google.gson.Gson
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
@@ -85,17 +86,24 @@ class SaleFragment : Fragment() {
         globalContext = this.activity
         preference = Preference(globalContext)
         val bundle = arguments
-        operation.userID = bundle!!.getInt("userID")
-        warehouse.warehouseID = bundle.getInt("vehicleID")
-        warehouse.warehouseName = bundle.getString("vehicleLicensePlate").toString()
-        person.personID = bundle.getInt("personID")
-        person.fullName = bundle.getString("personFullName").toString()
-        person.address = bundle.getString("personAddress").toString()
-        person.documentNumber = bundle.getString("personDocumentNumber").toString()
-        person.documentType = bundle.getString("personDocumentType").toString()
-        person.physicalDistribution = bundle.getString("physicalDistribution").toString()
-        person.physicalDistributionDisplay = bundle.getString("physicalDistributionDisplay").toString()
-        operation.routeDate = bundle.getString("routeDate").toString()
+        
+        // Restaurar estado guardado si existe
+        savedInstanceState?.let { savedState ->
+            restoreSaleState(savedState)
+        } ?: run {
+            // Inicializar datos básicos desde bundle si no hay estado guardado
+            operation.userID = bundle!!.getInt("userID")
+            warehouse.warehouseID = bundle.getInt("vehicleID")
+            warehouse.warehouseName = bundle.getString("vehicleLicensePlate").toString()
+            person.personID = bundle.getInt("personID")
+            person.fullName = bundle.getString("personFullName").toString()
+            person.address = bundle.getString("personAddress").toString()
+            person.documentNumber = bundle.getString("personDocumentNumber").toString()
+            person.documentType = bundle.getString("personDocumentType").toString()
+            person.physicalDistribution = bundle.getString("physicalDistribution").toString()
+            person.physicalDistributionDisplay = bundle.getString("physicalDistributionDisplay").toString()
+            operation.routeDate = bundle.getString("routeDate").toString()
+        }
 
         val formatter = SimpleDateFormat("yyyy-MM-dd")
         val date = formatter.parse(operation.routeDate)
@@ -164,6 +172,68 @@ class SaleFragment : Fragment() {
         autoCompletePhysicalDistribution.isEnabled = false
 
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        saveSaleState(outState)
+    }
+
+    private fun saveSaleState(outState: Bundle) {
+        try {
+            // Guardar datos básicos
+            outState.putInt("userID", operation.userID)
+            outState.putInt("vehicleID", warehouse.warehouseID)
+            outState.putString("vehicleLicensePlate", warehouse.warehouseName)
+            outState.putInt("personID", person.personID)
+            outState.putString("personFullName", person.fullName)
+            outState.putString("personAddress", person.address)
+            outState.putString("personDocumentNumber", person.documentNumber)
+            outState.putString("personDocumentType", person.documentType)
+            outState.putString("physicalDistribution", person.physicalDistribution)
+            outState.putString("physicalDistributionDisplay", person.physicalDistributionDisplay)
+            outState.putString("routeDate", operation.routeDate)
+            
+            // Guardar lista de productos
+            val gson = Gson()
+            val productsJson = gson.toJson(list)
+            outState.putString("saleProducts", productsJson)
+            
+            Log.d("SaleFragment", "Estado de venta guardado: ${list.size} productos")
+        } catch (e: Exception) {
+            Log.e("SaleFragment", "Error al guardar estado: ${e.message}")
+        }
+    }
+
+    private fun restoreSaleState(savedState: Bundle) {
+        try {
+            // Restaurar datos básicos
+            operation.userID = savedState.getInt("userID")
+            warehouse.warehouseID = savedState.getInt("vehicleID")
+            warehouse.warehouseName = savedState.getString("vehicleLicensePlate", "")
+            person.personID = savedState.getInt("personID")
+            person.fullName = savedState.getString("personFullName", "")
+            person.address = savedState.getString("personAddress", "")
+            person.documentNumber = savedState.getString("personDocumentNumber", "")
+            person.documentType = savedState.getString("personDocumentType", "")
+            person.physicalDistribution = savedState.getString("physicalDistribution", "")
+            person.physicalDistributionDisplay = savedState.getString("physicalDistributionDisplay", "")
+            operation.routeDate = savedState.getString("routeDate", "")
+            
+            // Restaurar lista de productos
+            val productsJson = savedState.getString("saleProducts", "")
+            if (productsJson.isNotEmpty()) {
+                val gson = Gson()
+                val restoredProducts = gson.fromJson(productsJson, Array<Product>::class.java).toList()
+                list.clear()
+                list.addAll(restoredProducts)
+                
+                Log.d("SaleFragment", "Estado de venta restaurado: ${list.size} productos")
+            }
+        } catch (e: Exception) {
+            Log.e("SaleFragment", "Error al restaurar estado: ${e.message}")
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -322,7 +392,9 @@ class SaleFragment : Fragment() {
         val totalFreeF3:Double = Math.round(totalFree * 1000.0) / 1000.0
         val totalFreeF1:Double = Math.round(totalFreeF3 * 100.0) / 100.0
         textViewTotal.text = totalF1.toString()
-        textViewTotalFree.text = totalFreeF1.toString()
+        if(this::textViewTotalFree.isInitialized){
+            textViewTotalFree.text = totalFreeF1.toString()
+        }
         textViewItems.text = counter.toString()
         if(this::textViewDialogTotal.isInitialized){
             textViewDialogTotal.text = totalF1.toString()

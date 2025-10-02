@@ -28,6 +28,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import com.google.gson.Gson
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
@@ -113,12 +114,78 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         route.gangID = preference.getData("gangID").toInt()
 
-        loadDistributors()
+        // Restaurar estado guardado si existe
+        savedInstanceState?.let { savedState ->
+            restoreMapState(savedState)
+        } ?: run {
+            // Cargar datos normalmente si no hay estado guardado
+            loadDistributors()
+        }
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(globalContext!!)
 //        fetchLocation()
 
 
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        saveMapState(outState)
+    }
+
+    private fun saveMapState(outState: Bundle) {
+        try {
+            // Guardar datos básicos
+            outState.putInt("vehicleID", vehicleID)
+            outState.putInt("userID", user.userID)
+            outState.putInt("gangID", user.gang.gangID)
+            outState.putInt("routeGangID", route.gangID)
+            
+            // Guardar datos de la ruta
+            outState.putString("routeDate", route.routeDate)
+            outState.putString("routeStatus", route.routeStatus)
+            
+            // Guardar lista de personas
+            val gson = Gson()
+            val personsJson = gson.toJson(personList)
+            outState.putString("personList", personsJson)
+            
+            Log.d("MapFragment", "Estado del mapa guardado: ${personList.size} personas")
+        } catch (e: Exception) {
+            Log.e("MapFragment", "Error al guardar estado: ${e.message}")
+        }
+    }
+
+    private fun restoreMapState(savedState: Bundle) {
+        try {
+            // Restaurar datos básicos
+            vehicleID = savedState.getInt("vehicleID")
+            user.userID = savedState.getInt("userID")
+            user.gang.gangID = savedState.getInt("gangID")
+            route.gangID = savedState.getInt("routeGangID")
+            
+            // Restaurar datos de la ruta
+            route.routeDate = savedState.getString("routeDate", "")
+            route.routeStatus = savedState.getString("routeStatus", "")
+            
+            // Restaurar lista de personas
+            val personsJson = savedState.getString("personList", "")
+            if (personsJson.isNotEmpty()) {
+                val gson = Gson()
+                val restoredPersons = gson.fromJson(personsJson, Array<Person>::class.java).toList()
+                personList.clear()
+                personList.addAll(restoredPersons)
+                
+                Log.d("MapFragment", "Estado del mapa restaurado: ${personList.size} personas")
+            } else {
+                // Si no hay datos guardados, cargar normalmente
+                loadDistributors()
+            }
+        } catch (e: Exception) {
+            Log.e("MapFragment", "Error al restaurar estado: ${e.message}")
+            // En caso de error, cargar normalmente
+            loadDistributors()
+        }
     }
 
     private fun fetchLocation() {

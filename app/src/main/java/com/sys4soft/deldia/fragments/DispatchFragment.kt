@@ -84,13 +84,83 @@ class DispatchFragment : Fragment() {
         globalContext = this.activity
 
         val bundle = arguments
-        operation.userID = bundle!!.getInt("userID")
-        operation.operationID = bundle.getInt("operationID")
+        
+        // Restaurar estado guardado si existe
+        savedInstanceState?.let { savedState ->
+            restoreDispatchState(savedState)
+        } ?: run {
+            // Inicializar datos básicos desde bundle si no hay estado guardado
+            operation.userID = bundle!!.getInt("userID")
+            operation.operationID = bundle.getInt("operationID")
 
-        preference = Preference(globalContext)
-        warehouse.warehouseID = 3  // warehouse central
-        warehouse.warehouseName = preference.getData("vehicleLicensePlate")
-        loadOperation(operation)
+            preference = Preference(globalContext)
+            warehouse.warehouseID = 3  // warehouse central
+            warehouse.warehouseName = preference.getData("vehicleLicensePlate")
+            loadOperation(operation)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        saveDispatchState(outState)
+    }
+
+    private fun saveDispatchState(outState: Bundle) {
+        try {
+            // Guardar datos básicos
+            outState.putInt("userID", operation.userID)
+            outState.putInt("operationID", operation.operationID)
+            outState.putInt("warehouseID", warehouse.warehouseID)
+            outState.putString("warehouseName", warehouse.warehouseName)
+            
+            // Guardar datos de la operación
+            outState.putString("operationDate", operation.operationDate)
+            outState.putString("documentNumber", operation.documentNumber)
+            outState.putDouble("total", operation.total)
+            outState.putDouble("totalReturned", operation.totalReturned)
+            outState.putDouble("totalCharged", operation.totalCharged)
+            outState.putString("numberToCurrency", operation.numberToCurrency)
+            
+            // Guardar lista de productos
+            val gson = Gson()
+            val productsJson = gson.toJson(list)
+            outState.putString("dispatchProducts", productsJson)
+            
+            Log.d("DispatchFragment", "Estado de despacho guardado: ${list.size} productos")
+        } catch (e: Exception) {
+            Log.e("DispatchFragment", "Error al guardar estado: ${e.message}")
+        }
+    }
+
+    private fun restoreDispatchState(savedState: Bundle) {
+        try {
+            // Restaurar datos básicos
+            operation.userID = savedState.getInt("userID")
+            operation.operationID = savedState.getInt("operationID")
+            warehouse.warehouseID = savedState.getInt("warehouseID")
+            warehouse.warehouseName = savedState.getString("warehouseName", "")
+            
+            // Restaurar datos de la operación
+            operation.operationDate = savedState.getString("operationDate", "")
+            operation.documentNumber = savedState.getString("documentNumber", "")
+            operation.total = savedState.getDouble("total")
+            operation.totalReturned = savedState.getDouble("totalReturned")
+            operation.totalCharged = savedState.getDouble("totalCharged")
+            operation.numberToCurrency = savedState.getString("numberToCurrency", "")
+            
+            // Restaurar lista de productos
+            val productsJson = savedState.getString("dispatchProducts", "")
+            if (productsJson.isNotEmpty()) {
+                val gson = Gson()
+                val restoredProducts = gson.fromJson(productsJson, Array<Product>::class.java).toList()
+                list.clear()
+                list.addAll(restoredProducts)
+                
+                Log.d("DispatchFragment", "Estado de despacho restaurado: ${list.size} productos")
+            }
+        } catch (e: Exception) {
+            Log.e("DispatchFragment", "Error al restaurar estado: ${e.message}")
+        }
     }
 
     override fun onCreateView(
@@ -262,7 +332,9 @@ class DispatchFragment : Fragment() {
         val totalFreeF3:Double = Math.round(totalFree * 1000.0) / 1000.0
         val totalFreeF1:Double = Math.round(totalFreeF3 * 100.0) / 100.0
         textViewTotal.text = totalF1.toString()
-        textViewTotalFree.text = totalFreeF1.toString()
+        if(this::textViewTotalFree.isInitialized){
+            textViewTotalFree.text = totalFreeF1.toString()
+        }
         textViewItems.text = counter.toString()
         if(this::textViewDialogTotal.isInitialized){
             textViewDialogTotal.text = totalF1.toString()

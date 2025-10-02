@@ -7,4 +7,5 @@ class Route() {
     var visitDay: Int = 0
     var visitDayDisplay: String = ""
     var routeDate: String = ""
+    var routeStatus: String = ""
 }
