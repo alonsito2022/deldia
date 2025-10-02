@@ -187,7 +187,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:padding="16dp"
-                    android:weightSum="3">
+                    android:weightSum="4">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -259,6 +259,30 @@
                             android:textSize="20sp"
                             android:textStyle="bold"
                             android:textColor="@color/dialog_text_primary"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/textViewDialogFree42"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Gratuito"
+                            style="@style/DialogSubtitleStyle"/>
+
+                        <TextView
+                            android:id="@+id/textViewDialogTotalFree"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="S/ 0.00"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/green"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

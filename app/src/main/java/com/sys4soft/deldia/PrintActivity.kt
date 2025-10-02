@@ -479,7 +479,8 @@ class PrintActivity : AppCompatActivity() {
         val base: Double = Math.round(operation.total / (1.18) * 100.0) / 100.0
         val igv: Double = Math.round((operation.total - base) * 100.0) / 100.0
         textTicketPart6 += "OP. GRAVADAS: S/ ${dfZero.format(base)} \n"
-        textTicketPart6 += "IGV: S/ ${dfZero.format(igv)} \n\n"
+        textTicketPart6 += "IGV: S/ ${dfZero.format(igv)} \n"
+        textTicketPart6 += "OP. GRATUITAS: S/ ${dfZero.format(operation.totalFree)} \n\n"
         textTicketPart6 += "TOTAL A PAGAR: S/ ${dfZero.format(operation.total)} \n\n\n"
 
         val textTicketPart7 = "SON: ${operation.numberToCurrency} \n\n"
@@ -650,6 +651,7 @@ class PrintActivity : AppCompatActivity() {
             outputStream!!.write(PrinterCommands.ESC_ALIGN_RIGHT)
             outputStream!!.write("OP. GRAVADAS: S/ ${dfZero.format(base)} \n".toByteArray())
             outputStream!!.write("IGV: S/ ${dfZero.format(igv)} \n".toByteArray())
+            outputStream!!.write("OP. GRATUITAS: S/ ${dfZero.format(operation.totalFree)} \n".toByteArray())
             outputStream!!.write("\n".toByteArray())
             outputStream!!.write("\n".toByteArray())
             format[2] = (0x8 or arrayOfByte1[2].toInt()).toByte()

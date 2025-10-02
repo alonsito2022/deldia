@@ -90,6 +90,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var routeAdapter: PersonAdapter
     private lateinit var layoutSalesList: LinearLayout
     private lateinit var preference: Preference
+    
+    // Variables para el dialog de persona
+    private var textViewTotalBalance: TextView? = null
+    private var dialogNewSale: Button? = null
+    private var dialogNewDispatch: Button? = null
 
     private lateinit var mMap: GoogleMap
     var mapView: View? = null
@@ -626,8 +631,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val dialogEditClient = v.findViewById<Button>(R.id.dialog_edit_client)
         val dialogWithoutDispatch = v.findViewById<Button>(R.id.dialog_without_dispatch)
         val dialogSaveClientData = v.findViewById<Button>(R.id.dialog_save_client_data)
-        val dialogNewSale = v.findViewById<Button>(R.id.dialog_new_sale)
-        val dialogNewDispatch = v.findViewById<Button>(R.id.dialog_new_dispatch)
+        dialogNewSale = v.findViewById<Button>(R.id.dialog_new_sale)
+        dialogNewDispatch = v.findViewById<Button>(R.id.dialog_new_dispatch)
         val dialogPutInPending = v.findViewById<Button>(R.id.dialog_put_in_pending)
         val dialogGenerateCreditNote = v.findViewById<Button>(R.id.dialog_generate_credit_note)
         val dialogDeclined = v.findViewById<Button>(R.id.dialog_declined)
@@ -646,10 +651,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val textViewComment = v.findViewById<TextView>(R.id.textViewComment)
         val textViewPurchaseVolume = v.findViewById<TextView>(R.id.textViewPurchaseVolume)
         val textViewRouteObservation = v.findViewById<TextView>(R.id.textViewRouteObservation)
-        val textViewTotalBalance = v.findViewById<TextView>(R.id.textViewTotalBalance)
+        textViewTotalBalance = v.findViewById<TextView>(R.id.textViewTotalBalance)
         layoutSalesList = v.findViewById(R.id.layoutSalesList)
 
-        val operation : Operation = Operation()
         operation.userID = user.userID
         editTextObs.setText(p.observation)
         editTextAddress.setText(p.address)
@@ -668,17 +672,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val total_pending_adjusted = String.format("%.2f", p.totalBalance).toDouble()
 
         if(total_pending_adjusted > 0){
-            textViewTotalBalance.text = "S/ ${total_pending_adjusted}"
-//            textViewTotalBalance.text = "S/ ${p.totalBalance}"
-            textViewTotalBalance.setTextColor(ContextCompat.getColor(globalContext!!, R.color.red))
-            dialogNewSale.visibility = View.GONE
-            dialogNewDispatch.visibility = View.GONE
+            textViewTotalBalance?.text = "S/ ${total_pending_adjusted}"
+//            textViewTotalBalance?.text = "S/ ${p.totalBalance}"
+            textViewTotalBalance?.setTextColor(ContextCompat.getColor(globalContext!!, R.color.red))
+            dialogNewSale?.visibility = View.GONE
+            dialogNewDispatch?.visibility = View.GONE
 
         }else{
-            textViewTotalBalance.text = "S/ 0.00"
-            textViewTotalBalance.setTextColor(ContextCompat.getColor(globalContext!!, R.color.purple_200))
-            dialogNewSale.visibility = View.VISIBLE
-            dialogNewDispatch.visibility = View.VISIBLE
+            textViewTotalBalance?.text = "S/ 0.00"
+            textViewTotalBalance?.setTextColor(ContextCompat.getColor(globalContext!!, R.color.purple_200))
+            dialogNewSale?.visibility = View.VISIBLE
+            dialogNewDispatch?.visibility = View.VISIBLE
         }
 
         if (p.routeObservation.isNotEmpty()){
@@ -724,8 +728,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             dialog.dismiss()
         }
         if (!p.isEnabled) {
-            dialogNewSale.visibility = View.GONE
-            dialogNewDispatch.visibility = View.GONE
+            dialogNewSale?.visibility = View.GONE
+            dialogNewDispatch?.visibility = View.GONE
             dialogWithoutDispatch.visibility = View.GONE
             dialogPresaleDelivered.visibility = View.GONE
             dialogPresaleNoDelivered.visibility = View.GONE
@@ -764,8 +768,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     dialogDeclined.visibility = View.GONE
                 }
                 "04"-> {
-                    dialogNewSale.visibility = View.GONE
-                    dialogNewDispatch.visibility = View.GONE
+                    dialogNewSale?.visibility = View.GONE
+                    dialogNewDispatch?.visibility = View.GONE
                     dialogWithoutDispatch.visibility = View.GONE
                     dialogPresaleDelivered.visibility = View.GONE
                     dialogPresaleNoDelivered.visibility = View.GONE
@@ -775,8 +779,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     dialogDeclined.visibility = View.GONE
                 }
                 "05"-> {
-                    dialogNewSale.visibility = View.GONE
-                    dialogNewDispatch.visibility = View.GONE
+                    dialogNewSale?.visibility = View.GONE
+                    dialogNewDispatch?.visibility = View.GONE
                     dialogWithoutDispatch.visibility = View.GONE
                     dialogCancelPresale.visibility = View.GONE
                     dialogCancelSale.visibility = View.GONE
@@ -794,8 +798,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
                 }
                 "07"-> {
-                    dialogNewSale.visibility = View.GONE
-                    dialogNewDispatch.visibility = View.GONE
+                    dialogNewSale?.visibility = View.GONE
+                    dialogNewDispatch?.visibility = View.GONE
                     dialogWithoutDispatch.visibility = View.GONE
                     dialogPresaleNoDelivered.visibility = View.GONE
                     dialogCancelPresale.visibility = View.GONE
@@ -823,11 +827,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         dialogClose.setOnClickListener{
             dialog.dismiss()
         }
-        dialogNewSale.setOnClickListener{
+        dialogNewSale?.setOnClickListener{
             goToSale(p!!)
             dialog.dismiss()
         }
-        dialogNewDispatch.setOnClickListener{
+        dialogNewDispatch?.setOnClickListener{
             goToQuotation(p!!)
             dialog.dismiss()
         }
@@ -976,7 +980,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 autoCompleteMethodName.adapter.getItem(0).toString(),
                 false
             )
-            val totalCharged:Double = String.format("%.2f", p.routeDispatchTotalSold).toDouble()
+            val totalCharged:Double = String.format("%.2f", operation.totalCharged).toDouble()
             textViewDialogTotal.text = totalCharged.toString()
             textViewDialogSubtotal.text = "0.00"
             
@@ -1164,15 +1168,38 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun reviewOrderHistoryByClient(){
-        val apiInterface = UserApiService.create(requireContext()).getOrderHistoryByClientID(operation)
-        apiInterface.enqueue(object : Callback<ArrayList<Operation>> {
+        // Asignar routeDate al objeto operation
+        operation.routeDate = route.routeDate
+        val apiInterface = UserApiService.create(requireContext()).getPendingDebtAndRecentOperationsByClientID(operation)
+        apiInterface.enqueue(object : Callback<ClientRouteResponse> {
             override fun onResponse(
-                call: Call<ArrayList<Operation>>,
-                response: Response<ArrayList<Operation>>
+                call: Call<ClientRouteResponse>,
+                response: Response<ClientRouteResponse>
             ) {
                 if (response.body() != null) {
-                    var totalBalance: Double = 0.0
-                    listOperations = response.body()!!
+                    val clientResponse = response.body()!!
+                    listOperations = clientResponse.recentOps
+                    Log.d("MIKE", "reviewOrderHistoryByClient..." + listOperations.toString())
+                    
+                    // Actualizar el totalBalance desde la API
+                    val totalBalance = clientResponse.totalBalance
+                    val total_pending_adjusted = String.format("%.2f", totalBalance).toDouble()
+                    
+                    // Asignar routeDispatchTotalSold a totalCharged
+                    operation.totalCharged = clientResponse.routeDispatchTotalSold
+                    
+                    if(total_pending_adjusted > 0){
+                        textViewTotalBalance?.text = "S/ ${total_pending_adjusted}"
+                        textViewTotalBalance?.setTextColor(ContextCompat.getColor(globalContext!!, R.color.red))
+                        dialogNewSale?.visibility = View.GONE
+                        dialogNewDispatch?.visibility = View.GONE
+                    }else{
+                        textViewTotalBalance?.text = "S/ 0.00"
+                        textViewTotalBalance?.setTextColor(ContextCompat.getColor(globalContext!!, R.color.purple_200))
+                        dialogNewSale?.visibility = View.VISIBLE
+                        dialogNewDispatch?.visibility = View.VISIBLE
+                    }
+                    
                     listOperations.forEach { o ->
                         val inflaterPaymentMethod = LayoutInflater.from(globalContext)
                         val viewPaymentMethod = inflaterPaymentMethod.inflate(R.layout.item_order_history, null)
@@ -1193,7 +1220,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             if (o.operationStatus == "02"){
 
                                 constraintLayoutOrder.setBackgroundColor(ContextCompat.getColor(globalContext!!, R.color.purple_200))
-                                totalBalance += o.totalPending
                             }else{
                                 constraintLayoutOrder.setBackgroundColor(ContextCompat.getColor(globalContext!!, R.color.red_light))
                             }
@@ -1218,7 +1244,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
             }
 
-            override fun onFailure(call: Call<ArrayList<Operation>>, t: Throwable) {
+            override fun onFailure(call: Call<ClientRouteResponse>, t: Throwable) {
                 Log.d("MIKE", "reviewOrderHistoryByClient. Algo salio mal..." + t.message.toString())
             }
         })

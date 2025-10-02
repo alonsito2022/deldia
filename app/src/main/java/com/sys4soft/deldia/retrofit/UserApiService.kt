@@ -47,10 +47,14 @@ interface UserApiService {
     @POST("dispatches/api/v1/get_sales_by_client_id/")
     @Headers("Accept: application/json", "Content-type:application/json")
     fun getSalesByClientID(@Body params: Operation) : Call<ArrayList<Operation>>
-
+    //old
     @POST("dispatches/api/v1/get_order_history_by_client_id/")
     @Headers("Accept: application/json", "Content-type:application/json")
     fun getOrderHistoryByClientID(@Body params: Operation) : Call<ArrayList<Operation>>
+    //    new
+    @POST("dispatches/api/v1/get_client_of_route/")
+    @Headers("Accept: application/json", "Content-type:application/json")
+    fun getPendingDebtAndRecentOperationsByClientID(@Body params: Operation) : Call<ClientRouteResponse>
 
     @POST("sales/api/v1/register_inventory_check/")
     @Headers("Accept: application/json", "Content-type:application/json")
@@ -181,8 +185,8 @@ interface UserApiService {
     fun getAllSalesBySellers(@Body request: SalesBySellerRequest) : Call<ArrayList<SaleBySeller>>
 
     companion object {
-//        var BASE_URL = "http://192.168.1.20:9017/"
-        var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"
+        var BASE_URL = "http://192.168.1.20:9017/"
+//        var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"
 
         fun create(context: Context): UserApiService {
             val client = OkHttpClient.Builder()

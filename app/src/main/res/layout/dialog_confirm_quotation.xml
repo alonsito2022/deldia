@@ -123,6 +123,22 @@
                             android:textSize="20sp"
                             android:textStyle="bold"
                             android:textColor="@color/dialog_text_primary"/>
+
+                        <TextView
+                            android:id="@+id/textViewDialogFree42"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Gratuito"
+                            style="@style/DialogSubtitleStyle"/>
+
+                        <TextView
+                            android:id="@+id/textViewDialogTotalFree"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="S/ 0.00"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/green"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

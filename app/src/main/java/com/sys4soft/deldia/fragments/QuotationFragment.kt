@@ -44,9 +44,11 @@ class QuotationFragment : Fragment() {
     private lateinit var buttonSummary: MaterialButton
 
     private lateinit var textViewTotal: TextView
+    private lateinit var textViewTotalFree: TextView
     private lateinit var textViewItems: TextView
 
     private lateinit var textViewDialogTotal: TextView
+    private lateinit var textViewDialogTotalFree: TextView
     private lateinit var textViewDialogItems: TextView
     private lateinit var autoCompletePhysicalDistribution: AutoCompleteTextView
 
@@ -102,6 +104,7 @@ class QuotationFragment : Fragment() {
         textViewClientNames = view.findViewById(R.id.textViewClientNames)
         textViewClientAddress = view.findViewById(R.id.textViewClientAddress)
         textViewTotal = view.findViewById(R.id.textViewTotal)
+        textViewTotalFree = view.findViewById(R.id.textViewTotalFree)
         textViewItems = view.findViewById(R.id.textViewItems)
         buttonSummary = view.findViewById(R.id.buttonSummary)
         buttonRefresh = view.findViewById(R.id.buttonRefresh)
@@ -249,6 +252,7 @@ class QuotationFragment : Fragment() {
 
         recyclerViewProductStore.adapter= productQuotationAdapter
         textViewTotal = view.findViewById(R.id.textViewTotal)
+        textViewTotalFree = view.findViewById(R.id.textViewTotalFree)
         buttonRefresh = view.findViewById(R.id.buttonRefresh)
         buttonRefresh.setOnClickListener {
             loadProductStoreInWarehouse()
@@ -469,15 +473,24 @@ class QuotationFragment : Fragment() {
     private fun updateTotal() {
         var counter = 0
         var total = 0.0
+        var totalFree = 0.0
         list.forEach {
             counter += it.quantity
-            total += it.quantity * it.priceSale
+            if(it.productActiveType == "01"){  // PRODUCTO
+                total += it.quantity * it.priceSale
+            }else if(it.productActiveType == "02"){  // REGALO
+                totalFree += it.quantity * it.priceSale
+            }
         }
         val totalF3:Double = Math.round(total * 1000.0) / 1000.0
         val totalF1:Double = Math.round(totalF3 * 100.0) / 100.0
+        val totalFreeF3:Double = Math.round(totalFree * 1000.0) / 1000.0
+        val totalFreeF1:Double = Math.round(totalFreeF3 * 100.0) / 100.0
         textViewTotal.text = totalF1.toString()
+        textViewTotalFree.text = totalFreeF1.toString()
         textViewItems.text = counter.toString()
         if(this::textViewDialogTotal.isInitialized){
+            textViewDialogTotalFree.text = totalFreeF1.toString()
             textViewDialogTotal.text = totalF1.toString()
             textViewDialogItems.text = counter.toString()
         }
@@ -529,6 +542,7 @@ class QuotationFragment : Fragment() {
         val v = inflater.inflate(R.layout.dialog_confirm_quotation, null)
         layoutListItem = v.findViewById(R.id.layoutList)
         textViewDialogTotal = v.findViewById(R.id.textViewDialogTotal)
+        textViewDialogTotalFree = v.findViewById(R.id.textViewDialogTotalFree)
         textViewDialogItems = v.findViewById(R.id.textViewDialogItems)
         autoCompletePhysicalDistribution = v.findViewById(R.id.autoCompletePhysicalDistribution)
         loadingLayout = v.findViewById(R.id.loadingLayout)

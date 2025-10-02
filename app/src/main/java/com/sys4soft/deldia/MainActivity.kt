@@ -207,7 +207,7 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 response.body()?.let {
                     user = it
-                    validateSession(it)
+//                    validateSession(it)
                 }
             }
 

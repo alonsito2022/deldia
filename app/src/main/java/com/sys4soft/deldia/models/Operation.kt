@@ -38,10 +38,12 @@ class Operation() {
     var userFullName: String = ""
     var operationTime: String = ""
     var total: Double = 0.0
+    var totalFree: Double = 0.0
     var totalPurchased: Double = 0.0
     var totalPaid: Double = 0.0
     var totalPending: Double = 0.0
     var totalReturned: Double = 0.0
+    var totalCharged: Double = 0.0
     var numberToCurrency: String = ""
     var documentTypeDisplay: String = ""
     var routeDate: String = ""

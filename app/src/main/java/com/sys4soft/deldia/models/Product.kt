@@ -15,6 +15,7 @@ class Product() {
     var positionInAdapter: Int = 0
     var productBrandName: String = ""
     var stock: Double = 0.0
+    var productActiveType: String = ""
     var stockInitial: Double = 0.0
     var stockStarted: Double = 0.0
     var stockSupplied: Double = 0.0

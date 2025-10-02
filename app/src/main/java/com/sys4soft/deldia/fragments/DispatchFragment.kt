@@ -49,10 +49,12 @@ class DispatchFragment : Fragment() {
     private lateinit var textViewTotal: TextView
     private lateinit var textViewItems: TextView
     private lateinit var textViewSubtotal: TextView
+    private lateinit var textViewTotalFree: TextView
 
     private lateinit var textViewDialogTotal: TextView
     private lateinit var textViewDialogItems: TextView
     private lateinit var textViewDialogSubtotal: TextView
+    private lateinit var textViewDialogTotalFree: TextView
     private lateinit var editTextMethodPrice: TextInputEditText
     private lateinit var switchShowImages: Switch
     private lateinit var refreshLayout: SwipeRefreshLayout
@@ -153,6 +155,7 @@ class DispatchFragment : Fragment() {
         textViewTotal = view.findViewById(R.id.textViewTotal)
         textViewItems = view.findViewById(R.id.textViewItems)
         textViewSubtotal = view.findViewById(R.id.textViewSubtotal)
+        textViewTotalFree = view.findViewById(R.id.textViewTotalFree)
         searchViewProduct = view.findViewById(R.id.searchViewProduct)
         searchViewProduct.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -244,17 +247,26 @@ class DispatchFragment : Fragment() {
     private fun updateTotal() {
         var counter = 0
         var total = 0.0
+        var totalFree = 0.0
         list.forEach {
             counter += it.quantity
-            total += it.quantity * it.priceSale
+            if(it.productActiveType == "01"){  // PRODUCTO
+                total += it.quantity * it.priceSale
+            }else if(it.productActiveType == "02"){  // REGALO
+                totalFree += it.quantity * it.priceSale
+            }
         }
 //        val totalF1:Double = String.format("%.2f", total).toDouble()
         val totalF3:Double = Math.round(total * 1000.0) / 1000.0
         val totalF1:Double = Math.round(totalF3 * 100.0) / 100.0
+        val totalFreeF3:Double = Math.round(totalFree * 1000.0) / 1000.0
+        val totalFreeF1:Double = Math.round(totalFreeF3 * 100.0) / 100.0
         textViewTotal.text = totalF1.toString()
+        textViewTotalFree.text = totalFreeF1.toString()
         textViewItems.text = counter.toString()
         if(this::textViewDialogTotal.isInitialized){
             textViewDialogTotal.text = totalF1.toString()
+            textViewDialogTotalFree.text = totalFreeF1.toString()
             textViewDialogItems.text = counter.toString()
 
             val subtotal:Double = textViewDialogSubtotal.text.toString().replace("S/", "").trim().toDouble()
@@ -330,6 +342,7 @@ class DispatchFragment : Fragment() {
         textViewDialogTotal = v.findViewById(R.id.textViewDialogTotal)
         textViewDialogSubtotal = v.findViewById(R.id.textViewDialogSubtotal)
         textViewDialogItems = v.findViewById(R.id.textViewDialogItems)
+        textViewDialogTotalFree = v.findViewById(R.id.textViewDialogTotalFree)
         autoCompletePhysicalDistribution = v.findViewById(R.id.autoCompletePhysicalDistribution)
 
         autoCompleteDocumentType = v.findViewById(R.id.autoCompleteDocumentType)
@@ -708,7 +721,6 @@ class DispatchFragment : Fragment() {
                     } catch (e: Exception) {
                         Log.d("MIKE", "Error parsing error response: ${e.message}")
                     }
-
                     Toast.makeText(globalContext, errorMessage, Toast.LENGTH_LONG).show()
                 }
             }
@@ -716,7 +728,6 @@ class DispatchFragment : Fragment() {
             override fun onFailure(call: Call<Operation>, t: Throwable) {
                 hideLoading()
                 isProcessing = false
-                Log.d("MIKE", "sendApiTerminateQuotation onFailure: " + t.message.toString())
                 Toast.makeText(globalContext, "Error de conexión: ${t.message}", Toast.LENGTH_LONG).show()
             }
         })

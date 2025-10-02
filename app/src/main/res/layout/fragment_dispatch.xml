@@ -202,6 +202,30 @@
                 app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV95"
                 app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV65"
                 app:layout_constraintTop_toBottomOf="@+id/textView42" />
+
+            <TextView
+                android:id="@+id/textViewFree42"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GRATUITO"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV95"
+                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV65"
+                app:layout_constraintTop_toBottomOf="@+id/textViewTotal" />
+
+            <TextView
+                android:id="@+id/textViewTotalFree"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/green"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/guidelineSubtotalInnerV95"
+                app:layout_constraintStart_toStartOf="@+id/guidelineSubtotalInnerV65"
+                app:layout_constraintTop_toBottomOf="@+id/textViewFree42" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
