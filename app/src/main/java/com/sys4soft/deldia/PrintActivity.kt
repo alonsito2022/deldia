@@ -24,9 +24,14 @@ import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sys4soft.deldia.localdatabase.Preference
 import com.sys4soft.deldia.models.Operation
 import com.sys4soft.deldia.pdf.Ticket
@@ -49,13 +54,15 @@ class PrintActivity : AppCompatActivity() {
     private var bluetoothSocket: BluetoothSocket? = null
     private var outputStream: OutputStream? = null
     private lateinit var toolbar : Toolbar
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navView: NavigationView
+    private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var fabPrintSettings: FloatingActionButton
     private lateinit var btnPrint: Button
     private lateinit var btnDownload: Button
     private lateinit var btnStartDiscovery: Button
     private lateinit var btnCancelDiscovery: Button
-    private lateinit var btnGoMap: Button
-    private lateinit var btnGoOrders: Button
     private lateinit var btnClose: Button
     private lateinit var listViewPairedDevices: ListView
     private lateinit var textViewOperationPart1: TextView
@@ -80,11 +87,121 @@ class PrintActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_print)
-        supportActionBar?.hide()
 
         preference = Preference(applicationContext)
 
+        val bundle = Bundle()
+        bundle.putInt("userID", preference.getData("userID").toInt())
+        bundle.putInt("vehicleID", preference.getData("vehicleID").toInt())
+        bundle.putString("vehicleLicensePlate", preference.getData("vehicleLicensePlate"))
+
         toolbar = findViewById(R.id.toolbar)
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navView = findViewById(R.id.nav_view)
+        bottomNavigationView = findViewById(R.id.bottomNavigationView)
+        setSupportActionBar(toolbar)
+        
+        // Configurar el ActionBarDrawerToggle para PrintActivity
+        toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        
+        // Configurar el listener del NavigationView
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.clientFragment -> {
+                    // Navegar a clientFragment
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("GO_TO_CLIENTS", true)
+                    startActivity(intent)
+                    finish()
+                }
+                R.id.productFragment -> {
+                    // Navegar a productFragment
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("GO_TO_PRODUCTS", true)
+                    startActivity(intent)
+                    finish()
+                }
+                R.id.collectionSheetFragment -> {
+                    // Navegar a collectionSheetFragment
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("GO_TO_COLLECTION_SHEET", true)
+                    startActivity(intent)
+                    finish()
+                }
+                R.id.mapFragment -> {
+                    // Navegar a mapFragment
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("GO_TO_MAP", true)
+                    startActivity(intent)
+                    finish()
+                }
+                R.id.saleRealizedFragment -> {
+                    // Navegar a saleRealizedFragment
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("GO_TO_ORDERS", true)
+                    startActivity(intent)
+                    finish()
+                }
+                R.id.chartFragment -> {
+                    // Navegar a chartFragment
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("GO_TO_CHARTS", true)
+                    startActivity(intent)
+                    finish()
+                }
+                R.id.profileFragment -> {
+                    // Navegar a profileFragment
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("GO_TO_PROFILE", true)
+                    startActivity(intent)
+                    finish()
+                }
+                R.id.nav_logout -> {
+                    // Cerrar sesión
+                    preference.clearPreference()
+                    finish()
+                }
+            }
+            drawerLayout.closeDrawer(GravityCompat.START)
+            true
+        }
+        
+        // Configurar el BottomNavigationView
+        bottomNavigationView.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_collection_sheet -> {
+                    // Navegar a collectionSheetFragment
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("GO_TO_COLLECTION_SHEET", true)
+                    startActivity(intent)
+                    finish()
+                }
+                R.id.nav_map -> {
+                    // Navegar a mapFragment
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("GO_TO_MAP", true)
+                    startActivity(intent)
+                    finish()
+                }
+                R.id.nav_sales_realized -> {
+                    // Navegar a saleRealizedFragment
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("GO_TO_ORDERS", true)
+                    startActivity(intent)
+                    finish()
+                }
+                R.id.nav_products -> {
+                    // Navegar a productFragment
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("GO_TO_PRODUCTS", true)
+                    startActivity(intent)
+                    finish()
+                }
+            }
+            true
+        }
         textViewOperationPart1 = findViewById(R.id.textViewOperationPart1)
         textViewOperationPart2 = findViewById(R.id.textViewOperationPart2)
         textViewOperationPart3 = findViewById(R.id.textViewOperationPart3)
@@ -118,21 +235,6 @@ class PrintActivity : AppCompatActivity() {
             }
         }
 
-        btnGoMap = findViewById(R.id.btnGoMap)
-        btnGoMap.setOnClickListener {
-            disconnectBluetooth()
-            val i = Intent(this@PrintActivity, MainActivity::class.java)
-            i.putExtra("GO_TO_MAP", true)
-            startActivity(i)
-        }
-        btnGoOrders = findViewById(R.id.btnGoOrders)
-        btnGoOrders.setOnClickListener {
-            disconnectBluetooth()
-            val i = Intent(this@PrintActivity, MainActivity::class.java)
-            i.putExtra("GO_TO_ORDERS", true)
-            startActivity(i)
-        }
-
         if(intent != null){
             val operationID: Int = intent.getStringExtra("operationID")!!.toInt()
             loadOperation(operationID)
@@ -148,10 +250,6 @@ class PrintActivity : AppCompatActivity() {
         initBluetooth()
 
 
-        val bundle = Bundle()
-        bundle.putInt("userID", preference.getData("userID").toInt())
-        bundle.putInt("vehicleID", preference.getData("vehicleID").toInt())
-        bundle.putString("vehicleLicensePlate", preference.getData("vehicleLicensePlate"))
 
     }
 
@@ -181,7 +279,8 @@ class PrintActivity : AppCompatActivity() {
         }
     }
     private fun init(){
-        toolbar.setNavigationOnClickListener { finish() }
+        // Remover el listener anterior que cerraba la actividad
+        // toolbar.setNavigationOnClickListener { finish() }
     }
 
     private fun initBluetooth() {
@@ -732,4 +831,5 @@ class PrintActivity : AppCompatActivity() {
         if (bluetoothAdapter != null)
             bluetoothAdapter!!.cancelDiscovery()
     }*/
+    
 }

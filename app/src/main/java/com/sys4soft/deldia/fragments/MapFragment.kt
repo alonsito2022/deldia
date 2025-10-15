@@ -371,6 +371,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         // Verificar rol del usuario para deshabilitar selector de ruta si es preventista
         val userRoleName = preference.getData("userRoleName")
         if (userRoleName.equals("preventista", ignoreCase = true)) {
+            textInputLayoutGang.isEnabled = false
             autoCompleteGang.isEnabled = false
             autoCompleteGang.isClickable = false
             autoCompleteGang.isFocusable = false

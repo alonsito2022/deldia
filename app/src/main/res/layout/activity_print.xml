@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PrintActivity">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
 
     <com.google.android.material.appbar.AppBarLayout
@@ -22,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/primary"
-            app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+            app:navigationIcon="@drawable/ic_baseline_reorder_24"
             app:navigationIconTint="@color/white"
             app:title="ticket"
             app:titleTextColor="@color/white" />
@@ -125,9 +130,17 @@
                 android:id="@+id/btnStartDiscovery"
                 style="@style/ButtonStyle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:backgroundTint="@color/blue_dark"
                 android:text="Iniciar Detecteccion"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:elevation="4dp"
                 android:visibility="gone" />
 
             <ProgressBar
@@ -142,51 +155,64 @@
                 android:id="@+id/btnPrint"
                 style="@style/ButtonStyle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
                 android:backgroundTint="@color/warning"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:elevation="6dp"
                 android:enabled="false"
-                android:text="Imprimir" />
+                android:text="🖨️ IMPRIMIR TICKET" />
 
 
             <Button
                 android:id="@+id/btnCancelDiscovery"
                 style="@style/ButtonStyle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:backgroundTint="@color/secondary_text"
-                android:text="Cancelar Detecteccion"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:elevation="4dp"
+                android:text="❌ Cancelar Detecteccion"
                 android:visibility="gone" />
-
-            <Button
-                android:id="@+id/btnGoMap"
-                style="@style/ButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/secondary_text"
-                android:text="Ir a mi mapa" />
-
-            <Button
-                android:id="@+id/btnGoOrders"
-                style="@style/ButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/secondary_text"
-                android:text="Ir a mis pedidos" />
 
             <Button
                 android:id="@+id/btnDownload"
                 style="@style/ButtonStyle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/olive"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:elevation="4dp"
                 android:enabled="false"
-                android:text="Compartir" />
+                android:text="📤 COMPARTIR PDF" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="3dp"
-                app:cardElevation="4dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="64dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@color/white"
                 app:cardUseCompatPadding="true">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -197,9 +223,14 @@
                         android:id="@+id/tvPrinterName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Impresora"
-                        android:textSize="18dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="🖨️ Impresora"
+                        android:textColor="@color/primary"
+                        android:textSize="18sp"
                         android:textStyle="bold"
+                        android:textAlignment="center"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -208,8 +239,13 @@
                         android:id="@+id/tvPrinterAddress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="16dp"
                         android:text="Address"
-                        android:textSize="12dp"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="14sp"
+                        android:textAlignment="center"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvPrinterName" />
@@ -229,7 +265,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="64dp"
         android:backgroundTint="@color/accent"
         android:elevation="6dp"
         android:src="@drawable/ic_baseline_print_24"
@@ -238,5 +275,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@color/white" />
 
-
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        style="@style/BottomNavigationStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/nav_bottom" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+<com.google.android.material.navigation.NavigationView
+    android:id="@+id/nav_view"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    style="@style/NavigationViewStyle"
+    app:headerLayout="@layout/nav_header"
+    app:menu="@menu/nav_menu" />
+</androidx.drawerlayout.widget.DrawerLayout>

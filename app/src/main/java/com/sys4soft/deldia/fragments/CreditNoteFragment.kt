@@ -314,12 +314,23 @@ class CreditNoteFragment : Fragment() {
             android.R.layout.simple_spinner_dropdown_item,
             listMethod
         )
-        autoCompleteMethodName.keyListener = null
         autoCompleteMethodName.setAdapter(adapter)
         autoCompleteMethodName.setText(
             autoCompleteMethodName.adapter.getItem(0).toString(),
             false
         )
+        
+        // Configurar comportamiento tipo Spinner
+        autoCompleteMethodName.keyListener = null // Desactivar entrada de texto
+        autoCompleteMethodName.isFocusable = false // No permitir foco para evitar teclado
+        autoCompleteMethodName.isClickable = true // Permitir clicks
+        
+        // Mostrar dropdown al hacer click (comportamiento tipo Spinner)
+        autoCompleteMethodName.setOnClickListener {
+            autoCompleteMethodName.showDropDown()
+        }
+        
+        // Manejar selección de item
         autoCompleteMethodName.setOnItemClickListener { adapterView, view, i, l ->
             val balance: Double = textViewDialogTotal.text.toString().toDouble() - textViewDialogSubtotal.text.toString().toDouble()
             editTextMethodPrice.setText(balance.toString())

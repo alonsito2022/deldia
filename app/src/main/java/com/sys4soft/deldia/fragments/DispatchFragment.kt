@@ -291,7 +291,7 @@ class DispatchFragment : Fragment() {
             autoCompletePhysicalDistribution.showDropDown()
         }
         
-        autoCompletePhysicalDistribution.isEnabled = false
+        autoCompletePhysicalDistribution.isEnabled = true
 
     }
     private fun loadOperation(o: Operation) {

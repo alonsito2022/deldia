@@ -61,7 +61,8 @@ class MainActivity : AppCompatActivity() {
 
         navController = findNavController(R.id.fragmentContainerView)
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.productFragment, R.id.collectionSheetFragment, R.id.mapFragment),
+            setOf(R.id.productFragment, R.id.collectionSheetFragment, R.id.mapFragment, R.id.quotationFragment, R.id.saleRealizedFragment, R.id.dispatchFragment, 
+            R.id.printActivity),
             drawerLayout
         )
         // the title in the action bar will automatically be updated when the destination changes

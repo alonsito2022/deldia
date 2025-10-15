@@ -169,7 +169,7 @@ class SaleFragment : Fragment() {
             autoCompletePhysicalDistribution.showDropDown()
         }
         
-        autoCompletePhysicalDistribution.isEnabled = false
+        autoCompletePhysicalDistribution.isEnabled = true
 
     }
 
