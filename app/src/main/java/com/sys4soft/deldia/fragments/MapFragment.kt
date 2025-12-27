@@ -79,6 +79,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var listOperations = arrayListOf<Operation>()
 
     private lateinit var textInputLayoutGang: TextInputLayout
+    private lateinit var textInputLayoutVisitDay: TextInputLayout
     private lateinit var autoCompleteVisitDay: AutoCompleteTextView
     private lateinit var autoCompleteGang: AutoCompleteTextView
     private lateinit var btnCleanGang: Button
@@ -305,8 +306,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 //        }
 
 
+        textInputLayoutVisitDay = rootView.findViewById(R.id.textInputLayoutVisitDay)
         autoCompleteVisitDay = rootView.findViewById(R.id.autoCompleteVisitDay)
-        // Habilitado para permitir selección manual
         autoCompleteGang = rootView.findViewById(R.id.autoCompleteGang)
         btnExpand = rootView.findViewById(R.id.btnExpand)
         cardViewResult = rootView.findViewById(R.id.cardViewResult)
@@ -370,12 +371,21 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         
         // Verificar rol del usuario para deshabilitar selector de ruta si es preventista
         val userRoleName = preference.getData("userRoleName")
+        val isRepartidor = userRoleName.equals("repartidor", ignoreCase = true)
+        
         if (userRoleName.equals("preventista", ignoreCase = true)) {
             textInputLayoutGang.isEnabled = false
             autoCompleteGang.isEnabled = false
             autoCompleteGang.isClickable = false
             autoCompleteGang.isFocusable = false
             autoCompleteGang.alpha = 0.6f // Hacer visual que está deshabilitado
+        }
+        
+        // Verificar si el usuario es repartidor para habilitar selector de día de visita
+        if (!isRepartidor) {
+            // Para usuarios que no son repartidores, deshabilitar selector de día
+            textInputLayoutVisitDay.isEnabled = false
+            textInputLayoutVisitDay.alpha = 0.6f // Hacer visual que está deshabilitado
         }
 
         editTextSearchDate = rootView.findViewById(R.id.editTextSearchDate)
@@ -427,9 +437,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             7 -> {indexDay = 5}
             1 -> {indexDay = 6}
         }
+        
         // Configurar como spinner (no permite escritura manual)
         autoCompleteVisitDay.isFocusable = false
-        autoCompleteVisitDay.isClickable = true
+        autoCompleteVisitDay.isClickable = isRepartidor // Solo clickeable si es repartidor
         autoCompleteVisitDay.keyListener = null
         autoCompleteVisitDay.setAdapter(adapterDay)
         autoCompleteVisitDay.setText(
@@ -438,26 +449,36 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         )
         route.visitDay = indexDay
         
-        // Listener para cuando el usuario cambia manualmente el día
-        autoCompleteVisitDay.setOnItemClickListener { parent, view, position, id ->
-            val selectedDay = parent.getItemAtPosition(position).toString()
-            var selectedVisitDay = 0
-            when (selectedDay){
-                "LUNES" -> {selectedVisitDay = 0}
-                "MARTES" -> {selectedVisitDay = 1}
-                "MIERCOLES" -> {selectedVisitDay = 2}
-                "JUEVES" -> {selectedVisitDay = 3}
-                "VIERNES" -> {selectedVisitDay = 4}
-                "SABADO" -> {selectedVisitDay = 5}
-                "DOMINGO" -> {selectedVisitDay = 6}
-                "TODOS" -> {selectedVisitDay = 7}
+        // Solo permitir selección manual si el usuario es repartidor
+        if (isRepartidor) {
+            // Listener para cuando el usuario cambia manualmente el día
+            autoCompleteVisitDay.setOnItemClickListener { parent, view, position, id ->
+                val selectedDay = parent.getItemAtPosition(position).toString()
+                var selectedVisitDay = 0
+                when (selectedDay){
+                    "LUNES" -> {selectedVisitDay = 0}
+                    "MARTES" -> {selectedVisitDay = 1}
+                    "MIERCOLES" -> {selectedVisitDay = 2}
+                    "JUEVES" -> {selectedVisitDay = 3}
+                    "VIERNES" -> {selectedVisitDay = 4}
+                    "SABADO" -> {selectedVisitDay = 5}
+                    "DOMINGO" -> {selectedVisitDay = 6}
+                    "TODOS" -> {selectedVisitDay = 7}
+                }
+                route.visitDay = selectedVisitDay
             }
-            route.visitDay = selectedVisitDay
-        }
-        
-        // Mostrar dropdown al hacer clic
-        autoCompleteVisitDay.setOnClickListener { 
-            autoCompleteVisitDay.showDropDown() 
+            
+            // Mostrar dropdown al hacer clic
+            autoCompleteVisitDay.setOnClickListener { 
+                autoCompleteVisitDay.showDropDown() 
+            }
+        } else {
+            // Para usuarios que no son repartidores, deshabilitar visualmente
+            autoCompleteVisitDay.isClickable = false
+            autoCompleteVisitDay.alpha = 0.6f // Hacer visual que está deshabilitado
+            // Limpiar listeners para evitar interacciones
+            autoCompleteVisitDay.setOnItemClickListener(null)
+            autoCompleteVisitDay.setOnClickListener(null)
         }
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.frg) as SupportMapFragment?
