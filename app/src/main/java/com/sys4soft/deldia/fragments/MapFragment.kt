@@ -86,6 +86,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var textViewNumberVisits: TextView
     private lateinit var btnExpand: Button
     private lateinit var cardViewResult: CardView
+    private lateinit var textInputLayoutSearchDate: TextInputLayout
     private lateinit var editTextSearchDate: TextInputEditText
     private lateinit var recyclerViewPerson: RecyclerView
     private lateinit var searchViewRoute: android.widget.SearchView
@@ -390,6 +391,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             textInputLayoutVisitDay.alpha = 0.6f // Hacer visual que está deshabilitado
         }
 
+        textInputLayoutSearchDate = rootView.findViewById(R.id.textInputLayoutSearchDate)
         editTextSearchDate = rootView.findViewById(R.id.editTextSearchDate)
         val sdf2 = SimpleDateFormat("dd/MM/yyyy").format(Date())
         val sdf3 = SimpleDateFormat("yyyy-MM-dd").format(Date())
@@ -468,6 +470,58 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     "TODOS" -> {selectedVisitDay = 7}
                 }
                 route.visitDay = selectedVisitDay
+                
+                // Si se selecciona "TODOS", deshabilitar la fecha
+                if (selectedVisitDay == 7) {
+                    textInputLayoutSearchDate.isEnabled = false
+                    editTextSearchDate.isEnabled = false
+                    editTextSearchDate.isClickable = false
+                    editTextSearchDate.isFocusable = false
+                    textInputLayoutSearchDate.alpha = 0.6f
+                    editTextSearchDate.alpha = 0.6f
+                    // Limpiar la fecha ya que se omitirá
+                    route.routeDate = ""
+                } else {
+                    // Si se selecciona un día específico, calcular y establecer la fecha de ese día en la semana actual
+                    val calendar = Calendar.getInstance()
+                    val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+                    
+                    // Convertir el día seleccionado al formato de Calendar (Calendar.MONDAY = 2, Calendar.SUNDAY = 1)
+                    val targetDayOfWeek = when(selectedVisitDay) {
+                        0 -> Calendar.MONDAY      // LUNES
+                        1 -> Calendar.TUESDAY    // MARTES
+                        2 -> Calendar.WEDNESDAY   // MIERCOLES
+                        3 -> Calendar.THURSDAY    // JUEVES
+                        4 -> Calendar.FRIDAY      // VIERNES
+                        5 -> Calendar.SATURDAY    // SABADO
+                        6 -> Calendar.SUNDAY      // DOMINGO
+                        else -> currentDayOfWeek
+                    }
+                    
+                    // Calcular la diferencia de días
+                    var daysToAdd = targetDayOfWeek - currentDayOfWeek
+                    // Si el día objetivo ya pasó esta semana, ir a la próxima semana
+                    if (daysToAdd < 0) {
+                        daysToAdd += 7
+                    }
+                    
+                    // Establecer la fecha del día objetivo
+                    calendar.add(Calendar.DAY_OF_MONTH, daysToAdd)
+                    val sdf2 = SimpleDateFormat("dd/MM/yyyy").format(calendar.time)
+                    val sdf3 = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
+                    
+                    // Actualizar la fecha en el campo y en route
+                    editTextSearchDate.setText(sdf2)
+                    route.routeDate = sdf3
+                    
+                    // Habilitar el campo de fecha
+                    textInputLayoutSearchDate.isEnabled = true
+                    editTextSearchDate.isEnabled = true
+                    editTextSearchDate.isClickable = true
+                    editTextSearchDate.isFocusable = true
+                    textInputLayoutSearchDate.alpha = 1.0f
+                    editTextSearchDate.alpha = 1.0f
+                }
             }
             
             // Mostrar dropdown al hacer clic
@@ -524,6 +578,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         route.visitDay = indexDay
         route.routeDate = sdf3
         editTextSearchDate.setText(sdf2)
+        
+        // Si el usuario puede cambiar el día, habilitar la fecha (ya que al seleccionar una fecha, no está en modo "TODOS")
+        val userRoleName = preference.getData("userRoleName")
+        val isRepartidor = userRoleName.equals("repartidor", ignoreCase = true)
+        val isAdministrador = userRoleName.equals("administrador", ignoreCase = true)
+        val canChangeVisitDay = isRepartidor || isAdministrador
+        
+        if (canChangeVisitDay) {
+            // Habilitar el campo de fecha cuando se selecciona manualmente
+            textInputLayoutSearchDate.isEnabled = true
+            editTextSearchDate.isEnabled = true
+            editTextSearchDate.isClickable = true
+            editTextSearchDate.isFocusable = true
+            textInputLayoutSearchDate.alpha = 1.0f
+            editTextSearchDate.alpha = 1.0f
+        }
     }
 
     private fun showLoading() {
