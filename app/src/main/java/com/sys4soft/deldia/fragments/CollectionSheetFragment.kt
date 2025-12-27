@@ -370,7 +370,8 @@ class CollectionSheetFragment : Fragment() {
     private fun calculateAndDisplayTotals(sales: ArrayList<SaleBySeller>) {
         // Filter sales with operationStatus === "02" (COMPLETE)
         val completedSales = sales.filter { it.operationStatus == "02" }
-        
+        val allSales = sales.filter { it.operationStatus == "02" || it.operationStatus == "03" }
+
         // Calculate sumTotalPurchased
         val sumTotalPurchased = completedSales.sumOf { it.totalPurchased.toDouble() }
         
@@ -384,7 +385,7 @@ class CollectionSheetFragment : Fragment() {
         val sumTotalPaidInYape = completedSales.sumOf { it.totalPaidInYape.toDouble() }
         
         // Calculate sumTotalReturned
-        val sumTotalReturned = completedSales.sumOf { it.totalReturned.toDouble() }
+        val sumTotalReturned = allSales.sumOf { it.totalReturned.toDouble() }
         
         // Calculate sumTotalInCredit (with additional filters)
         val sumTotalInCredit = sales
