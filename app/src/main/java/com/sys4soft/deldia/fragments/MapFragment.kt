@@ -306,7 +306,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
         autoCompleteVisitDay = rootView.findViewById(R.id.autoCompleteVisitDay)
-        autoCompleteVisitDay.isEnabled = false
+        // Habilitado para permitir selección manual
         autoCompleteGang = rootView.findViewById(R.id.autoCompleteGang)
         btnExpand = rootView.findViewById(R.id.btnExpand)
         cardViewResult = rootView.findViewById(R.id.cardViewResult)
@@ -427,12 +427,38 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             7 -> {indexDay = 5}
             1 -> {indexDay = 6}
         }
+        // Configurar como spinner (no permite escritura manual)
+        autoCompleteVisitDay.isFocusable = false
+        autoCompleteVisitDay.isClickable = true
         autoCompleteVisitDay.keyListener = null
         autoCompleteVisitDay.setAdapter(adapterDay)
         autoCompleteVisitDay.setText(
             autoCompleteVisitDay.adapter.getItem(indexDay).toString(),
             false
         )
+        route.visitDay = indexDay
+        
+        // Listener para cuando el usuario cambia manualmente el día
+        autoCompleteVisitDay.setOnItemClickListener { parent, view, position, id ->
+            val selectedDay = parent.getItemAtPosition(position).toString()
+            var selectedVisitDay = 0
+            when (selectedDay){
+                "LUNES" -> {selectedVisitDay = 0}
+                "MARTES" -> {selectedVisitDay = 1}
+                "MIERCOLES" -> {selectedVisitDay = 2}
+                "JUEVES" -> {selectedVisitDay = 3}
+                "VIERNES" -> {selectedVisitDay = 4}
+                "SABADO" -> {selectedVisitDay = 5}
+                "DOMINGO" -> {selectedVisitDay = 6}
+                "TODOS" -> {selectedVisitDay = 7}
+            }
+            route.visitDay = selectedVisitDay
+        }
+        
+        // Mostrar dropdown al hacer clic
+        autoCompleteVisitDay.setOnClickListener { 
+            autoCompleteVisitDay.showDropDown() 
+        }
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.frg) as SupportMapFragment?
         //use SupportMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment

@@ -150,7 +150,6 @@
                 style="@style/SpinnerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:enabled="false"
                 android:hint="Día de visita"
                 app:endIconMode="dropdown_menu">
 
@@ -159,7 +158,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:textSize="12sp"
-                    android:fontFamily="@font/nexa_light" />
+                    android:fontFamily="@font/nexa_light"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Botones -->
