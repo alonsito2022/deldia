@@ -372,6 +372,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         // Verificar rol del usuario para deshabilitar selector de ruta si es preventista
         val userRoleName = preference.getData("userRoleName")
         val isRepartidor = userRoleName.equals("repartidor", ignoreCase = true)
+        val isAdministrador = userRoleName.equals("administrador", ignoreCase = true)
+        val canChangeVisitDay = isRepartidor || isAdministrador
         
         if (userRoleName.equals("preventista", ignoreCase = true)) {
             textInputLayoutGang.isEnabled = false
@@ -381,9 +383,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             autoCompleteGang.alpha = 0.6f // Hacer visual que está deshabilitado
         }
         
-        // Verificar si el usuario es repartidor para habilitar selector de día de visita
-        if (!isRepartidor) {
-            // Para usuarios que no son repartidores, deshabilitar selector de día
+        // Verificar si el usuario puede cambiar el día de visita (repartidor o administrador)
+        if (!canChangeVisitDay) {
+            // Para usuarios que no son repartidores ni administradores, deshabilitar selector de día
             textInputLayoutVisitDay.isEnabled = false
             textInputLayoutVisitDay.alpha = 0.6f // Hacer visual que está deshabilitado
         }
@@ -440,7 +442,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         
         // Configurar como spinner (no permite escritura manual)
         autoCompleteVisitDay.isFocusable = false
-        autoCompleteVisitDay.isClickable = isRepartidor // Solo clickeable si es repartidor
+        autoCompleteVisitDay.isClickable = canChangeVisitDay // Solo clickeable si es repartidor o administrador
         autoCompleteVisitDay.keyListener = null
         autoCompleteVisitDay.setAdapter(adapterDay)
         autoCompleteVisitDay.setText(
@@ -449,8 +451,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         )
         route.visitDay = indexDay
         
-        // Solo permitir selección manual si el usuario es repartidor
-        if (isRepartidor) {
+        // Solo permitir selección manual si el usuario es repartidor o administrador
+        if (canChangeVisitDay) {
             // Listener para cuando el usuario cambia manualmente el día
             autoCompleteVisitDay.setOnItemClickListener { parent, view, position, id ->
                 val selectedDay = parent.getItemAtPosition(position).toString()
@@ -473,7 +475,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 autoCompleteVisitDay.showDropDown() 
             }
         } else {
-            // Para usuarios que no son repartidores, deshabilitar visualmente
+            // Para usuarios que no son repartidores ni administradores, deshabilitar visualmente
             autoCompleteVisitDay.isClickable = false
             autoCompleteVisitDay.alpha = 0.6f // Hacer visual que está deshabilitado
             // Limpiar listeners para evitar interacciones
