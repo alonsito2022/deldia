@@ -462,12 +462,34 @@ class ClientEditFragment : Fragment() {
 
                     val listDistrict = listOf(
                         "JOSE LUIS BUSTAMANTE Y RIVERO",
-                        "SOCABAYA",
-                        "SABANDIA",
-                        "CHARACATO",
-                        "QUEQUEÑA",
+                        "ALTO SELVA ALEGRE",
+                        "JACOBO HUNTER",
+                        "MARIANO MELGAR",
+                        "YURA",
                         "YARABAMBA",
-                        "MOLLEBAYA"
+                        "YANAHUARA",
+                        "VITOR",
+                        "UCHUMAYO",
+                        "TIABAYA",
+                        "SOCABAYA",
+                        "STA RITA DE SIGUAS",
+                        "SANTA ISABEL DE SIGUAS",
+                        "SAN JUAN DE TARUCANI",
+                        "SAN JUAN DE SIGUAS",
+                        "SACHACA",
+                        "SABANDIA",
+                        "QUEQUEÑA",
+                        "POLOBAYA",
+                        "POCSI",
+                        "PAUCARPATA",
+                        "MOLLEBAYA",
+                        "MIRAFLORES",
+                        "LA JOYA",
+                        "CHIGUATA",
+                        "CHARACATO",
+                        "CERRO COLORADO",
+                        "CAYMA",
+                        "AREQUIPA"
                     )
                     val adapterDistrict = ArrayAdapter(
                         globalContext!!,
@@ -482,10 +504,26 @@ class ClientEditFragment : Fragment() {
                             false
                         )
                     }else{
-                        autoCompleteDistrict.setText(
-                            autoCompleteDistrict.adapter.getItem(listDistrict.indexOf(person.districtDisplay)).toString(),
-                            false
-                        )
+                        val districtIndex = listDistrict.indexOf(person.districtDisplay)
+                        if(districtIndex >= 0 && districtIndex < listDistrict.size){
+                            // El distrito existe en la lista, seleccionarlo
+                            autoCompleteDistrict.setText(
+                                autoCompleteDistrict.adapter.getItem(districtIndex).toString(),
+                                false
+                            )
+                        }else{
+                            // El distrito no existe en la lista, usar el valor del distrito directamente
+                            // o seleccionar el primer elemento como fallback
+                            if(!person.districtDisplay.isNullOrEmpty()){
+                                autoCompleteDistrict.setText(person.districtDisplay, false)
+                            }else{
+                                autoCompleteDistrict.setText(
+                                    autoCompleteDistrict.adapter.getItem(0).toString(),
+                                    false
+                                )
+                            }
+                            Log.w("ClientEditFragment", "Distrito '${person.districtDisplay}' no encontrado en listDistrict. Usando valor directo.")
+                        }
                     }
 
                     btnSaveAndGoToMap.setOnClickListener { handleSaveAndSend("N") }
@@ -522,13 +560,35 @@ class ClientEditFragment : Fragment() {
     private fun getSelectedDistrict(): String {
         val valueDistrict = autoCompleteDistrict.text.toString()
         return when (valueDistrict) {
-            "JOSE LUIS BUSTAMANTE Y RIVERO" -> "040129"
-            "SOCABAYA" -> "040119"
-            "SABANDIA" -> "040113"
-            "CHARACATO" -> "040104"
-            "QUEQUEÑA" -> "040112"
+            "JOSE LUIS BUSTAMANTE Y RIVERO" ->  "040129"
+            "ALTO SELVA ALEGRE" -> "040128"
+            "JACOBO HUNTER" -> "040127"
+            "MARIANO MELGAR" -> "040126"
+            "YURA" -> "040125"
             "YARABAMBA" -> "040124"
+            "YANAHUARA" -> "040123"
+            "VITOR" -> "040122"
+            "UCHUMAYO" -> "040121"
+            "TIABAYA" -> "040120"
+            "SOCABAYA" -> "040119"
+            "STA RITA DE SIGUAS" -> "040118"
+            "SANTA ISABEL DE SIGUAS" -> "040117"
+            "SAN JUAN DE TARUCANI" -> "040116"
+            "SAN JUAN DE SIGUAS" -> "040115"
+            "SACHACA" -> "040114"
+            "SABANDIA" -> "040113"
+            "QUEQUENA" -> "040112"
+            "POLOBAYA" -> "040111"
+            "POCSI" -> "040110"
+            "PAUCARPATA" -> "040109"
             "MOLLEBAYA" -> "040108"
+            "MIRAFLORES" -> "040107"
+            "LA JOYA" -> "040106"
+            "CHIGUATA" -> "040105"
+            "CHARACATO" -> "040104"
+            "CERRO COLORADO" -> "040103"
+            "CAYMA" -> "040102"
+            "AREQUIPA" -> "040101"
             else -> ""
         }
     }
