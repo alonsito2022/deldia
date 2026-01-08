@@ -630,6 +630,9 @@ class SaleFragment : Fragment() {
             editTextMethodPrice.setText(total)
         }
 
+        // Restaurar pagos existentes si hay alguno
+        restorePaymentMethods()
+
         buttonAddPayment.setOnClickListener {
             if (editTextMethodPrice.text.toString().isNotEmpty()){
                 var selectedItem = "cash"
@@ -770,6 +773,45 @@ class SaleFragment : Fragment() {
 
     private fun removePaymentMethodItem(view: View) {
         layoutPaymentList.removeView(view)
+    }
+
+    private fun restorePaymentMethods() {
+        // Limpiar el layout antes de restaurar (por si acaso hay views residuales)
+        layoutPaymentList.removeAllViews()
+        
+        // Restaurar cada pago existente en paymentMethodList
+        paymentMethodList.forEach { (key, amount) ->
+            val inflaterMethod = LayoutInflater.from(globalContext)
+            val viewMethod = inflaterMethod.inflate(R.layout.item_payment_method, null)
+
+            val textViewPaymentMethodName = viewMethod.findViewById<TextView>(R.id.textViewPaymentMethodName)
+            val textViewPaymentMethodPrice = viewMethod.findViewById<TextView>(R.id.textViewPaymentMethodPrice)
+            val btnRemove = viewMethod.findViewById<Button>(R.id.buttonRemovePaymentMethodItem)
+
+            // Convertir la clave del mapa al nombre de visualización
+            val displayName = when (key) {
+                "cash" -> "CONTADO"
+                "yape" -> "YAPE"
+                "bcp" -> "BCP - DEPOSITO"
+                "credit" -> "CREDITO"
+                else -> key
+            }
+
+            textViewPaymentMethodName.text = displayName
+            textViewPaymentMethodPrice.text = "S/ $amount"
+
+            // Configurar el listener de eliminación
+            btnRemove.setOnClickListener {
+                removePaymentMethodItem(viewMethod)
+                paymentMethodList.remove(key)
+                updatePaymentMethodTotal()
+            }
+
+            layoutPaymentList.addView(viewMethod)
+        }
+        
+        // Actualizar el total después de restaurar
+        updatePaymentMethodTotal()
     }
 
     private fun updatePaymentMethodTotal() {
