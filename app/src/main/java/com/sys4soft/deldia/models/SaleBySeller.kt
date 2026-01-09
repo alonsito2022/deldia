@@ -20,6 +20,7 @@ class SaleBySeller() {
     var clientPhysicalDistributionDisplay: String = ""
     var clientDocumentType: String = ""
     var clientAddress: String = ""
+    var saleType: String = ""
     var totalPurchased: Double = 0.0
     var totalPaid: Double = 0.0
     var totalPaidInCash: Double = 0.0

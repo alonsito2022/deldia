@@ -391,13 +391,15 @@ class CollectionSheetFragment : Fragment() {
         val sumTotalInCredit = sales
             .filter { 
                 it.totalPending > 0 && 
-                it.dailyRouteStatus == "06" && 
-                it.operationStatus == "02" 
+                ((it.dailyRouteStatus == "06" &&
+                it.operationStatus == "02" && it.saleType == "PREVENTA") ||
+                it.operationStatus == "02" && it.saleType == "AUTOVENTA")
             }
             .sumOf { it.totalInCredit.toDouble() }
         
         // Calculate sumTotalPending
-        val sumTotalPending = completedSales.sumOf { it.totalPending.toDouble() }
+        val sumTotalPending = completedSales.filter { it.totalPending > 0 && (it.dailyRouteStatus == "05" &&
+                it.operationStatus == "02" && it.saleType == "PREVENTA") }.sumOf { it.totalPending.toDouble() }
 
         // Display totals
         textViewTotalPurchased.text = String.format("%.2f", sumTotalPurchased)
