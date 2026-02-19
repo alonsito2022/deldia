@@ -47,17 +47,26 @@ class ProductFragment : Fragment() {
         globalContext = this.activity
         preference = Preference(globalContext)
         val bundle = arguments
-        warehouse.warehouseID = bundle!!.getInt("vehicleID")
-        warehouse.warehouseName = bundle.getString("vehicleLicensePlate").toString()
         
-        // Agregar almacén actual a la lista
-        warehouseList.add(warehouse)
+        val userRoleName = preference.getData("userRoleName")
         
-        // Agregar almacén central
-        val centralWarehouse = Warehouse()
-        centralWarehouse.warehouseID = 3
-        centralWarehouse.warehouseName = "A-1 Almacen Central"
-        warehouseList.add(centralWarehouse)
+        if (!userRoleName.equals("ADMINISTRADOR", ignoreCase = true)) {
+            warehouse.warehouseID = bundle!!.getInt("vehicleID")
+            warehouse.warehouseName = bundle.getString("vehicleLicensePlate").toString()
+            
+            // Agregar almacén actual a la lista
+            warehouseList.add(warehouse)
+            
+            // Agregar almacén central
+            val centralWarehouse = Warehouse()
+            centralWarehouse.warehouseID = 3
+            centralWarehouse.warehouseName = "A-1 Almacen Central"
+            warehouseList.add(centralWarehouse)
+        } else {
+            // Si es ADMINISTRADOR, el warehouse inicial puede venir del bundle o ser 0
+            warehouse.warehouseID = bundle!!.getInt("vehicleID")
+            warehouse.warehouseName = bundle.getString("vehicleLicensePlate").toString()
+        }
     }
 
     override fun onCreateView(
@@ -79,8 +88,64 @@ class ProductFragment : Fragment() {
         warehouse.otherDate = sdf3
         operation.operationDate = sdf3
         
-        // Cargar productos del almacén inicial
-        loadProductStoreInWarehouse(warehouse.warehouseID)
+        val userRoleName = preference.getData("userRoleName")
+        if (userRoleName.equals("ADMINISTRADOR", ignoreCase = true)) {
+            loadWarehousesBySubsidiary()
+        } else {
+            // Cargar productos del almacén inicial
+            loadProductStoreInWarehouse(warehouse.warehouseID)
+        }
+    }
+
+    private fun loadWarehousesBySubsidiary() {
+        val subsidiaryIdStr = preference.getData("subsidiaryID")
+        val subsidiaryID = if (subsidiaryIdStr.isNotEmpty()) subsidiaryIdStr.toInt() else 1
+        
+        val warehouseParams = Warehouse().apply {
+            this.subsidiaryID = subsidiaryID
+        }
+        
+        UserApiService.create(requireContext()).getWarehousesBySubsidiary(warehouseParams)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ responseData ->
+                if (responseData != null) {
+                    warehouseList.clear()
+                    // Filtrar por gangStatus == true
+                    val filteredWarehouses = responseData.filter { it.gang?.gangStatus == true }
+                    warehouseList.addAll(filteredWarehouses)
+                    
+                    // Actualizar el adapter del AutoCompleteTextView
+                    updateWarehouseAdapter()
+                }
+            }, { error ->
+                Log.e("ProductFragment", "Error loading warehouses: ${error.message}")
+            })
+    }
+
+    private fun updateWarehouseAdapter() {
+        if (::autoCompleteWarehouse.isInitialized) {
+            val adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                warehouseList.map { it.warehouseName }
+            )
+            autoCompleteWarehouse.setAdapter(adapter)
+            
+            // Si es ADMINISTRADOR y la lista no está vacía, y no tenemos un almacén válido aún
+            if (warehouseList.isNotEmpty()) {
+                val userRoleName = preference.getData("userRoleName")
+                if (userRoleName.equals("ADMINISTRADOR", ignoreCase = true)) {
+                    // Si el almacén actual no está en la lista (ID es 0 o similar), seleccionar el primero
+                    if (!warehouseList.any { it.warehouseID == warehouse.warehouseID }) {
+                        warehouse = warehouseList[0]
+                        autoCompleteWarehouse.setText(warehouse.warehouseName, false)
+                    }
+                    // Siempre cargar productos después de actualizar la lista si es ADMINISTRADOR
+                    loadProductStoreInWarehouse(warehouse.warehouseID)
+                }
+            }
+        }
     }
 
     private fun setupWarehouseSelector(view: View) {

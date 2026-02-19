@@ -184,6 +184,10 @@ interface UserApiService {
     @Headers("Accept: application/json", "Content-type:application/json")
     fun getAllSalesBySellers(@Body request: SalesBySellerRequest) : Call<ArrayList<SaleBySeller>>
 
+    @POST("sales/api/v1/get_warehouses_by_subsidiary/")
+    @Headers("Accept: application/json", "Content-type:application/json")
+    fun getWarehousesBySubsidiary(@Body params: Warehouse) : Observable<ArrayList<Warehouse>>
+
     companion object {
 //        var BASE_URL = "http://192.168.1.20:9017/"
         var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"
