@@ -388,18 +388,10 @@ class CollectionSheetFragment : Fragment() {
         val sumTotalReturned = allSales.sumOf { it.totalReturned.toDouble() }
         
         // Calculate sumTotalInCredit (with additional filters)
-        val sumTotalInCredit = sales
-            .filter { 
-                it.totalPending > 0 && 
-                ((it.dailyRouteStatus == "06" &&
-                it.operationStatus == "02" && it.saleType == "PREVENTA") ||
-                it.operationStatus == "02" && it.saleType == "AUTOVENTA")
-            }
-            .sumOf { it.totalInCredit.toDouble() }
+        val sumTotalInCredit = completedSales.sumOf { it.totalInCredit.toDouble() }
         
         // Calculate sumTotalPending
-        val sumTotalPending = completedSales.filter { it.totalPending > 0 && (it.dailyRouteStatus == "05" &&
-                it.operationStatus == "02" && it.saleType == "PREVENTA") }.sumOf { it.totalPending.toDouble() }
+        val sumTotalPending = completedSales.filter { it.operationStatus == "02"}.sumOf { it.totalPending.toDouble() }
 
         // Display totals
         textViewTotalPurchased.text = String.format("%.2f", sumTotalPurchased)
