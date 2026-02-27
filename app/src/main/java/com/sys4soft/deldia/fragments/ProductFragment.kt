@@ -48,25 +48,21 @@ class ProductFragment : Fragment() {
         preference = Preference(globalContext)
         val bundle = arguments
         
+        warehouse.warehouseID = bundle!!.getInt("vehicleID")
+        warehouse.warehouseName = bundle.getString("vehicleLicensePlate").toString()
+        
         val userRoleName = preference.getData("userRoleName")
         
         if (!userRoleName.equals("ADMINISTRADOR", ignoreCase = true)) {
-            warehouse.warehouseID = bundle!!.getInt("vehicleID")
-            warehouse.warehouseName = bundle.getString("vehicleLicensePlate").toString()
-            
             // Agregar almacén actual a la lista
             warehouseList.add(warehouse)
-            
-            // Agregar almacén central
-            val centralWarehouse = Warehouse()
-            centralWarehouse.warehouseID = 3
-            centralWarehouse.warehouseName = "A-1 Almacen Central"
-            warehouseList.add(centralWarehouse)
-        } else {
-            // Si es ADMINISTRADOR, el warehouse inicial puede venir del bundle o ser 0
-            warehouse.warehouseID = bundle!!.getInt("vehicleID")
-            warehouse.warehouseName = bundle.getString("vehicleLicensePlate").toString()
         }
+        
+        // Agregar almacén central (para todos)
+        val centralWarehouse = Warehouse()
+        centralWarehouse.warehouseID = 3
+        centralWarehouse.warehouseName = "A-1 Almacen Central"
+        warehouseList.add(centralWarehouse)
     }
 
     override fun onCreateView(
@@ -111,8 +107,16 @@ class ProductFragment : Fragment() {
             .subscribe({ responseData ->
                 if (responseData != null) {
                     warehouseList.clear()
-                    // Filtrar por gangStatus == true
-                    val filteredWarehouses = responseData.filter { it.gang?.gangStatus == true }
+                    
+                    // Almacén central (siempre incluir para administradores)
+                    val centralWarehouse = Warehouse().apply {
+                        warehouseID = 3
+                        warehouseName = "A-1 Almacen Central"
+                    }
+                    warehouseList.add(centralWarehouse)
+                    
+                    // Filtrar por gangStatus == true y evitar duplicado del central
+                    val filteredWarehouses = responseData.filter { it.gang?.gangStatus == true && it.warehouseID != 3 }
                     warehouseList.addAll(filteredWarehouses)
                     
                     // Actualizar el adapter del AutoCompleteTextView
