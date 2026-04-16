@@ -188,6 +188,9 @@ interface UserApiService {
     @Headers("Accept: application/json", "Content-type:application/json")
     fun getWarehousesBySubsidiary(@Body params: Warehouse) : Observable<ArrayList<Warehouse>>
 
+    @GET("hrm/api/schedules/")
+    fun getSchedules() : Call<ArrayList<Schedule>>
+
     companion object {
 //        var BASE_URL = "http://192.168.1.20:9017/"
         var BASE_URL = "https://www.deldiadistribuciones.nom.pe/"

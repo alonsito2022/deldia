@@ -192,12 +192,15 @@ class ChartFragment : Fragment() {
         val apiInterface = UserApiService.create(requireContext()).getGangs()
         apiInterface.enqueue(object : Callback<java.util.ArrayList<Gang>> {
             override fun onResponse(call: Call<java.util.ArrayList<Gang>>, response: Response<java.util.ArrayList<Gang>>) {
-                listGangs = response.body()!!
-                val g: Gang = Gang()
-                g.gangID = 0
-                g.name = "TODOS"
-                listGangs.add(g)
-                autoCompleteGang.setAdapter(GangAdapter(globalContext!!, R.layout.item_gang_view, listGangs, object : GangAdapter.OnItemClickListener{
+                if (response.isSuccessful && response.body() != null) {
+                    listGangs = response.body()!!
+                    val g = Gang()
+                    g.gangID = 0
+                    g.name = "TODOS"
+                    listGangs.add(g)
+                    
+                    val context = context ?: return
+                    autoCompleteGang.setAdapter(GangAdapter(context, R.layout.item_gang_view, listGangs, object : GangAdapter.OnItemClickListener{
                     override fun onItemClick(model: Gang) {
                         autoCompleteGang.setText(model.name, false)
                         autoCompleteGang.dismissDropDown()
@@ -211,6 +214,9 @@ class ChartFragment : Fragment() {
                     }
                 }))
                 Log.d("MIKE", "loadDistributors ok: " + listGangs.size)
+                } else {
+                    Log.e("MIKE", "loadDistributors error: ${response.code()}")
+                }
             }
 
             override fun onFailure(call: Call<java.util.ArrayList<Gang>>, t: Throwable) {
@@ -224,12 +230,15 @@ class ChartFragment : Fragment() {
         val apiInterface = UserApiService.create(requireContext()).getUsersByGang(g)
         apiInterface.enqueue(object : Callback<ArrayList<User>> {
             override fun onResponse(call: Call<ArrayList<User>>, response: Response<ArrayList<User>>) {
-                listUsers = response.body()!!
-                val u: User = User()
-                u.userID = 0
-                u.fullName = "TODOS"
-                listUsers.add(u)
-                userAdapter = UserAdapter(globalContext!!, R.layout.item_user_view, listUsers, object : UserAdapter.OnItemClickListener{
+                if (response.isSuccessful && response.body() != null) {
+                    listUsers = response.body()!!
+                    val u = User()
+                    u.userID = 0
+                    u.fullName = "TODOS"
+                    listUsers.add(u)
+                    
+                    val context = context ?: return
+                    userAdapter = UserAdapter(context, R.layout.item_user_view, listUsers, object : UserAdapter.OnItemClickListener{
                     override fun onItemClick(model: User) {
                         autoCompleteUser.setText(model.fullName, false)
                         autoCompleteUser.dismissDropDown()
@@ -241,6 +250,9 @@ class ChartFragment : Fragment() {
                 })
                 autoCompleteUser.setAdapter(userAdapter)
                 Log.d("MIKE", "loadUsers ok: " + listUsers.size)
+                } else {
+                    Log.e("MIKE", "loadUsers error: ${response.code()}")
+                }
             }
 
             override fun onFailure(call: Call<ArrayList<User>>, t: Throwable) {

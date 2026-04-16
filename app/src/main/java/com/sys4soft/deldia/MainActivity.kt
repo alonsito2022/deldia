@@ -27,6 +27,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.sys4soft.deldia.models.Schedule
 
 
 class MainActivity : AppCompatActivity() {
@@ -147,7 +150,14 @@ class MainActivity : AppCompatActivity() {
         // Configurar navegación según el rol del usuario
         configureNavigationByRole()
 
+        // Sincronizar y verificar horarios
+        fetchSchedules()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        // Verificar horario cada vez que la app vuelve al primer plano
+        checkWorkTime()
     }
     
     private fun configureNavigationByRole() {
@@ -221,17 +231,73 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(applicationContext, "userID invalido.", Toast.LENGTH_SHORT).show()
     }
 
-    private fun checkWorkTime(){
-        val c = Calendar.getInstance()
-        val hour = c.get(Calendar.HOUR_OF_DAY)
-        if(hour in 7..18) {
-            Toast.makeText(applicationContext, "BIENVENIDO ${preference.getData("userName").uppercase()}", Toast.LENGTH_LONG).show()
+    private fun fetchSchedules() {
+        val apiInterface = UserApiService.create(applicationContext).getSchedules()
+        apiInterface.enqueue(object : Callback<ArrayList<Schedule>> {
+            override fun onResponse(call: Call<ArrayList<Schedule>>, response: Response<ArrayList<Schedule>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val json = gson.toJson(response.body())
+                    preference.saveData("SCHEDULES", json)
+                    checkWorkTime()
+                }
+            }
+            override fun onFailure(call: Call<ArrayList<Schedule>>, t: Throwable) {
+                Log.e("MIKE", "Error al obtener horarios: ${t.message}")
+            }
+        })
+    }
+
+    private fun checkWorkTime() {
+        val isStaff = preference.getData("isStaff") == "true"
+        if (isStaff) return // Los administradores/staff suelen no tener restricciones aquí o se manejan distinto
+
+        val userRoleName = preference.getData("userRoleName")
+        if (userRoleName.isEmpty()) return
+
+        val schedulesJson = preference.getData("SCHEDULES")
+        if (schedulesJson.isEmpty()) return
+
+        try {
+            val gson = Gson()
+            val type = object : TypeToken<ArrayList<Schedule>>() {}.type
+            val schedules: ArrayList<Schedule> = gson.fromJson(schedulesJson, type)
+
+            val schedule = schedules.find { it.roleName.equals(userRoleName, ignoreCase = true) }
+            
+            if (schedule == null || !schedule.hasRestrictions) return
+
+            val now = Calendar.getInstance()
+            val currentDayRaw = SimpleDateFormat("EEEE", Locale("es", "ES")).format(now.time).toUpperCase(Locale.ROOT)
+            val currentDay = currentDayRaw.replace("Á", "A")
+                .replace("É", "E")
+                .replace("Í", "I")
+                .replace("Ó", "O")
+                .replace("Ú", "U")
+            val currentTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(now.time)
+
+            // Validar día
+            val allowedDays = schedule.daysOfWeek.split("-")
+            val isAllowedDay = allowedDays.any { it.equals(currentDay, ignoreCase = true) }
+
+            if (!isAllowedDay) {
+                logoutDueToSchedule("Hoy ($currentDayRaw) no es un día laborable para tu rol.")
+                return
+            }
+
+            // Validar hora (Comparación de strings HH:mm:ss funciona bien para rangos)
+            if (currentTime < schedule.startTime || currentTime > schedule.endTime) {
+                logoutDueToSchedule("Fuate de horario. Tu horario es de ${schedule.startTime} a ${schedule.endTime}")
+            }
+        } catch (e: Exception) {
+            Log.e("MIKE", "Error validando horario", e)
         }
-        else {
-            Toast.makeText(applicationContext,"Acceso denegado. El horario de ingreso es de 7am a 6pm", Toast.LENGTH_LONG).show()
-            preference.clearPreference()
-            GoToActivityAsNewTask(this, LoginActivity::class.java)
-        }
+    }
+
+    private fun logoutDueToSchedule(message: String) {
+        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+        preference.clearPreference()
+        GoToActivityAsNewTask(this, LoginActivity::class.java)
     }
 
     fun GoToActivityAsNewTask(context: Activity, clazz: Class<*>?) {

@@ -17,6 +17,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.sys4soft.deldia.models.Schedule
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var preference: Preference
@@ -144,8 +147,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         saveData(PREF_TOKEN_DATE, SimpleDateFormat("yyyy-MM-dd").format(Date()).toString())
                         saveData(PREF_IS_STAFF, if (r.is_staff) "true" else "false")
                     }
-                    startActivity(Intent(applicationContext, MainActivity::class.java))
-                    finish()
+                    
+                    // Validar horario antes de proceder
+                    validateScheduleAndEnter(r.roleName, r.is_staff)
                 } ?: run {
                     showToast("Error al obtener los datos del usuario.")
                 }
@@ -156,6 +160,71 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 Log.d("APP", t.message.toString())
             }
         })
+    }
+
+    private fun validateScheduleAndEnter(roleName: String, isStaff: Boolean) {
+        if (isStaff) {
+            startMainActivity()
+            return
+        }
+
+        val apiInterface = UserApiService.create(applicationContext).getSchedules()
+        apiInterface.enqueue(object : Callback<ArrayList<Schedule>> {
+            override fun onResponse(call: Call<ArrayList<Schedule>>, response: Response<ArrayList<Schedule>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val schedules = response.body()!!
+                    val gson = Gson()
+                    preference.saveData("SCHEDULES", gson.toJson(schedules))
+
+                    val schedule = schedules.find { it.roleName.equals(roleName, ignoreCase = true) }
+
+                    if (schedule == null || !schedule.hasRestrictions) {
+                        startMainActivity()
+                        return
+                    }
+
+                    val now = Calendar.getInstance()
+                    val currentDayRaw = SimpleDateFormat("EEEE", Locale("es", "ES")).format(now.time).toUpperCase(Locale.ROOT)
+                    val currentDay = currentDayRaw.replace("Á", "A")
+                        .replace("É", "E")
+                        .replace("Í", "I")
+                        .replace("Ó", "O")
+                        .replace("Ú", "U")
+                    val currentTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(now.time)
+
+                    // Validar día
+                    val allowedDays = schedule.daysOfWeek.split("-")
+                    val isAllowedDay = allowedDays.any { it.equals(currentDay, ignoreCase = true) }
+
+                    if (!isAllowedDay) {
+                        showToast("Acceso denegado: Hoy ($currentDayRaw) no laboras.")
+                        preference.clearPreference()
+                        return
+                    }
+
+                    // Validar hora
+                    if (currentTime < schedule.startTime || currentTime > schedule.endTime) {
+                        showToast("Acceso denegado: Tu horario es de ${schedule.startTime} a ${schedule.endTime}")
+                        preference.clearPreference()
+                        return
+                    }
+
+                    startMainActivity()
+                } else {
+                    // En caso de error de red con los horarios, permitimos el acceso para no bloquear al usuario
+                    startMainActivity()
+                }
+            }
+
+            override fun onFailure(call: Call<ArrayList<Schedule>>, t: Throwable) {
+                startMainActivity()
+            }
+        })
+    }
+
+    private fun startMainActivity() {
+        startActivity(Intent(applicationContext, MainActivity::class.java))
+        finish()
     }
 
     private fun showToast(text:String){
