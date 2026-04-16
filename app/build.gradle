@@ -6,7 +6,8 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    namespace 'com.sys4soft.deldia' // <--- ESTA LÍNEA ES CLAVE
+    compileSdk 34 // o la versión que estés usando
 
     defaultConfig {
         applicationId "com.sys4soft.deldia"
