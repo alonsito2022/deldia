@@ -84,6 +84,8 @@ class MainActivity : AppCompatActivity() {
         bundle.putString("vehicleLicensePlate", preference.getData("vehicleLicensePlate"))
 
         bottomNavigationView.setOnItemSelectedListener { item ->
+            if (!checkWorkTime()) return@setOnItemSelectedListener false
+
             val destination = when (item.itemId) {
                 R.id.nav_products -> R.id.productFragment
                 R.id.nav_collection_sheet -> R.id.collectionSheetFragment
@@ -104,6 +106,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         navView.setNavigationItemSelectedListener {
+            if (!checkWorkTime()) return@setNavigationItemSelectedListener false
 
             it.isChecked = true
             drawerLayout.closeDrawers()
@@ -248,15 +251,15 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun checkWorkTime() {
+    private fun checkWorkTime(): Boolean {
         val isStaff = preference.getData("isStaff") == "true"
-        if (isStaff) return // Los administradores/staff suelen no tener restricciones aquí o se manejan distinto
+        if (isStaff) return true // Los administradores/staff suelen no tener restricciones aquí o se manejan distinto
 
         val userRoleName = preference.getData("userRoleName")
-        if (userRoleName.isEmpty()) return
+        if (userRoleName.isEmpty()) return true
 
         val schedulesJson = preference.getData("SCHEDULES")
-        if (schedulesJson.isEmpty()) return
+        if (schedulesJson.isEmpty()) return true
 
         try {
             val gson = Gson()
@@ -265,7 +268,7 @@ class MainActivity : AppCompatActivity() {
 
             val schedule = schedules.find { it.roleName.equals(userRoleName, ignoreCase = true) }
             
-            if (schedule == null || !schedule.hasRestrictions) return
+            if (schedule == null || !schedule.hasRestrictions) return true
 
             val now = Calendar.getInstance()
             val currentDayRaw = SimpleDateFormat("EEEE", Locale("es", "ES")).format(now.time).toUpperCase(Locale.ROOT)
@@ -282,16 +285,18 @@ class MainActivity : AppCompatActivity() {
 
             if (!isAllowedDay) {
                 logoutDueToSchedule("Hoy ($currentDayRaw) no es un día laborable para tu rol.")
-                return
+                return false
             }
 
             // Validar hora (Comparación de strings HH:mm:ss funciona bien para rangos)
             if (currentTime < schedule.startTime || currentTime > schedule.endTime) {
-                logoutDueToSchedule("Fuate de horario. Tu horario es de ${schedule.startTime} a ${schedule.endTime}")
+                logoutDueToSchedule("Fuera de horario. Tu horario es de ${schedule.startTime} a ${schedule.endTime}")
+                return false
             }
         } catch (e: Exception) {
             Log.e("MIKE", "Error validando horario", e)
         }
+        return true
     }
 
     private fun logoutDueToSchedule(message: String) {
