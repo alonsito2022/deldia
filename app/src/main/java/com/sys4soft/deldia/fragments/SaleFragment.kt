@@ -105,6 +105,8 @@ class SaleFragment : Fragment() {
             operation.routeDate = bundle.getString("routeDate").toString()
         }
 
+        warehouse.userID = operation.userID
+
         val formatter = SimpleDateFormat("yyyy-MM-dd")
         val date = formatter.parse(operation.routeDate)
         val calendar = Calendar.getInstance()

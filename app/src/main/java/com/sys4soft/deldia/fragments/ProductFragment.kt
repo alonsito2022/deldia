@@ -226,6 +226,7 @@ class ProductFragment : Fragment() {
         val warehouseToLoad = Warehouse().apply {
             warehouseID = warehouseId
             otherDate = warehouse.otherDate
+            userID = preference.getData("userID").toIntOrNull() ?: 0
         }
         
         val apiInterface = UserApiService.create(requireContext()).getStockInWarehouse(warehouseToLoad)

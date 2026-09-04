@@ -350,6 +350,7 @@ class DispatchFragment : Fragment() {
     }
 
     private fun loadProductStoreInWarehouse(w: Warehouse) {
+        w.userID = operation.userID
         val apiInterface = UserApiService.create(requireContext()).getStockInWarehouse(w)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

@@ -499,6 +499,7 @@ class QuotationFragment : Fragment() {
     }
 
     private fun loadProductStoreInWarehouse() {
+        warehouse.userID = operation.userID
         UserApiService.create(requireContext()).getStockInWarehouse(warehouse)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

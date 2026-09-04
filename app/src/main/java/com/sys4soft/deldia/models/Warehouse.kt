@@ -7,4 +7,5 @@ class Warehouse() {
     var warehouseCategory: String = ""
     var gang: Gang? = null
     var subsidiaryID: Int = 0
+    var userID: Int = 0
 }
